@@ -1538,7 +1538,9 @@ function renderTimeline(){
       <div class="tl-q-text">${cur.t}</div>
       ${fb ? `
         <div class="feedback-banner ${fb.status==='correct'?'correct':'wrong'}">
-          ${fb.status==='correct' ? '✓ إجابة صحيحة! أُضيف الحدث لخانته' : `✕ ${fb.status==='skip'?'تم تخطي الحدث':'إجابة غير صحيحة'} — الصحيح: ${TIMELINE_BOX_LABELS[fb.correctBox]}`}
+          ${fb.status==='correct' ? '✓ إجابة صحيحة! أُضيف الحدث لخانته'
+            : fb.status==='retry' ? '✕ إجابة غير صحيحة، حاول مرة أخرى'
+            : `✕ تم تخطي الحدث — الصحيح: ${TIMELINE_BOX_LABELS[fb.correctBox]}`}
         </div>
       ` : (tl.hintShown ? `<div class="hint-box"><span class="tl-bulb-icon">${ICONS.bulb}</span> <span>ينتمي هذا الحدث إلى قسم: ${TIMELINE_GROUPS.find(g=>g.boxes.includes(cur.b)).title}</span></div>` : '')}
     </div>
@@ -1551,7 +1553,7 @@ function renderTimeline(){
       <div style="display:flex; gap:8px;">
         ${(!fb && !tl.hintShown) ? `<button class="btn btn-ghost btn-sm" onclick="showTimelineHint()"><span class="tl-bulb-icon">${ICONS.bulb}</span> تلميح</button>` : ''}
         ${!fb ? `<button class="btn btn-ghost btn-sm" onclick="skipTimelineEvent()">تخطي</button>` : ''}
-        ${(fb && fb.status!=='correct') ? `<button class="btn btn-primary btn-sm" onclick="nextTimelineQuestion()">التالي</button>` : ''}
+        ${(fb && fb.status==='skip') ? `<button class="btn btn-primary btn-sm" onclick="nextTimelineQuestion()">التالي</button>` : ''}
       </div>
     </div>
   </div>
@@ -1563,18 +1565,30 @@ function pickTimelineBox(boxId){
   const cur = tl.queue[tl.idx];
   const isCorrect = cur.b === boxId;
   tl.locked = true;
-  tl.feedback = { status: isCorrect?'correct':'wrong', pickedBox:boxId, correctBox:cur.b };
   if(isCorrect){
+    tl.feedback = { status:'correct', pickedBox:boxId, correctBox:cur.b };
     tl.correct++;
     if(!tl.placed[boxId]) tl.placed[boxId] = [];
     tl.placed[boxId].push(cur.t);
+    saveTimelineProgress();
+    render();
+    if(tl.autoAdvanceTimer) clearTimeout(tl.autoAdvanceTimer);
+    tl.autoAdvanceTimer = setTimeout(advanceTimeline, 700);
   }else{
+    /* إجابة خاطئة: لا تُكشف الإجابة الصحيحة ولا يُنتقل للسؤال التالي —
+       تُتاح فرصة إعادة المحاولة على نفس الحدث بعد لحظة قصيرة */
+    tl.feedback = { status:'retry', pickedBox:boxId };
     tl.wrong++;
+    saveTimelineProgress();
+    render();
+    if(tl.autoAdvanceTimer) clearTimeout(tl.autoAdvanceTimer);
+    tl.autoAdvanceTimer = setTimeout(()=>{
+      tl.feedback = null;
+      tl.locked = false;
+      saveTimelineProgress();
+      render();
+    }, 1100);
   }
-  saveTimelineProgress();
-  render();
-  if(tl.autoAdvanceTimer) clearTimeout(tl.autoAdvanceTimer);
-  tl.autoAdvanceTimer = setTimeout(advanceTimeline, isCorrect ? 700 : 4000);
 }
 function skipTimelineEvent(){
   const tl = state.timeline;
