@@ -921,6 +921,13 @@ async function deleteNoteFromStorage(id){
   list = list.filter(n=>n.id!==id);
   return await saveNotesList(list);
 }
+async function updateNoteInStorage(id, title, body){
+  let list = await loadNotes();
+  const idx = list.findIndex(n=>n.id===id);
+  if(idx===-1) return false;
+  list[idx] = { ...list[idx], title:(title||'').trim(), body:(body||'').trim() };
+  return await saveNotesList(list);
+}
 /* ---- الأسئلة المضافة من الزوار (Supabase — تظهر فورًا لدى الجميع) ---- */
 async function loadSubmittedQuestions(){
   try{
@@ -1124,7 +1131,7 @@ function render(){
   else if(state.view==='progress') html = renderProgressShell();
   else if(state.view==='references') html = renderReferences();
 
-  html += `<div class="footer-note">هذه المنصة مبادرة مستقلة، ولا علاقة لإدارة البرنامج بها<br><span class="pill-note">ساعة علم وساعة عمل</span></div>`;
+  html += `<div class="footer-note">مبادرة مستقلة غير تابعة لإدارة البرنامج<br><span class="pill-note">ساعة علم وساعة عمل</span></div>`;
   app.innerHTML = html;
 
   const toastRoot = document.getElementById('toast-root');
@@ -1952,6 +1959,7 @@ const REF_MAX_FILE_BYTES = 3*1024*1024; // ~3 ميجابايت خام (يكبر 
 let __refSharedCache = [];
 let __refMineCache = [];
 let __notesCache = [];
+let __editingNoteId = null;
 
 function fmtBytes(n){
   if(!n && n!==0) return '';
@@ -2251,7 +2259,10 @@ function renderNotes(){
     </div>
     <div class="note-compose-actions">
       <span class="note-char-count" id="note-char-count">٠ / ٦٠٠</span>
-      <button class="btn btn-primary btn-sm" onclick="submitNote()"><span class="plus-icon">+</span> حفظ الملاحظة</button>
+      <span style="display:flex; gap:8px;">
+        <button class="btn btn-ghost btn-sm" id="note-cancel-edit-btn" onclick="cancelEditNote()" style="display:none;">إلغاء التعديل</button>
+        <button class="btn btn-primary btn-sm" id="note-submit-btn" onclick="submitNote()"><span class="plus-icon">+</span> حفظ الملاحظة</button>
+      </span>
     </div>
   </div>
 
@@ -2283,7 +2294,10 @@ function notesGridMarkup(list){
       <p class="note-card-body">${escapeHtml(n.body)}</p>
       <div class="note-card-foot">
         <span class="note-card-date">${fmtNoteDate(n.ts)}</span>
-        <button class="note-del" onclick="deleteNoteUI('${n.id}')" title="حذف الملاحظة">${ICONS.trash}</button>
+        <span style="display:flex; gap:6px;">
+          <button class="note-del" onclick="editNoteUI('${n.id}')" title="تعديل الملاحظة">${ICONS.pen}</button>
+          <button class="note-del" onclick="deleteNoteUI('${n.id}')" title="حذف الملاحظة">${ICONS.trash}</button>
+        </span>
       </div>
     </div>
   `).join('');
@@ -2301,6 +2315,17 @@ async function submitNote(){
   const title = titleEl ? titleEl.value : '';
   const body = bodyEl ? bodyEl.value : '';
   if(!body.trim()){ showToast('اكتب نص الملاحظة أولاً'); return; }
+  if(__editingNoteId){
+    const ok = await updateNoteInStorage(__editingNoteId, title, body);
+    __editingNoteId = null;
+    if(titleEl) titleEl.value = '';
+    if(bodyEl) bodyEl.value = '';
+    updateNoteCharCount();
+    resetNoteComposeUI();
+    showToast(ok ? 'تم حفظ التعديل بنجاح' : 'تعذّر حفظ التعديل، حاول مجددًا');
+    refreshNotesEverywhere();
+    return;
+  }
   const note = await addNoteToStorage(title, body);
   if(!note){ showToast('تعذّر حفظ الملاحظة، حاول مجددًا'); return; }
   if(titleEl) titleEl.value = '';
@@ -2309,8 +2334,40 @@ async function submitNote(){
   showToast('تم حفظ ملاحظتك بنجاح، وستجدها أيضًا في «تقدّمي»');
   refreshNotesEverywhere();
 }
+function editNoteUI(id){
+  const note = __notesCache.find(n=>n.id===id);
+  if(!note) return;
+  __editingNoteId = id;
+  const titleEl = document.getElementById('note-title-input');
+  const bodyEl = document.getElementById('note-body-input');
+  if(titleEl) titleEl.value = note.title || '';
+  if(bodyEl) bodyEl.value = note.body || '';
+  updateNoteCharCount();
+  const submitBtn = document.getElementById('note-submit-btn');
+  const cancelBtn = document.getElementById('note-cancel-edit-btn');
+  if(submitBtn) submitBtn.innerHTML = 'حفظ التعديل';
+  if(cancelBtn) cancelBtn.style.display = '';
+  if(bodyEl) bodyEl.scrollIntoView({behavior:'smooth', block:'center'});
+  if(bodyEl) bodyEl.focus();
+}
+function cancelEditNote(){
+  __editingNoteId = null;
+  const titleEl = document.getElementById('note-title-input');
+  const bodyEl = document.getElementById('note-body-input');
+  if(titleEl) titleEl.value = '';
+  if(bodyEl) bodyEl.value = '';
+  updateNoteCharCount();
+  resetNoteComposeUI();
+}
+function resetNoteComposeUI(){
+  const submitBtn = document.getElementById('note-submit-btn');
+  const cancelBtn = document.getElementById('note-cancel-edit-btn');
+  if(submitBtn) submitBtn.innerHTML = '<span class="plus-icon">+</span> حفظ الملاحظة';
+  if(cancelBtn) cancelBtn.style.display = 'none';
+}
 async function deleteNoteUI(id){
   if(!confirm('هل تريد حذف هذه الملاحظة؟')) return;
+  if(__editingNoteId===id) cancelEditNote();
   await deleteNoteFromStorage(id);
   showToast('تم حذف الملاحظة');
   refreshNotesEverywhere();
@@ -2409,7 +2466,7 @@ function renderModal(){
       <div class="modal-card">
         <button class="btn-ghost btn-sm modal-close" onclick="closeModal()" style="border-radius:50%; width:32px; height:32px; padding:0;">✕</button>
         <h3>أضف سؤالك الخاص</h3>
-        <p class="sub-note">أضف سؤالاً جديدًا لأي مقرر، ويُضاف مباشرة دون أي مراجعة. يمكنك إضافة أي عدد من الأسئلة بلا حدّ.</p>
+        <p class="sub-note">أضف سؤالاً جديدًا لأي مقرر، ويُضاف مباشرة دون أي مراجعة. يمكنك إضافة أي عدد من الأسئلة بلا حدّ، كما يمكنك حذف سؤالك لاحقًا في أي وقت بعد نشره من خلال «أسئلتي المضافة».</p>
         <div class="field">
           <label>المقرر</label>
           <select id="aq-course">
