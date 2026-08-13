@@ -913,7 +913,7 @@ async function loadCoursesFromSupabase(){
         const qs = qRows
           .filter(q=>q.course_id===c.id && q.exam_id===e.id)
           .map(q=>({ q:q.question, options:q.options, a:q.correct_index, hint:q.hint||'' }));
-        examsObj[e.id] = { title:e.title, questions: qs };
+        examsObj[e.id] = { title:e.title, questions: qs, createdAt: e.created_at };
       });
       return { id:c.id, name:c.name, sub:c.sub, icon:c.icon, status:c.status, exams: examsObj };
     });
@@ -1098,18 +1098,45 @@ async function forgetMySubmittedQuestion(id){
   }catch(e){ return false; }
 }
 /* ---- exam completion tracking (personal, per device) ---- */
+/* ---- exam completion tracking (personal, per device) ----
+   كل اكتمال مرتبط ببصمة (created_at) الاختبار وقت إنجازه؛ إن حُذف الاختبار
+   وأُعيد إنشاؤه بنفس الرقم لاحقًا (بمحتوى جديد)، ستختلف البصمة تلقائيًا
+   فتُعامَل حالته على أنها "غير مكتمل" من جديد لكل الزوار دون أي تدخل يدوي. */
 async function loadCompletedExams(){
-  try{ const res = await localData.get('completed_exams'); return res && res.value ? JSON.parse(res.value) : []; }
-  catch(e){ return []; }
-}
-async function markExamCompleted(courseId, examId){
   try{
-    const list = await loadCompletedExams();
-    const key = `${courseId}__${examId}`;
-    if(!list.includes(key)){
-      list.push(key);
-      await localData.set('completed_exams', JSON.stringify(list));
+    const res = await localData.get('completed_exams');
+    if(!res || !res.value) return {};
+    const parsed = JSON.parse(res.value);
+    // توافق مع الصيغة القديمة (قائمة نصية) بترحيلها لخريطة ببصمة فارغة
+    if(Array.isArray(parsed)){
+      const map = {};
+      parsed.forEach(k=>{ map[k] = null; });
+      return map;
     }
+    return parsed || {};
+  }catch(e){ return {}; }
+}
+/* مقررات يُعاد فيها التحقق القسري من صحة أي علامة "اكتمال" قديمة بلا بصمة
+   (بمعنى: تُعامَل معاملة "غير مكتمل" من جديد للجميع، مرة واحدة) — يُستخدم بعد
+   إعادة بناء محتوى مقرر بالكامل والتأكد أن لا أحد اختبر المحتوى الجديد بعد. */
+const FORCE_REVALIDATE_COURSES = ['zubda'];
+function isExamMarkedDone(completedMap, key, currentVersion){
+  if(!(key in completedMap)) return false;
+  const storedVersion = completedMap[key];
+  // إدخالات قديمة بلا بصمة (من قبل هذا التحديث) تُعتبر صحيحة كما هي
+  if(storedVersion === null || storedVersion === undefined){
+    const courseId = key.split('__')[0];
+    if(FORCE_REVALIDATE_COURSES.includes(courseId)) return false;
+    return true;
+  }
+  return storedVersion === currentVersion;
+}
+async function markExamCompleted(courseId, examId, version){
+  try{
+    const map = await loadCompletedExams();
+    const key = `${courseId}__${examId}`;
+    map[key] = version !== undefined ? version : null;
+    await localData.set('completed_exams', JSON.stringify(map));
   }catch(e){}
 }
 async function resetCompletedExams(){
@@ -1336,7 +1363,7 @@ async function hydrateHomeCoursesProgress(){
     Object.keys(c.exams||{}).forEach(s=>{
       if(!c.exams[s] || s==='extra') return;
       total++;
-      if(completed.includes(`${c.id}__${s}`)) done++;
+      if(isExamMarkedDone(completed, `${c.id}__${s}`, c.exams[s].createdAt)) done++;
     });
     if(total<=0) return;
     if(done >= total){
@@ -1371,7 +1398,15 @@ async function hydrateHomeStats(){
   if(resetArea){
     const completed = await loadCompletedExams();
     const totalAvail = totalAvailableExams();
-    if(totalAvail>0 && completed.length>=totalAvail){
+    let doneAvail = 0;
+    COURSES.forEach(c=>{
+      if(c.status!=='active') return;
+      Object.keys(c.exams||{}).forEach(s=>{
+        if(!c.exams[s] || s==='extra') return;
+        if(isExamMarkedDone(completed, `${c.id}__${s}`, c.exams[s].createdAt)) doneAvail++;
+      });
+    });
+    if(totalAvail>0 && doneAvail>=totalAvail){
       resetArea.innerHTML = `
         <div class="panel" style="text-align:center; margin-top:14px;">
           <p style="font-weight:800; color:var(--sage-deep); margin:0 0 8px;">🎉 أتممت جميع الاختبارات المتاحة في كل المقررات!</p>
@@ -1450,7 +1485,7 @@ async function hydrateCourseExams(courseId){
     if(!c.exams[s]) return;
     if(s !== 'extra') totalReal++;
     const key = `${courseId}__${s}`;
-    const isDone = completed.includes(key);
+    const isDone = isExamMarkedDone(completed, key, c.exams[s].createdAt);
     if(isDone && s !== 'extra') doneCount++;
     const card = document.getElementById(`examcard-${courseId}-${s}`);
     const badge = document.getElementById(`examdone-${courseId}-${s}`);
@@ -1506,12 +1541,11 @@ async function hydrateAddedQuestionsCard(courseId){
 }
 async function resetSingleExam(courseId, examId){
   try{
-    const list = await loadCompletedExams();
+    const map = await loadCompletedExams();
     const key = `${courseId}__${examId}`;
-    const idx = list.indexOf(key);
-    if(idx > -1){
-      list.splice(idx, 1);
-      await localData.set('completed_exams', JSON.stringify(list));
+    if(key in map){
+      delete map[key];
+      await localData.set('completed_exams', JSON.stringify(map));
     }
   }catch(e){}
   showToast('تمت إعادة تعيين الاختبار، يمكنك إعادته الآن');
@@ -1847,7 +1881,9 @@ function finishQuiz(){
   q.questions.forEach((qq,i)=>{ if(q.answers[i]===qq.correct) score++; });
   const timeTaken = EXAM_SECONDS - q.remaining;
   state.lastResult = { score, total:q.questions.length, courseId:state.courseId, examId:state.examId, saved:false, timeTaken };
-  markExamCompleted(state.courseId, state.examId);
+  const __c = COURSES.find(c=>c.id===state.courseId);
+  const __examVersion = __c && __c.exams && __c.exams[state.examId] ? __c.exams[state.examId].createdAt : null;
+  markExamCompleted(state.courseId, state.examId, __examVersion);
   setView('result');
 }
 
