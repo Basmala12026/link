@@ -12,6 +12,7 @@
 <title>بسملة | منصة للمراجعة والتثبيت</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dawod/thmanyah-font-web/index.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
   :root{
@@ -41,7 +42,7 @@
       radial-gradient(circle at 100% 0%, var(--cream-deep), transparent 45%),
       var(--cream);
     color:var(--ink);
-    font-family:'Tajawal', sans-serif;
+    font-family:'Thmanyah Sans', 'Tajawal', sans-serif;
     min-height:100vh;
     min-height:100dvh;
     -webkit-font-smoothing:antialiased;
@@ -624,7 +625,7 @@
   .mustalahat-select, .mustalahat-fill-input{
     width:100%; background:var(--cream-deep); color:var(--ink);
     border:1px solid var(--cream-deep); border-radius:10px; padding:11px 12px;
-    font-family:'Cairo', sans-serif; font-size:14.5px;
+    font-family:'Thmanyah Sans', 'Tajawal', sans-serif; font-size:14.5px;
   }
   .mustalahat-select:focus, .mustalahat-fill-input:focus{ outline:3px solid var(--sage-pale-2); outline-offset:1px; }
   .mustalahat-fill-input::placeholder{ color:var(--ink-soft); opacity:.6; }
@@ -643,7 +644,7 @@
   .mustalahat-feedback.no{ background:var(--danger-bg); color:var(--danger); }
   .mustalahat-submit-zone{ text-align:center; margin-top:44px; }
   .mustalahat-grade-btn{
-    background:var(--sage); color:#fff; border:none; font-family:'Cairo', sans-serif;
+    background:var(--sage); color:#fff; border:none; font-family:'Thmanyah Sans', 'Tajawal', sans-serif;
     font-weight:700; font-size:16.5px; padding:14px 42px; border-radius:30px; cursor:pointer; letter-spacing:.5px;
   }
   .mustalahat-grade-btn:hover{ background:var(--sage-deep); }
@@ -651,7 +652,7 @@
     text-align:center; margin-top:34px; padding:30px 20px;
     background:var(--card); border:1px solid var(--sage); border-radius:var(--radius); box-shadow:var(--shadow);
   }
-  .mustalahat-score-num{ font-family:'Cairo', sans-serif; font-size:48px; color:var(--sage-deep); font-weight:700; margin:6px 0; }
+  .mustalahat-score-num{ font-family:'Thmanyah Sans', 'Tajawal', sans-serif; font-size:48px; color:var(--sage-deep); font-weight:700; margin:6px 0; }
   .mustalahat-score-label{ color:var(--ink-soft); font-size:14.5px; }
   .mustalahat-reset-link{ display:block; text-align:center; margin-top:16px; color:var(--sage-deep); font-size:13.5px; text-decoration:underline; cursor:pointer; background:none; border:none; font-family:inherit; }
   .daycard-note-input{
@@ -912,6 +913,50 @@ const TIMELINE_EVENTS = [
   {t:'قول الناظم «خمسا شهر» يعني ١٢ يوماً، وقول «ثلث وخمس» يعني ١٦ يوماً', b:'d3'},
 ];
 
+/* ============================ لعبة "رتّب الأمور" — أركان الإيمان (اختبار ٤ لمقرر زبدة العقيدة) ============================ */
+const IMAN_ARKAN_GROUPS = [
+  { id:'ia1', title:'الإيمان بالله يتضمن:' },
+  { id:'ia2', title:'من أدلة وجود الله تعالى' },
+  { id:'ia3', title:'الإيمان بالملائكة يتضمن:' },
+  { id:'ia4', title:'الإيمان بالكتب يتضمن:' },
+  { id:'ia5', title:'الإيمان بالرسل يتضمن:' },
+  { id:'ia7', title:'الإيمان بالقدر يتضمن:' },
+  { id:'ia6', title:'الإيمان باليوم الآخر يتضمن:' },
+];
+const IMAN_ARKAN_ITEMS = [
+  {t:'الإيمان بوجوده', b:'ia1'},
+  {t:'الإيمان بربوبيته', b:'ia1'},
+  {t:'الإيمان بإلاهيته', b:'ia1'},
+  {t:'الإيمان بأسمائه وصفاته', b:'ia1'},
+  {t:'الفطرة السليمة', b:'ia2'},
+  {t:'العقل الصريح', b:'ia2'},
+  {t:'الشرع الصحيح', b:'ia2'},
+  {t:'الحس المشهود', b:'ia2'},
+  {t:'الإيمان بوجودهم', b:'ia3'},
+  {t:'الإيمان بأسمائهم', b:'ia3'},
+  {t:'الإيمان بصفاتهم', b:'ia3'},
+  {t:'الإيمان بأعمالهم', b:'ia3'},
+  {t:'الإيمان بأنها نزلت من عند الله تعالى', b:'ia4'},
+  {t:'الإيمان بما علمنا اسمه منها، وما لم نعلم اسمه فنؤمن به إجمالاً', b:'ia4'},
+  {t:'تصديق أخبارها', b:'ia4'},
+  {t:'العمل بأحكام ما لم يُنسخ منها', b:'ia4'},
+  {t:'الإيمان بأن رسالتهم حق من الله تعالى', b:'ia5'},
+  {t:'الإيمان باسم من علمنا منهم، ومن لم نعلم اسمه فنؤمن بهم إجمالاً', b:'ia5'},
+  {t:'تصديق ما صحّ عنهم من أخبارهم', b:'ia5'},
+  {t:'اعتقاد عصمتهم', b:'ia5'},
+  {t:'البعث', b:'ia6'},
+  {t:'جزاء الأعمال', b:'ia6'},
+  {t:'العرض', b:'ia6'},
+  {t:'الحساب', b:'ia6'},
+  {t:'الثواب والعقاب', b:'ia6'},
+  {t:'الصراط', b:'ia6'},
+  {t:'الميزان', b:'ia6'},
+  {t:'العلم', b:'ia7'},
+  {t:'الكتابة', b:'ia7'},
+  {t:'المشيئة', b:'ia7'},
+  {t:'الخلق', b:'ia7'},
+].map((e,i)=>({ ...e, id:'ia-'+i }));
+
 /* ============================ STATE ============================ */
 let state = {
   view:'home',
@@ -919,6 +964,7 @@ let state = {
   examId:null,
   quiz:null,
   timeline:null,
+  imanArkan:null,
   lastResult:null,
   toast:null,
   modal:null,
@@ -1316,6 +1362,7 @@ function render(){
   else if(state.view==='course') html = renderCourse();
   else if(state.view==='quiz') html = renderQuiz();
   else if(state.view==='timeline') html = renderTimeline();
+  else if(state.view==='imanarkan') html = renderImanArkan();
   else if(state.view==='result') html = renderResult();
   else if(state.view==='tasks') html = renderTasks();
   else if(state.view==='mustalahat') html = renderMustalahatPage();
@@ -1342,6 +1389,7 @@ function render(){
   if(state.view==='home'){ hydrateHomeStats(); hydrateQuestionCounts(); hydrateHomeCoursesProgress(); }
   hydrateOwnerNameRow();
   if(state.view==='quiz') hydrateQuizTimer();
+  if(state.view==='imanarkan') hydrateImanArkanTimer();
   if(state.view==='favorites'){ hydrateFavorites(); hydrateNotes(); }
   if(state.view==='result') hydrateResultAutoSave();
   if(state.view==='references') hydrateReferences();
@@ -1503,6 +1551,16 @@ function renderCourse(){
             <div class="t">اختبار مصطلحات · ٢٠ سؤالاً</div>
             <div class="exam-actions">
               <button class="btn btn-primary btn-sm" onclick="openMustalahatQuiz()">ابدأ</button>
+            </div>
+          </div>`;
+        }
+        const isImanArkan = c.id==='zubda' && s===4;
+        if(isImanArkan){
+          return `<div class="exam-card" id="examcard-${c.id}-${s}">
+            <div class="n">${examLabel(s)}</div>
+            <div class="t">رتّب الأمور · ${IMAN_ARKAN_ITEMS.length} عبارة · ٥ د</div>
+            <div class="exam-actions">
+              <button class="btn btn-primary btn-sm" onclick="startImanArkanGame('${c.id}')">ابدأ</button>
             </div>
           </div>`;
         }
@@ -1850,6 +1908,266 @@ function finishTimelineGame(){
   setView('result');
 }
 
+/* ============================ لعبة رتّب الأمور (اختبار ٤ — زبدة العقيدة) ============================ */
+const IMANARKAN_PROGRESS_KEY = 'bs_imanarkan_progress_v1';
+function saveImanArkanProgress(){
+  const ia = state.imanArkan;
+  if(!ia) return;
+  try{
+    const toSave = { courseId:ia.courseId, queue:ia.queue, idx:ia.idx, placed:ia.placed, correct:ia.correct, wrong:ia.wrong, total:ia.total, startedAt:ia.startedAt, remaining:ia.remaining, hintShown:ia.hintShown };
+    localStorage.setItem(IMANARKAN_PROGRESS_KEY, JSON.stringify(toSave));
+  }catch(e){}
+}
+function loadImanArkanProgress(courseId){
+  try{
+    const raw = localStorage.getItem(IMANARKAN_PROGRESS_KEY);
+    if(!raw) return null;
+    const saved = JSON.parse(raw);
+    if(saved && saved.courseId===courseId && saved.idx < saved.total) return saved;
+  }catch(e){}
+  return null;
+}
+function clearImanArkanProgress(){
+  try{ localStorage.removeItem(IMANARKAN_PROGRESS_KEY); }catch(e){}
+}
+async function startImanArkanGame(courseId, forceNew){
+  const saved = forceNew ? null : loadImanArkanProgress(courseId);
+  if(saved){
+    state.imanArkan = { ...saved, remaining: (saved.remaining!=null ? saved.remaining : EXAM_SECONDS), feedback:null, locked:false, autoAdvanceTimer:null };
+  }else{
+    state.imanArkan = {
+      courseId,
+      queue: shuffle(IMAN_ARKAN_ITEMS),
+      idx: 0,
+      placed: {},
+      correct: 0,
+      wrong: 0,
+      total: IMAN_ARKAN_ITEMS.length,
+      startedAt: Date.now(),
+      remaining: EXAM_SECONDS,
+      feedback: null,
+      hintShown: false,
+      locked: false,
+      autoAdvanceTimer: null,
+    };
+    saveImanArkanProgress();
+  }
+  const favs = await loadFavorites();
+  state.favIds = new Set(favs.map(f=>f.id));
+  state.flaggedIds = state.flaggedIds || new Set();
+  setView('imanarkan', {courseId, examId:'4'});
+}
+function resetImanArkanGame(){
+  if(!state.imanArkan) return;
+  state.modal = 'confirm-reset-imanarkan';
+  render();
+}
+function confirmResetImanArkan(){
+  const ia = state.imanArkan;
+  closeModal();
+  if(!ia) return;
+  if(ia.autoAdvanceTimer){ clearTimeout(ia.autoAdvanceTimer); }
+  clearImanArkanProgress();
+  startImanArkanGame(ia.courseId, true);
+}
+function groupTitleOfImanArkan(gid){ const g = IMAN_ARKAN_GROUPS.find(g=>g.id===gid); return g ? g.title : ''; }
+function renderImanArkan(){
+  const ia = state.imanArkan;
+  if(!ia) return `<p>تعذّر تحميل اللعبة.</p>`;
+  const cur = ia.queue[ia.idx];
+  const pct = Math.round((ia.idx)/ia.total*100);
+  const fb = ia.feedback;
+  const isFav = !!(state.favIds && state.favIds.has(cur.id));
+  const isFlagged = !!(state.flaggedIds && state.flaggedIds.has(cur.id));
+
+  const groupsHtml = `<div class="tl-grid">
+    ${IMAN_ARKAN_GROUPS.map(g=>{
+      const count = (ia.placed[g.id]||[]).length;
+      let cls = '';
+      if(fb && fb.pickedGroup===g.id) cls += fb.status==='correct' ? ' tl-flash-correct' : ' tl-flash-wrong';
+      if(fb && fb.status!=='correct' && fb.correctGroup===g.id && fb.pickedGroup!==g.id) cls += ' tl-flash-hint';
+      return `<button class="tl-box${cls}" ${ia.locked?'disabled':''} onclick="pickImanArkanGroup('${g.id}')">
+        ${count>0?`<span class="tl-count">${count}</span>`:''}
+        <span>${g.title}</span>
+      </button>`;
+    }).join('')}
+  </div>`;
+
+  return `
+  <div class="panel timeline-panel">
+    <div class="quiz-top">
+      <div class="q-index">رتّب الأمور — أركان الإيمان</div>
+      <div class="quiz-top-right">
+        <span class="tl-tally tl-tally-correct">✓ ${ia.correct}</span>
+        <span class="tl-tally tl-tally-wrong">✕ ${ia.wrong}</span>
+        <div class="timer-chip ${ia.remaining<=30?'low':''}" id="imanarkan-timer-chip">⏱ ${fmtTime(ia.remaining)}</div>
+      </div>
+    </div>
+    <div class="progress-bar"><div style="width:${pct}%"></div></div>
+
+    <div class="tl-groups">${groupsHtml}</div>
+
+    <div class="tl-question-card">
+      <div class="tl-q-meta">
+        <span>عبارة ${ia.idx+1} من ${ia.total}</span>
+        <span class="tl-q-meta-right">
+          <span>اختر القسم المناسب من الأعلى <span class="tl-arrow-icon">${ICONS.arrowUp}</span></span>
+          <button class="icon-btn heart-btn ${isFav?'active':''}" onclick="toggleImanArkanFavorite()" title="${isFav?'إزالة من المفضلة':'أضف إلى المفضلة'}">${ICONS.heart}</button>
+          <button class="icon-btn flag-btn ${isFlagged?'flagged':''}" onclick="openReportImanArkan()" title="${isFlagged?'تم إرسال بلاغك عن هذه العبارة':'الإبلاغ عن مشكلة في هذه العبارة'}">${ICONS.flag}</button>
+        </span>
+      </div>
+      <div class="tl-q-text">${cur.t}</div>
+      ${fb ? `
+        <div class="feedback-banner ${fb.status==='correct'?'correct':'wrong'}">
+          ${fb.status==='correct' ? '✓ إجابة صحيحة! أُضيفت العبارة لقسمها'
+            : fb.status==='retry' ? '✕ إجابة غير صحيحة، حاول مرة أخرى'
+            : `✕ تم تخطي العبارة — الصحيح: ${groupTitleOfImanArkan(fb.correctGroup)}`}
+        </div>
+      ` : (ia.hintShown ? `<div class="hint-box"><span class="tl-bulb-icon">${ICONS.bulb}</span> <span>تنتمي هذه العبارة إلى قسم: ${groupTitleOfImanArkan(cur.b)}</span></div>` : '')}
+    </div>
+
+    <div class="tl-actions">
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="go('course',{courseId:'${ia.courseId}'})">إنهاء ومغادرة</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetImanArkanGame()">إعادة التعيين</button>
+      </div>
+      <div style="display:flex; gap:8px;">
+        ${(!fb && !ia.hintShown) ? `<button class="btn btn-ghost btn-sm" onclick="showImanArkanHint()"><span class="tl-bulb-icon">${ICONS.bulb}</span> تلميح</button>` : ''}
+        ${!fb ? `<button class="btn btn-ghost btn-sm" onclick="skipImanArkanItem()">تخطي</button>` : ''}
+        ${(fb && fb.status==='skip') ? `<button class="btn btn-primary btn-sm" onclick="nextImanArkanQuestion()">التالي</button>` : ''}
+      </div>
+    </div>
+  </div>
+  `;
+}
+function pickImanArkanGroup(groupId){
+  const ia = state.imanArkan;
+  if(!ia || ia.locked) return;
+  const cur = ia.queue[ia.idx];
+  const isCorrect = cur.b === groupId;
+  ia.locked = true;
+  if(isCorrect){
+    ia.feedback = { status:'correct', pickedGroup:groupId, correctGroup:cur.b };
+    ia.correct++;
+    if(!ia.placed[groupId]) ia.placed[groupId] = [];
+    ia.placed[groupId].push(cur.t);
+    saveImanArkanProgress();
+    render();
+    if(ia.autoAdvanceTimer) clearTimeout(ia.autoAdvanceTimer);
+    ia.autoAdvanceTimer = setTimeout(advanceImanArkan, 700);
+  }else{
+    ia.feedback = { status:'retry', pickedGroup:groupId };
+    ia.wrong++;
+    saveImanArkanProgress();
+    render();
+    if(ia.autoAdvanceTimer) clearTimeout(ia.autoAdvanceTimer);
+    ia.autoAdvanceTimer = setTimeout(()=>{
+      ia.feedback = null;
+      ia.locked = false;
+      saveImanArkanProgress();
+      render();
+    }, 1100);
+  }
+}
+function skipImanArkanItem(){
+  const ia = state.imanArkan;
+  if(!ia || ia.locked) return;
+  const cur = ia.queue[ia.idx];
+  ia.locked = true;
+  ia.wrong++;
+  ia.feedback = { status:'skip', pickedGroup:null, correctGroup:cur.b };
+  saveImanArkanProgress();
+  render();
+  if(ia.autoAdvanceTimer) clearTimeout(ia.autoAdvanceTimer);
+  ia.autoAdvanceTimer = setTimeout(advanceImanArkan, 4000);
+}
+function nextImanArkanQuestion(){
+  const ia = state.imanArkan;
+  if(!ia || !ia.feedback) return;
+  if(ia.autoAdvanceTimer){ clearTimeout(ia.autoAdvanceTimer); ia.autoAdvanceTimer = null; }
+  advanceImanArkan();
+}
+function showImanArkanHint(){
+  const ia = state.imanArkan;
+  if(!ia || ia.locked) return;
+  ia.hintShown = true;
+  render();
+}
+function advanceImanArkan(){
+  const ia = state.imanArkan;
+  if(!ia || state.view!=='imanarkan') return;
+  ia.idx++;
+  ia.feedback = null;
+  ia.locked = false;
+  ia.hintShown = false;
+  if(ia.idx >= ia.total){ finishImanArkanGame(); }
+  else{ saveImanArkanProgress(); render(); }
+}
+function finishImanArkanGame(){
+  const ia = state.imanArkan;
+  if(imanArkanTimerHandle) clearInterval(imanArkanTimerHandle);
+  const timeTaken = Math.round((Date.now()-ia.startedAt)/1000);
+  clearImanArkanProgress();
+  state.lastResult = { score:ia.correct, total:ia.total, courseId:ia.courseId, examId:'4', saved:false, timeTaken };
+  setView('result');
+}
+let imanArkanTimerHandle = null;
+function hydrateImanArkanTimer(){
+  if(imanArkanTimerHandle) clearInterval(imanArkanTimerHandle);
+  imanArkanTimerHandle = setInterval(()=>{
+    if(state.view!=='imanarkan' || !state.imanArkan){ clearInterval(imanArkanTimerHandle); return; }
+    const ia = state.imanArkan;
+    ia.remaining--;
+    if(ia.remaining <= 0){
+      ia.remaining = 0;
+      clearInterval(imanArkanTimerHandle);
+      finishImanArkanGame();
+      return;
+    }
+    saveImanArkanProgress();
+    const chip = document.getElementById('imanarkan-timer-chip');
+    if(chip){
+      chip.textContent = '⏱ ' + fmtTime(ia.remaining);
+      chip.classList.toggle('low', ia.remaining<=30);
+    }
+  }, 1000);
+}
+/* ---- قلب المفضلة لعبارات رتّب الأمور ---- */
+async function toggleImanArkanFavorite(){
+  const ia = state.imanArkan;
+  if(!ia) return;
+  const cur = ia.queue[ia.idx];
+  if(!state.favIds) state.favIds = new Set();
+  const nowFav = !state.favIds.has(cur.id);
+  if(nowFav) state.favIds.add(cur.id); else state.favIds.delete(cur.id);
+  render();
+  let list = await loadFavorites();
+  if(nowFav){
+    if(!list.find(f=>f.id===cur.id)){
+      list.push({ id:cur.id, courseId:ia.courseId, examId:'4', text:cur.t, options:[groupTitleOfImanArkan(cur.b)], correctText:groupTitleOfImanArkan(cur.b), hint:'', ts:Date.now() });
+    }
+  }else{
+    list = list.filter(f=>f.id!==cur.id);
+  }
+  const ok = await saveFavoritesList(list);
+  if(!ok){
+    if(nowFav) state.favIds.delete(cur.id); else state.favIds.add(cur.id);
+    render();
+    showToast('تعذّر حفظ التفضيل، حاول مرة أخرى');
+  }else{
+    showToast(nowFav ? 'أُضيفت العبارة إلى المفضلة ❤️' : 'أُزيلت العبارة من المفضلة');
+  }
+}
+/* ---- الإبلاغ عن عبارة في لعبة رتّب الأمور ---- */
+function openReportImanArkan(){
+  const ia = state.imanArkan;
+  if(!ia) return;
+  const cur = ia.queue[ia.idx];
+  state.reportCtx = { id:cur.id, courseId:ia.courseId, examId:'4', text:cur.t };
+  state.modal = 'report-question';
+  render();
+}
+
 /* ============================ QUIZ ============================ */
 let quizTimerHandle = null;
 function hydrateQuizTimer(){
@@ -2042,7 +2360,7 @@ function renderResult(){
     <div class="result-hero">
       <div class="result-score">${r.score}<span class="result-total"> / ${r.total}</span></div>
       <div class="level-chip ${lvl.cls}">${lvl.label} — ${pct}%</div>
-      <div style="margin-top:6px; color:var(--ink-soft); font-size:12.5px;">${courseName(r.courseId)} · ${examFullLabel(r.examId)}</div>
+      <div style="margin-top:6px; color:var(--ink-soft); font-size:12.5px;">${courseName(r.courseId)} · ${(r.courseId==='zubda'&&r.examId==='4')?'رتّب الأمور':examFullLabel(r.examId)}</div>
       <div class="time-note">⏱ الوقت المستغرق: ${fmtTime(r.timeTaken)}</div>
       ${congrats}
     </div>
@@ -2051,7 +2369,7 @@ function renderResult(){
 
     <div class="quiz-actions" style="margin-top:20px;">
       <button class="btn btn-ghost btn-sm" onclick="go('course',{courseId:'${r.courseId}'})">مقررات أخرى</button>
-      <button class="btn btn-primary btn-sm" onclick="${r.examId==='6' ? `startTimelineGame('${r.courseId}')` : (r.examId && r.examId.toString().startsWith('added')) ? `startAddedQuestionsQuiz('${r.courseId}', ${r.examId.toString().includes('-') ? r.examId.toString().split('-')[1] : 1})` : `startQuiz('${r.courseId}', '${r.examId}')`}">إعادة المحاولة</button>
+      <button class="btn btn-primary btn-sm" onclick="${r.examId==='6' ? `startTimelineGame('${r.courseId}')` : (r.courseId==='zubda'&&r.examId==='4') ? `startImanArkanGame('${r.courseId}')` : (r.examId && r.examId.toString().startsWith('added')) ? `startAddedQuestionsQuiz('${r.courseId}', ${r.examId.toString().includes('-') ? r.examId.toString().split('-')[1] : 1})` : `startQuiz('${r.courseId}', '${r.examId}')`}">إعادة المحاولة</button>
     </div>
   </div>
   `;
@@ -2151,7 +2469,7 @@ async function hydrateFavorites(){
     <div class="fav-item">
       <button class="icon-btn heart-btn active" onclick="removeFavorite('${f.id}')" title="إزالة من المفضلة">${ICONS.heart}</button>
       <div>
-        <div class="fav-meta">${courseName(f.courseId)} · ${examFullLabel(f.examId)}</div>
+        <div class="fav-meta">${courseName(f.courseId)} · ${(f.courseId==='zubda'&&f.examId==='4')?'رتّب الأمور':examFullLabel(f.examId)}</div>
         <div class="fav-text">${escapeHtml(f.text)}</div>
         <div class="fav-answer">✓ ${escapeHtml(f.correctText)}</div>
       </div>
@@ -3245,6 +3563,7 @@ function renderModal(){
   if(state.modal === 'admin-reports'){ root.innerHTML = renderAdminReportsModal(); return; }
   if(state.modal === 'admin-submitted'){ root.innerHTML = renderAdminSubmittedModal(); return; }
   if(state.modal === 'confirm-reset-timeline'){ root.innerHTML = renderResetTimelineModal(); return; }
+  if(state.modal === 'confirm-reset-imanarkan'){ root.innerHTML = renderResetImanArkanModal(); return; }
   if(state.modal === 'my-questions'){ root.innerHTML = renderMyQuestionsModal(); hydrateMyQuestionsModal(); return; }
   if(state.modal === 'ref-add-auth'){ root.innerHTML = renderRefAddAuthModal(); return; }
   if(state.modal === 'ref-delete-confirm'){ root.innerHTML = renderRefDeleteModal(); return; }
@@ -3365,6 +3684,21 @@ function renderResetTimelineModal(){
         <div class="modal-actions">
           <button class="btn btn-ghost btn-sm" onclick="closeModal()">إلغاء</button>
           <button class="btn btn-primary btn-sm" onclick="confirmResetTimeline()">نعم، أعد التعيين</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+function renderResetImanArkanModal(){
+  return `
+    <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
+      <div class="modal-card">
+        <button class="btn-ghost btn-sm modal-close" onclick="closeModal()" style="border-radius:50%; width:32px; height:32px; padding:0;">✕</button>
+        <h3>إعادة تعيين اللعبة</h3>
+        <p class="sub-note">سيتم حذف تقدمك الحالي في رتّب الأمور والبدء من جديد. هل تريد المتابعة؟</p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost btn-sm" onclick="closeModal()">إلغاء</button>
+          <button class="btn btn-primary btn-sm" onclick="confirmResetImanArkan()">نعم، أعد التعيين</button>
         </div>
       </div>
     </div>
