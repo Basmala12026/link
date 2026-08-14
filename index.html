@@ -1563,7 +1563,7 @@ function renderCourse(){
   const c = COURSES.find(c=>c.id===state.courseId);
   if(!c) return `<p>لم يتم العثور على المقرر.</p>`;
   const isTimelineCourse = c.id==='urjuza';
-  const slots = isTimelineCourse ? [1,2,3,4,5,6,'extra'] : (c.id==='tuhfa' ? [1,2,3,4,5,6,7,'extra'] : [1,2,3,4,5,'extra']);
+  const slots = isTimelineCourse ? [1,2,3,4,5,6,'extra'] : [1,2,3,4,5,'extra'];
   return `
   <button class="back-btn" onclick="go('home')">→ رجوع</button>
   <div class="panel">
@@ -1578,7 +1578,7 @@ function renderCourse(){
     <div class="exam-grid">
       ${slots.map(s=>{
         const isExtra = s==='extra';
-        const isTimeline = s===6;
+        const isTimeline = c.id==='urjuza' && s===6;
         if(isTimeline){
           return `<div class="exam-card timeline-card">
             <div class="n">٦</div>
