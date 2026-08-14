@@ -605,6 +605,55 @@
   }
   .daycard-note-del svg{ width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:1.8; }
   .daycard-note-del:hover{ background:rgba(255,255,255,0.32); }
+  .mustalahat-page-wrap{ background:transparent; padding:0; }
+  .mustalahat-top-row{ display:flex; align-items:center; justify-content:space-between; }
+  .mustalahat-card-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .mustalahat-icon-row{ display:flex; gap:6px; }
+  .mustalahat-icon.icon-btn{ width:28px; height:28px; background:var(--cream); }
+  .mustalahat-icon svg{ width:14px; height:14px; }
+
+  .mustalahat-card{ background:var(--sage-deep); border-radius:var(--radius); border-inline-start:4px solid var(--sage-pale-2); padding:18px 20px; margin-bottom:16px; box-shadow:var(--shadow); }
+  .mustalahat-num{ color:var(--sage-pale-2); font-weight:800; font-size:12.5px; letter-spacing:.5px; display:block; margin-bottom:6px; }
+  .mustalahat-text{ font-size:16px; color:#fff; margin:0 0 12px; }
+  .mustalahat-text b{ color:#fff; font-weight:800; }
+  .mustalahat-term-box{
+    font-weight:600; font-size:17.5px; color:var(--sage-deep);
+    background:var(--cream-deep); border:1px solid var(--cream-deep);
+    border-radius:12px; padding:12px 14px; margin-bottom:12px;
+  }
+  .mustalahat-select, .mustalahat-fill-input{
+    width:100%; background:var(--cream-deep); color:var(--ink);
+    border:1px solid var(--cream-deep); border-radius:10px; padding:11px 12px;
+    font-family:'Cairo', sans-serif; font-size:14.5px;
+  }
+  .mustalahat-select:focus, .mustalahat-fill-input:focus{ outline:3px solid var(--sage-pale-2); outline-offset:1px; }
+  .mustalahat-fill-input::placeholder{ color:var(--ink-soft); opacity:.6; }
+  .mustalahat-options{ display:flex; flex-direction:column; }
+  .mustalahat-opt{
+    display:flex; align-items:flex-start; gap:10px; background:var(--cream-deep);
+    border:1px solid var(--cream-deep); border-radius:10px; padding:11px 12px;
+    margin-bottom:8px; cursor:pointer; font-size:14.5px; color:var(--ink);
+  }
+  .mustalahat-opt:hover{ border-color:var(--sage-pale-2); }
+  .mustalahat-opt input{ accent-color:var(--sage); margin-top:3px; flex-shrink:0; }
+  .mustalahat-opt.correct-flag{ border-color:var(--good); background:var(--good-bg); color:var(--ink); }
+  .mustalahat-opt.wrong-flag{ border-color:var(--danger); background:var(--danger-bg); color:var(--ink); }
+  .mustalahat-feedback{ margin-top:10px; font-size:13.5px; padding:8px 12px; border-radius:8px; }
+  .mustalahat-feedback.ok{ background:var(--good-bg); color:var(--good); }
+  .mustalahat-feedback.no{ background:var(--danger-bg); color:var(--danger); }
+  .mustalahat-submit-zone{ text-align:center; margin-top:44px; }
+  .mustalahat-grade-btn{
+    background:var(--sage); color:#fff; border:none; font-family:'Cairo', sans-serif;
+    font-weight:700; font-size:16.5px; padding:14px 42px; border-radius:30px; cursor:pointer; letter-spacing:.5px;
+  }
+  .mustalahat-grade-btn:hover{ background:var(--sage-deep); }
+  .mustalahat-score{
+    text-align:center; margin-top:34px; padding:30px 20px;
+    background:var(--card); border:1px solid var(--sage); border-radius:var(--radius); box-shadow:var(--shadow);
+  }
+  .mustalahat-score-num{ font-family:'Cairo', sans-serif; font-size:48px; color:var(--sage-deep); font-weight:700; margin:6px 0; }
+  .mustalahat-score-label{ color:var(--ink-soft); font-size:14.5px; }
+  .mustalahat-reset-link{ display:block; text-align:center; margin-top:16px; color:var(--sage-deep); font-size:13.5px; text-decoration:underline; cursor:pointer; background:none; border:none; font-family:inherit; }
   .daycard-note-input{
     width:100%; border-radius:12px; border:none; padding:8px 12px; font-family:inherit; font-size:12.5px;
     resize:vertical; color:var(--ink); background:#fff; min-height:34px; max-height:70px;
@@ -1269,6 +1318,7 @@ function render(){
   else if(state.view==='timeline') html = renderTimeline();
   else if(state.view==='result') html = renderResult();
   else if(state.view==='tasks') html = renderTasks();
+  else if(state.view==='mustalahat') html = renderMustalahatPage();
   else if(state.view==='favorites') html = renderFavoritesShell();
   else if(state.view==='progress') html = renderProgressShell();
   else if(state.view==='references') html = renderReferences();
@@ -1444,6 +1494,16 @@ function renderCourse(){
             <div class="n">٦</div>
             <div class="t">رتب الأحداث · ${TIMELINE_EVENTS.length} حدثاً · بلا وقت</div>
             <button class="btn btn-primary btn-sm" onclick="startTimelineGame('${c.id}')">ابدأ</button>
+          </div>`;
+        }
+        const isMustalahat = c.id==='zubda' && s==='3';
+        if(isMustalahat){
+          return `<div class="exam-card" id="examcard-${c.id}-${s}">
+            <div class="n">${examLabel(s)}</div>
+            <div class="t">اختبار مصطلحات · ٢٠ سؤالاً</div>
+            <div class="exam-actions">
+              <button class="btn btn-primary btn-sm" onclick="openMustalahatQuiz()">ابدأ</button>
+            </div>
           </div>`;
         }
         const data = c.exams[s];
@@ -1927,6 +1987,37 @@ function openReportTimelineEvent(){
   state.reportCtx = { id:'tl-'+cur.t, courseId:tl.courseId, examId:'6', text:cur.t };
   state.modal = 'report-question';
   render();
+}
+function openReportMustalahat(){
+  state.reportCtx = { id:'mustalahat-general', courseId:'zubda', examId:'3', text:'اختبار مصطلحات' };
+  state.modal = 'report-question';
+  render();
+}
+async function toggleMustalahatFavorite(qn){
+  const q = MUSTALAHAT_QUESTIONS.find(q=>q.n===qn);
+  if(!q) return;
+  const id = `mustalahat-${qn}`;
+  if(!state.favIds) state.favIds = new Set();
+  const nowFav = !state.favIds.has(id);
+  if(nowFav) state.favIds.add(id); else state.favIds.delete(id);
+  render();
+  let list = await loadFavorites();
+  if(nowFav){
+    if(!list.find(f=>f.id===id)){
+      const opts = q.type==='fill' ? [q.answer] : q.options;
+      list.push({ id, courseId:'zubda', examId:'3', text:q.text, options:opts, correctText:q.answer, hint:'', ts:Date.now() });
+    }
+  }else{
+    list = list.filter(f=>f.id!==id);
+  }
+  const ok = await saveFavoritesList(list);
+  if(!ok){
+    if(nowFav) state.favIds.delete(id); else state.favIds.add(id);
+    render();
+    showToast('تعذّر حفظ التفضيل، حاول مرة أخرى');
+  }else{
+    showToast(nowFav ? 'أُضيف السؤال إلى المفضلة ❤️' : 'أُزيل السؤال من المفضلة');
+  }
 }
 async function submitReport(){
   const descEl = document.getElementById('rq-desc');
@@ -2756,6 +2847,168 @@ function launchConfetti(){
     root.appendChild(p);
   }
   setTimeout(()=>{ root.remove(); }, 4200);
+}
+
+/* ============================ اختبار مصطلحات (مدمج أصليًا بتصميم الموقع) ============================ */
+const MUSTALAHAT_QUESTIONS = [
+  {n:1, type:'match', text:'الإيمان بالله، وملائكته، وكتبه، ورسله، واليوم الآخر، والقدر خيره وشره.', options:['أركان الإيمان','الإيمان بالملائكة','الإيمان بالكتب','الإيمان بالرسل','الإيمان باليوم الآخر','الإيمان بالقدر'], answer:'أركان الإيمان'},
+  {n:2, type:'match', text:'الاعتقاد الجازم بأنهم عالم غيبي، خلقهم الله تعالى من نور.', options:['الإيمان بالرسل','الإيمان بالملائكة','أركان الإيمان','الإيمان باليوم الآخر','الإيمان بالكتب','الإيمان بالقدر'], answer:'الإيمان بالملائكة'},
+  {n:3, type:'match', text:'الاعتقاد الجازم بأن الله تعالى أنزل على أنبيائه ورسله كتبًا مقدسة، هدىً للناس، ورحمةً بهم، وموعظةً لهم.', options:['الإيمان بالقدر','الإيمان باليوم الآخر','الإيمان بالكتب','أركان الإيمان','الإيمان بالملائكة','الإيمان بالرسل'], answer:'الإيمان بالكتب'},
+  {n:4, type:'match', text:'الاعتقاد الجازم بأن الله تعالى اصطفى من الناس رجالًا، أوحى إليهم، وأرسلهم مبشرين ومنذرين.', options:['الإيمان بالكتب','الإيمان بالرسل','الإيمان بالقدر','الإيمان بالملائكة','أركان الإيمان','الإيمان باليوم الآخر'], answer:'الإيمان بالرسل'},
+  {n:5, type:'match', text:'الاعتقاد الجازم بأن هناك يومًا يبعث الله تعالى فيه الناس من قبورهم، ويحاسبهم على أعمالهم، ويجازيهم عليها.', options:['الإيمان بالملائكة','الإيمان باليوم الآخر','الإيمان بالرسل','أركان الإيمان','الإيمان بالكتب','الإيمان بالقدر'], answer:'الإيمان باليوم الآخر'},
+  {n:6, type:'match', text:'الاعتقاد الجازم بأن الله تعالى قدّر مقادير الخلائق بعلمه الأزليّ، وكتبها في اللوح المحفوظ، وأجراها بمشيئته، وأوجدها بقدرته.', options:['أركان الإيمان','الإيمان باليوم الآخر','الإيمان بالقدر','الإيمان بالكتب','الإيمان بالملائكة','الإيمان بالرسل'], answer:'الإيمان بالقدر'},
+  {n:7, type:'fill', text:'الإيمان بالله: الاعتقاد الجازم بوجوده سبحانه وتعالى، وأنه ____ كل شيء.', answer:'رب'},
+  {n:8, type:'fill', text:'الإيمان بربوبية الله: الاعتقاد الجازم بأن الله وحده هو الرب، الخالق، ____، المالك، الحاكم، الرازق.', answer:'المدبر'},
+  {n:9, type:'fill', text:'الإيمان بإلاهية الله: الاعتقاد الجازم بأن الله وحده هو ____ الحق، المستحق للعبادة دون ما سواه.', answer:'الإله'},
+  {n:10, type:'fill', text:'الإيمان بأسماء الله وصفاته: إثبات ما أثبته الله ____، أو أثبته له نبيه صلى الله عليه وسلم.', answer:'لنفسه'},
+  {n:11, type:'fill', text:'الإيمان بالملائكة: الاعتقاد الجازم بأنهم عالم ____، خلقهم الله تعالى من نور.', answer:'غيبي'},
+  {n:12, type:'fill', text:'الإيمان بالرسل: يبلغون رسالاته إلى خلقه بعبادته وحده، واجتناب ____.', answer:'الطاغوت'},
+  {n:13, type:'fill', text:'الإيمان باليوم الآخر: يبعث الله تعالى فيه الناس من ____، ويحاسبهم على أعمالهم.', answer:'قبورهم'},
+  {n:14, type:'fill', text:'الإيمان بالقدر: قدّر الله مقادير الخلائق بعلمه ____، وكتبها في اللوح المحفوظ.', answer:'الأزلي', alt:'الأزليّ'},
+  {n:15, type:'mcq', text:'«الاعتقاد الجازم بوجوده سبحانه وتعالى، وأنه رب كل شيء، وأنه هو وحده المستحق للعبادة دون ما سواه، المتصف بصفات الكمال، المنزّه عن صفات النقص.»', options:['الإيمان بوجود الله','الإيمان بالله','الإيمان بربوبية الله','الإيمان بإلاهية الله'], answer:'الإيمان بالله'},
+  {n:16, type:'mcq', text:'«الاعتقاد الجازم بأن الله تعالى وحده هو الرب، الخالق، المدبر، المالك، الحاكم، الرازق، الذي ربّى جميع العالمين بنعمه.»', options:['الإيمان بالله','الإيمان بربوبية الله','الإيمان بإلاهية الله','الإيمان بأسماء الله وصفاته'], answer:'الإيمان بربوبية الله'},
+  {n:17, type:'mcq', text:'«الاعتقاد الجازم بأن الله تعالى وحده هو الإله الحق، المستحق للعبادة، دون ما سواه.»', options:['الإيمان بربوبية الله','الإيمان بوجود الله','الإيمان بإلاهية الله','أركان الإيمان'], answer:'الإيمان بإلاهية الله'},
+  {n:18, type:'mcq', text:'«إثبات ما أثبت الله تعالى لنفسه، أو أثبته له نبيه صلى الله عليه وسلم، ونفي ما نفى الله تعالى عن نفسه، أو نفاه عنه نبيه صلى الله عليه وسلم من الأسماء والصفات.»', options:['الإيمان بأسماء الله وصفاته','الإيمان بالله','الإيمان بالكتب','الإيمان بالملائكة'], answer:'الإيمان بأسماء الله وصفاته'},
+  {n:19, type:'mcq', text:'«الاعتقاد الجازم بوجوده سبحانه وتعالى».', options:['الإيمان بوجود الله','الإيمان بربوبية الله','الإيمان بإلاهية الله','أركان الإيمان'], answer:'الإيمان بوجود الله'},
+  {n:20, type:'mcq', text:'«الإيمان بالله، وملائكته، وكتبه، ورسله، واليوم الآخر، والقدر خيره وشره.»', options:['أركان الإيمان','الإيمان بالقدر','الإيمان بالرسل','الإيمان بالكتب'], answer:'أركان الإيمان'},
+];
+function mustalahatNormalize(s){
+  return (s||'').trim()
+    .replace(/[إأآا]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+    .replace(/[ًٌٍَُِّْـ]/g,'').replace(/\s+/g,' ');
+}
+async function openMustalahatQuiz(){
+  state.mustalahatAnswers = {};
+  state.mustalahatGraded = false;
+  const favs = await loadFavorites();
+  state.favIds = new Set(favs.map(f=>f.id));
+  setView('mustalahat');
+}
+function renderMustalahatSection(tag, title, desc, items){
+  return `
+    <div class="section-title" style="margin-top:26px;"><h2 style="font-size:16px;">${tag} — ${title}</h2><span class="hint">${desc}</span></div>
+    ${items.map(q=>renderMustalahatQuestion(q)).join('')}
+  `;
+}
+function renderMustalahatQuestion(q){
+  const graded = state.mustalahatGraded;
+  const given = (state.mustalahatAnswers||{})[q.n];
+  let isCorrect = false;
+  if(graded){
+    if(q.type==='fill'){
+      const norm = mustalahatNormalize(given);
+      isCorrect = !!norm && (norm===mustalahatNormalize(q.answer) || (q.alt && norm===mustalahatNormalize(q.alt)));
+    }else{
+      isCorrect = given === q.answer;
+    }
+  }
+  let body = '';
+  if(q.type==='match'){
+    body = `
+      <div class="mustalahat-term-box">${escapeHtml(q.text)}</div>
+      <select class="mustalahat-select" ${graded?'disabled':''}
+        onchange="state.mustalahatAnswers['${q.n}']=this.value; render();"
+        style="${graded ? `border-color:${isCorrect?'var(--good)':'var(--danger)'};` : ''}">
+        <option value="">اختر المصطلح المناسب</option>
+        ${q.options.map(opt=>`<option value="${escapeHtml(opt)}" ${given===opt?'selected':''}>${escapeHtml(opt)}</option>`).join('')}
+      </select>
+      ${graded ? (isCorrect ? `<div class="mustalahat-feedback ok">صحيح</div>` : `<div class="mustalahat-feedback no">إجابة غير صحيحة</div>`) : ''}
+    `;
+  }else if(q.type==='fill'){
+    body = `
+      <p class="mustalahat-text">${q.text.replace('____','<b>____</b>')}</p>
+      <input type="text" class="mustalahat-fill-input" ${graded?'disabled':''} value="${escapeHtml(given||'')}"
+        oninput="state.mustalahatAnswers['${q.n}']=this.value"
+        style="${graded ? `border-color:${isCorrect?'var(--good)':'var(--danger)'};` : ''}"
+        placeholder="اكتب الكلمة الناقصة">
+      ${graded ? (isCorrect ? `<div class="mustalahat-feedback ok">صحيح</div>` : `<div class="mustalahat-feedback no">الإجابة الصحيحة: ${escapeHtml(q.answer)}</div>`) : ''}
+    `;
+  }else{
+    body = `
+      <p class="mustalahat-text">${q.text}</p>
+      <div class="mustalahat-options">${q.options.map(opt=>{
+        const picked = given===opt;
+        let cls = 'mustalahat-opt';
+        if(graded && opt===q.answer) cls += ' correct-flag';
+        else if(graded && picked) cls += ' wrong-flag';
+        return `<label class="${cls}">
+          <input type="radio" name="mq${q.n}" ${picked?'checked':''} ${graded?'disabled':''} onchange="state.mustalahatAnswers['${q.n}']='${escapeHtml(opt).replace(/'/g,"\\'")}'; render();">
+          ${escapeHtml(opt)}
+        </label>`;
+      }).join('')}</div>
+      ${graded ? (isCorrect ? `<div class="mustalahat-feedback ok">صحيح</div>` : `<div class="mustalahat-feedback no">إجابة غير صحيحة — راجع التعريف</div>`) : ''}
+    `;
+  }
+  const isFav = state.favIds && state.favIds.has(`mustalahat-${q.n}`);
+  return `
+    <div class="mustalahat-card">
+      <div class="mustalahat-card-top">
+        <span class="mustalahat-num">السؤال ${toArabicDigits(q.n)}</span>
+        <button class="icon-btn heart-btn mustalahat-icon ${isFav?'active':''}" onclick="toggleMustalahatFavorite(${q.n})" title="${isFav?'إزالة من المفضلة':'أضف إلى المفضلة'}">${ICONS.heart}</button>
+      </div>
+      ${body}
+    </div>
+  `;
+}
+function renderMustalahatPage(){
+  const graded = state.mustalahatGraded;
+  const score = graded ? computeMustalahatScore() : 0;
+  let msg = 'واصل المراجعة';
+  if(score>=18) msg='ممتاز — إتقان تام';
+  else if(score>=14) msg='جيد جدًا';
+  else if(score>=10) msg='جيد، يحتاج مراجعة';
+  return `
+    <div class="mustalahat-top-row">
+      <button class="back-btn" onclick="go('course', {courseId:'zubda'})">→ رجوع</button>
+      <button class="icon-btn flag-btn" onclick="openReportMustalahat()" title="الإبلاغ عن مشكلة في هذا الاختبار">${ICONS.flag}</button>
+    </div>
+    <div class="section-title"><h2>اختبار مصطلحات</h2><span class="hint">زبدة العقيدة — ٢٠ سؤالاً بثلاثة أقسام</span></div>
+    <div class="mustalahat-page-wrap">
+      ${renderMustalahatSection('القسم الأول','اختر المصطلح المناسب','اختر المصطلح الذي يدل عليه كل تعريف.', MUSTALAHAT_QUESTIONS.filter(q=>q.n>=1&&q.n<=6))}
+      ${renderMustalahatSection('القسم الثاني','أكمل التعريف','اكتب الكلمة الناقصة في المكان الفارغ من كل تعريف.', MUSTALAHAT_QUESTIONS.filter(q=>q.n>=7&&q.n<=14))}
+      ${renderMustalahatSection('القسم الثالث','اختر المصطلح','اقرأ التعريف جيدًا، ثم اختر المصطلح الذي يدل عليه.', MUSTALAHAT_QUESTIONS.filter(q=>q.n>=15&&q.n<=20))}
+      <div class="mustalahat-submit-zone">
+        ${graded ? `
+          <div class="mustalahat-score">
+            <div class="mustalahat-score-label">نتيجتك</div>
+            <div class="mustalahat-score-num">${toArabicDigits(score)} / ٢٠</div>
+            <div class="mustalahat-score-label">${msg}</div>
+          </div>
+          <button class="mustalahat-reset-link" onclick="resetMustalahatQuiz()">إعادة الاختبار من جديد</button>
+        ` : `<button class="mustalahat-grade-btn" onclick="gradeMustalahatQuiz()">صحّح الإجابات</button>`}
+      </div>
+    </div>
+  `;
+}
+function computeMustalahatScore(){
+  let score = 0;
+  MUSTALAHAT_QUESTIONS.forEach(q=>{
+    const given = (state.mustalahatAnswers||{})[q.n];
+    if(q.type==='fill'){
+      const norm = mustalahatNormalize(given);
+      if(norm && (norm===mustalahatNormalize(q.answer) || (q.alt && norm===mustalahatNormalize(q.alt)))) score++;
+    }else if(given===q.answer) score++;
+  });
+  return score;
+}
+function gradeMustalahatQuiz(){
+  state.mustalahatGraded = true;
+  render();
+  const board = document.querySelector('.mustalahat-submit-zone');
+  if(board) board.scrollIntoView({behavior:'smooth', block:'center'});
+  const score = computeMustalahatScore();
+  const c = COURSES.find(c=>c.id==='zubda');
+  const version = c && c.exams && c.exams['3'] ? c.exams['3'].createdAt : null;
+  markExamCompleted('zubda', '3', version);
+  const att = { id: Date.now()+'-'+Math.random().toString(36).slice(2,7), course:'zubda', exam:'3', score, total:20, timeTaken:0, ts: Date.now() };
+  saveMyAttempt(att);
+  saveAttempt(att).catch(()=>{});
+}
+function resetMustalahatQuiz(){
+  state.mustalahatAnswers = {};
+  state.mustalahatGraded = false;
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 /* ============================ NOTES (ملاحظاتي) ============================ */
