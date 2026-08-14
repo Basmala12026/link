@@ -1382,7 +1382,7 @@ function examLabel(id){
     const num = id.includes('-') ? id.split('-')[1] : '';
     return num ? `الأسئلة المضافة ${toArabicDigits(num)}` : 'الأسئلة المضافة';
   }
-  return (['','١','٢','٣','٤','٥','٦'][id]);
+  return (['','١','٢','٣','٤','٥','٦','٧'][id]);
 }
 /* التسمية الكاملة لأي اختبار (تشمل حالة لعبة ترتيب الأحداث والأسئلة المضافة المقسّمة) */
 function examFullLabel(id){
@@ -1563,7 +1563,7 @@ function renderCourse(){
   const c = COURSES.find(c=>c.id===state.courseId);
   if(!c) return `<p>لم يتم العثور على المقرر.</p>`;
   const isTimelineCourse = c.id==='urjuza';
-  const slots = isTimelineCourse ? [1,2,3,4,5,6,'extra'] : [1,2,3,4,5,'extra'];
+  const slots = isTimelineCourse ? [1,2,3,4,5,6,'extra'] : (c.id==='tuhfa' ? [1,2,3,4,5,6,7,'extra'] : [1,2,3,4,5,'extra']);
   return `
   <button class="back-btn" onclick="go('home')">→ رجوع</button>
   <div class="panel">
@@ -1618,7 +1618,7 @@ function renderCourse(){
         return `<div class="exam-card ${isExtra?'extra':''}" id="examcard-${c.id}-${s}">
           <div class="exam-done-badge" id="examdone-${c.id}-${s}" style="display:none;">✓ منتهي</div>
           <div class="n">${isExtra?'+':examLabel(s)}</div>
-          <div class="t">${label} · ١٠ أسئلة · ٥ د</div>
+          <div class="t">${label} · ${toArabicDigits((data.questions||[]).length)} أسئلة · ٥ د</div>
           <div class="exam-actions" id="examactions-${c.id}-${s}">
             <button class="btn btn-primary btn-sm" onclick="startQuiz('${c.id}','${s}')">ابدأ</button>
           </div>
