@@ -1496,7 +1496,7 @@ function renderCourse(){
             <button class="btn btn-primary btn-sm" onclick="startTimelineGame('${c.id}')">ابدأ</button>
           </div>`;
         }
-        const isMustalahat = c.id==='zubda' && s==='3';
+        const isMustalahat = c.id==='zubda' && s===3;
         if(isMustalahat){
           return `<div class="exam-card" id="examcard-${c.id}-${s}">
             <div class="n">${examLabel(s)}</div>
