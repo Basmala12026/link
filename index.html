@@ -261,6 +261,48 @@
   .tl-bulb-icon{ display:inline-flex; flex:none; }
   .tl-bulb-icon svg{ width:15px; height:15px; stroke:currentColor; stroke-width:1.7; fill:none; stroke-linecap:round; stroke-linejoin:round; }
 
+  /* ---------- iman-arkan drag & drop game (رتّب الأمور — سحب وإفلات) ---------- */
+  .ia-groups{ display:grid; grid-template-columns:1fr 1fr; align-items:start; gap:10px; margin-bottom:18px; }
+  .ia-box-group{
+    min-width:0; min-height:112px;
+    border:1.5px solid var(--sage-pale); border-radius:14px; background:var(--card);
+    padding:12px; transition:.15s;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  }
+  .ia-box-group.full-span{ grid-column:1 / -1; }
+  .ia-box-group .grp-title{ font-size:14.5px; font-weight:900; color:var(--sage-deep); text-align:center; line-height:1.5; transition:.15s; }
+  .ia-box-group.has-items{ align-items:stretch; justify-content:flex-start; }
+  .ia-box-group.has-items .grp-title{ text-align:center; }
+  .ia-box-group .grp-items{ display:flex; flex-direction:column; gap:6px; width:100%; }
+  .ia-box-group .grp-item{
+    font-size:12.5px; font-weight:700; color:var(--ink); background:var(--sage-pale-2);
+    border-radius:9px; padding:7px 8px; text-align:center; line-height:1.6; word-break:break-word;
+    animation:tlpop .35s ease;
+  }
+  .ia-box-group.drag-over{ border-color:var(--sage); box-shadow:0 0 0 3px var(--sage-pale-2); }
+  .ia-box-group.ia-flash-correct{ border-color:var(--good); background:var(--good-bg); animation:tlpop .5s ease; }
+  .ia-box-group.ia-flash-wrong{ border-color:var(--danger); background:var(--danger-bg); animation:tlshake .4s ease; }
+  .ia-box-group.ia-flash-hint{ border-color:var(--good); box-shadow:0 0 0 3px var(--good-bg); }
+  .ia-question-card{
+    background:var(--cream); border:1.5px solid var(--sage-pale); border-radius:16px; padding:16px; margin-top:6px;
+    position:sticky; bottom:6px; z-index:20; box-shadow:var(--shadow-lg);
+  }
+  @supports (padding: max(0px)){
+    .ia-question-card{ bottom:max(6px, calc(6px + env(safe-area-inset-bottom))) !important; }
+  }
+  .ia-q-text{
+    font-size:15.5px; font-weight:800; line-height:1.9; color:var(--ink); text-align:center; margin:4px 0 6px;
+    animation:qin .28s ease; cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none;
+    border:1.5px solid var(--sage-pale); border-radius:12px; padding:12px 14px; background:var(--sage-pale-2);
+  }
+  .ia-q-text:active{ cursor:grabbing; }
+  .ia-q-text.dragging-source{ opacity:.35; }
+  .ia-drag-ghost{
+    position:fixed; z-index:500; pointer-events:none; background:var(--sage-pale-2); border:1.5px solid var(--sage-pale);
+    border-radius:12px; padding:12px 14px; font-size:15px; font-weight:800; color:var(--ink); text-align:center;
+    box-shadow:var(--shadow-lg); line-height:1.7;
+  }
+
   /* ---------- quiz ---------- */
   .quiz-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
   .timer-chip{
@@ -1980,18 +2022,19 @@ function renderImanArkan(){
   const isFav = !!(state.favIds && state.favIds.has(cur.id));
   const isFlagged = !!(state.flaggedIds && state.flaggedIds.has(cur.id));
 
-  const groupsHtml = `<div class="tl-grid">
-    ${IMAN_ARKAN_GROUPS.map(g=>{
-      const count = (ia.placed[g.id]||[]).length;
-      let cls = '';
-      if(fb && fb.pickedGroup===g.id) cls += fb.status==='correct' ? ' tl-flash-correct' : ' tl-flash-wrong';
-      if(fb && fb.status!=='correct' && fb.correctGroup===g.id && fb.pickedGroup!==g.id) cls += ' tl-flash-hint';
-      return `<button class="tl-box${cls}" ${ia.locked?'disabled':''} onclick="pickImanArkanGroup('${g.id}')">
-        ${count>0?`<span class="tl-count">${count}</span>`:''}
-        <span>${g.title}</span>
-      </button>`;
-    }).join('')}
-  </div>`;
+  const groupsHtml = IMAN_ARKAN_GROUPS.map(g=>{
+    const items = ia.placed[g.id] || [];
+    const hasItems = items.length > 0;
+    let cls = 'ia-box-group';
+    if(g.id === 'ia6') cls += ' full-span';
+    if(hasItems) cls += ' has-items';
+    if(fb && fb.pickedGroup === g.id) cls += fb.status==='correct' ? ' ia-flash-correct' : ' ia-flash-wrong';
+    if(fb && fb.status!=='correct' && fb.correctGroup === g.id && fb.pickedGroup !== g.id) cls += ' ia-flash-hint';
+    return `<div class="${cls}" data-gid="${g.id}">
+      <div class="grp-title">${g.title}</div>
+      ${hasItems ? `<div class="grp-items">${items.map(t=>`<div class="grp-item">${t}</div>`).join('')}</div>` : ''}
+    </div>`;
+  }).join('');
 
   return `
   <div class="panel timeline-panel">
@@ -2005,18 +2048,18 @@ function renderImanArkan(){
     </div>
     <div class="progress-bar"><div style="width:${pct}%"></div></div>
 
-    <div class="tl-groups">${groupsHtml}</div>
+    <div class="ia-groups">${groupsHtml}</div>
 
-    <div class="tl-question-card">
+    <div class="ia-question-card">
       <div class="tl-q-meta">
         <span>عبارة ${ia.idx+1} من ${ia.total}</span>
         <span class="tl-q-meta-right">
-          <span>اختر القسم المناسب من الأعلى <span class="tl-arrow-icon">${ICONS.arrowUp}</span></span>
+          <span>اسحب العبارة إلى القسم المناسب من الأعلى <span class="tl-arrow-icon">${ICONS.arrowUp}</span></span>
           <button class="icon-btn heart-btn ${isFav?'active':''}" onclick="toggleImanArkanFavorite()" title="${isFav?'إزالة من المفضلة':'أضف إلى المفضلة'}">${ICONS.heart}</button>
           <button class="icon-btn flag-btn ${isFlagged?'flagged':''}" onclick="openReportImanArkan()" title="${isFlagged?'تم إرسال بلاغك عن هذه العبارة':'الإبلاغ عن مشكلة في هذه العبارة'}">${ICONS.flag}</button>
         </span>
       </div>
-      <div class="tl-q-text">${cur.t}</div>
+      <div class="ia-q-text" id="ia-drag-phrase" onpointerdown="startImanArkanDrag(event)">${cur.t}</div>
       ${fb ? `
         <div class="feedback-banner ${fb.status==='correct'?'correct':'wrong'}">
           ${fb.status==='correct' ? '✓ إجابة صحيحة! أُضيفت العبارة لقسمها'
@@ -2040,7 +2083,60 @@ function renderImanArkan(){
   </div>
   `;
 }
-function pickImanArkanGroup(groupId){
+/* ---- سحب وإفلات العبارة إلى القسم المناسب ---- */
+let imanArkanDragState = null;
+function startImanArkanDrag(e){
+  const ia = state.imanArkan;
+  if(!ia || ia.locked) return;
+  const source = document.getElementById('ia-drag-phrase');
+  if(!source) return;
+  e.preventDefault();
+  const rect = source.getBoundingClientRect();
+  const ghost = document.createElement('div');
+  ghost.className = 'ia-drag-ghost';
+  ghost.textContent = source.textContent;
+  ghost.style.width = rect.width + 'px';
+  document.body.appendChild(ghost);
+  imanArkanDragState = {
+    offsetX: e.clientX - rect.left,
+    offsetY: e.clientY - rect.top,
+    ghost, activeBox: null
+  };
+  positionImanArkanGhost(e.clientX, e.clientY);
+  source.classList.add('dragging-source');
+  document.addEventListener('pointermove', onImanArkanDragMove);
+  document.addEventListener('pointerup', onImanArkanDragEnd);
+}
+function positionImanArkanGhost(x,y){
+  if(!imanArkanDragState) return;
+  imanArkanDragState.ghost.style.left = (x - imanArkanDragState.offsetX) + 'px';
+  imanArkanDragState.ghost.style.top = (y - imanArkanDragState.offsetY) + 'px';
+}
+function onImanArkanDragMove(e){
+  if(!imanArkanDragState) return;
+  positionImanArkanGhost(e.clientX, e.clientY);
+  imanArkanDragState.ghost.style.display = 'none';
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  imanArkanDragState.ghost.style.display = '';
+  const box = el && el.closest('.ia-box-group');
+  if(imanArkanDragState.activeBox && imanArkanDragState.activeBox !== box){ imanArkanDragState.activeBox.classList.remove('drag-over'); }
+  if(box){ box.classList.add('drag-over'); }
+  imanArkanDragState.activeBox = box || null;
+}
+function onImanArkanDragEnd(e){
+  if(!imanArkanDragState) return;
+  document.removeEventListener('pointermove', onImanArkanDragMove);
+  document.removeEventListener('pointerup', onImanArkanDragEnd);
+  const box = imanArkanDragState.activeBox;
+  if(box) box.classList.remove('drag-over');
+  imanArkanDragState.ghost.remove();
+  const source = document.getElementById('ia-drag-phrase');
+  if(source) source.classList.remove('dragging-source');
+  const gid = box ? box.getAttribute('data-gid') : null;
+  imanArkanDragState = null;
+  if(gid) handleImanArkanDrop(gid);
+}
+function handleImanArkanDrop(groupId){
   const ia = state.imanArkan;
   if(!ia || ia.locked) return;
   const cur = ia.queue[ia.idx];
