@@ -656,6 +656,8 @@
   .mustalahat-icon svg{ width:14px; height:14px; }
 
   .mustalahat-card{ background:var(--sage); border-radius:var(--radius); border-inline-start:4px solid var(--sage-pale-2); padding:14px 16px; margin-bottom:12px; box-shadow:var(--shadow); }
+  .mustalahat-card.reveal-ready{ opacity:0; transform:translateY(24px); transition:opacity .55s ease, transform .55s ease; }
+  .mustalahat-card.reveal-ready.revealed{ opacity:1; transform:translateY(0); }
   .mustalahat-num{ color:var(--sage-pale-2); font-weight:800; font-size:13px; letter-spacing:.5px; display:block; margin-bottom:5px; }
   .mustalahat-text{ font-size:16.5px; color:#fff; margin:0 0 10px; }
   .mustalahat-text b{ color:#fff; font-weight:800; }
@@ -1433,6 +1435,25 @@ function render(){
   if(state.view==='favorites'){ hydrateFavorites(); hydrateNotes(); }
   if(state.view==='result') hydrateResultAutoSave();
   if(state.view==='references') hydrateReferences();
+  if(state.view==='mustalahat' || state.view==='ajrumfill') hydrateScrollReveal();
+}
+function hydrateScrollReveal(){
+  const cards = document.querySelectorAll('.mustalahat-card:not(.reveal-ready)');
+  if(!cards.length) return;
+  if(!window.__revealObserver){
+    window.__revealObserver = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('revealed');
+          window.__revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold:0.15, rootMargin:'0px 0px -40px 0px' });
+  }
+  cards.forEach(card=>{
+    card.classList.add('reveal-ready');
+    window.__revealObserver.observe(card);
+  });
 }
 
 /* ============================ HOME ============================ */
