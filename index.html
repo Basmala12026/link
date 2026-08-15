@@ -655,48 +655,48 @@
   .mustalahat-icon.icon-btn{ width:28px; height:28px; background:var(--cream); }
   .mustalahat-icon svg{ width:14px; height:14px; }
 
-  .mustalahat-card{ background:var(--sage-deep); border-radius:var(--radius); border-inline-start:4px solid var(--sage-pale-2); padding:18px 20px; margin-bottom:16px; box-shadow:var(--shadow); }
-  .mustalahat-num{ color:var(--sage-pale-2); font-weight:800; font-size:12.5px; letter-spacing:.5px; display:block; margin-bottom:6px; }
-  .mustalahat-text{ font-size:16px; color:#fff; margin:0 0 12px; }
+  .mustalahat-card{ background:var(--sage); border-radius:var(--radius); border-inline-start:4px solid var(--sage-pale-2); padding:14px 16px; margin-bottom:12px; box-shadow:var(--shadow); }
+  .mustalahat-num{ color:var(--sage-pale-2); font-weight:800; font-size:13px; letter-spacing:.5px; display:block; margin-bottom:5px; }
+  .mustalahat-text{ font-size:16.5px; color:#fff; margin:0 0 10px; }
   .mustalahat-text b{ color:#fff; font-weight:800; }
   .mustalahat-term-box{
-    font-weight:600; font-size:17.5px; color:var(--sage-deep);
+    font-weight:600; font-size:18px; color:var(--sage-deep);
     background:var(--cream-deep); border:1px solid var(--cream-deep);
-    border-radius:12px; padding:12px 14px; margin-bottom:12px;
+    border-radius:12px; padding:10px 12px; margin-bottom:10px;
   }
   .mustalahat-select, .mustalahat-fill-input{
     width:100%; background:var(--cream-deep); color:var(--ink);
-    border:1px solid var(--cream-deep); border-radius:10px; padding:11px 12px;
-    font-family:'Thmanyah Sans', 'Tajawal', sans-serif; font-size:14.5px;
+    border:1px solid var(--cream-deep); border-radius:10px; padding:9px 10px;
+    font-family:'Thmanyah Sans', 'Tajawal', sans-serif; font-size:15px;
   }
   .mustalahat-select:focus, .mustalahat-fill-input:focus{ outline:3px solid var(--sage-pale-2); outline-offset:1px; }
   .mustalahat-fill-input::placeholder{ color:var(--ink-soft); opacity:.6; }
   .mustalahat-options{ display:flex; flex-direction:column; }
   .mustalahat-opt{
     display:flex; align-items:flex-start; gap:10px; background:var(--cream-deep);
-    border:1px solid var(--cream-deep); border-radius:10px; padding:11px 12px;
-    margin-bottom:8px; cursor:pointer; font-size:14.5px; color:var(--ink);
+    border:1px solid var(--cream-deep); border-radius:10px; padding:9px 10px;
+    margin-bottom:6px; cursor:pointer; font-size:15px; color:var(--ink);
   }
   .mustalahat-opt:hover{ border-color:var(--sage-pale-2); }
   .mustalahat-opt input{ accent-color:var(--sage); margin-top:3px; flex-shrink:0; }
   .mustalahat-opt.correct-flag{ border-color:var(--good); background:var(--good-bg); color:var(--ink); }
   .mustalahat-opt.wrong-flag{ border-color:var(--danger); background:var(--danger-bg); color:var(--ink); }
-  .mustalahat-feedback{ margin-top:10px; font-size:13.5px; padding:8px 12px; border-radius:8px; }
+  .mustalahat-feedback{ margin-top:8px; font-size:14px; padding:6px 10px; border-radius:8px; }
   .mustalahat-feedback.ok{ background:var(--good-bg); color:var(--good); }
   .mustalahat-feedback.no{ background:var(--danger-bg); color:var(--danger); }
-  .mustalahat-submit-zone{ text-align:center; margin-top:44px; }
+  .mustalahat-submit-zone{ text-align:center; margin-top:32px; }
   .mustalahat-grade-btn{
     background:var(--sage); color:#fff; border:none; font-family:'Thmanyah Sans', 'Tajawal', sans-serif;
-    font-weight:700; font-size:16.5px; padding:14px 42px; border-radius:30px; cursor:pointer; letter-spacing:.5px;
+    font-weight:700; font-size:17px; padding:12px 36px; border-radius:30px; cursor:pointer; letter-spacing:.5px;
   }
   .mustalahat-grade-btn:hover{ background:var(--sage-deep); }
   .mustalahat-score{
-    text-align:center; margin-top:34px; padding:30px 20px;
+    text-align:center; margin-top:26px; padding:22px 16px;
     background:var(--card); border:1px solid var(--sage); border-radius:var(--radius); box-shadow:var(--shadow);
   }
-  .mustalahat-score-num{ font-family:'Thmanyah Sans', 'Tajawal', sans-serif; font-size:48px; color:var(--sage-deep); font-weight:700; margin:6px 0; }
+  .mustalahat-score-num{ font-family:'Thmanyah Sans', 'Tajawal', sans-serif; font-size:40px; color:var(--sage-deep); font-weight:700; margin:6px 0; }
   .mustalahat-score-label{ color:var(--ink-soft); font-size:14.5px; }
-  .mustalahat-reset-link{ display:block; text-align:center; margin-top:16px; color:var(--sage-deep); font-size:13.5px; text-decoration:underline; cursor:pointer; background:none; border:none; font-family:inherit; }
+  .mustalahat-reset-link{ display:block; text-align:center; margin-top:14px; color:var(--sage-deep); font-size:13.5px; text-decoration:underline; cursor:pointer; background:none; border:none; font-family:inherit; }
   .daycard-note-input{
     width:100%; border-radius:12px; border:none; padding:8px 12px; font-family:inherit; font-size:12.5px;
     resize:vertical; color:var(--ink); background:#fff; min-height:34px; max-height:70px;
@@ -1405,6 +1405,7 @@ function render(){
   else if(state.view==='result') html = renderResult();
   else if(state.view==='tasks') html = renderTasks();
   else if(state.view==='mustalahat') html = renderMustalahatPage();
+  else if(state.view==='ajrumfill') html = renderAjrumFillPage();
   else if(state.view==='favorites') html = renderFavoritesShell();
   else if(state.view==='progress') html = renderProgressShell();
   else if(state.view==='references') html = renderReferences();
@@ -1490,6 +1491,7 @@ async function hydrateQuestionCounts(){
 }
 async function hydrateHomeCoursesProgress(){
   const completed = await loadCompletedExams();
+  const SPECIAL_EXAM_IDS = { zubda:['3','4'], ajrumiyyah:['2'] };
   COURSES.forEach(c=>{
     if(c.status!=='active') return;
     const wrap = document.getElementById(`mini-progress-${c.id}`);
@@ -1497,16 +1499,16 @@ async function hydrateHomeCoursesProgress(){
     const lbl = document.getElementById(`mini-progress-lbl-${c.id}`);
     if(!wrap || !bar || !lbl) return;
     let total = 0, done = 0;
+    const specialIds = SPECIAL_EXAM_IDS[c.id] || [];
     Object.keys(c.exams||{}).forEach(s=>{
-      if(c.id==='zubda' && (s==='3' || s==='4')) return; /* مُدارة يدويًا أدناه — ليست بيانات Supabase حقيقية */
+      if(specialIds.includes(s)) return; /* مُدارة يدويًا أدناه — ليست بيانات Supabase حقيقية */
       if(!c.exams[s] || s==='extra') return;
       total++;
       if(isExamMarkedDone(completed, `${c.id}__${s}`, c.exams[s].createdAt)) done++;
     });
-    if(c.id==='zubda'){
-      total += 2;
-      if('zubda__3' in completed) done++;
-      if('zubda__4' in completed) done++;
+    if(specialIds.length){
+      total += specialIds.length;
+      specialIds.forEach(examId=>{ if(`${c.id}__${examId}` in completed) done++; });
     }
     if(total<=0) return;
     if(done >= total){
@@ -1611,6 +1613,17 @@ function renderCourse(){
             </div>
           </div>`;
         }
+        const isAjrumFill = c.id==='ajrumiyyah' && s===2;
+        if(isAjrumFill){
+          return `<div class="exam-card" id="examcard-${c.id}-${s}">
+            <div class="exam-done-badge" id="examdone-${c.id}-${s}" style="display:none;">✓ منتهي</div>
+            <div class="n">${examLabel(s)}</div>
+            <div class="t">أكمل · ${AJRUM_FILL_QUESTIONS.length} سؤالاً</div>
+            <div class="exam-actions" id="examactions-${c.id}-${s}">
+              <button class="btn btn-primary btn-sm" onclick="openAjrumFillQuiz()">ابدأ</button>
+            </div>
+          </div>`;
+        }
         const data = c.exams[s];
         const label = isExtra? 'اختبار إضافي' : `اختبار ${examLabel(s)}`;
         if(!data){
@@ -1646,8 +1659,18 @@ async function hydrateCourseExams(courseId){
   if(!c) return;
   const completed = await loadCompletedExams();
   let doneCount = 0, totalReal = 0;
+  const SPECIAL_EXAMS = {
+    zubda: [
+      { examId:'3', retryHtml:`<button class="btn btn-primary btn-sm" onclick="openMustalahatQuiz()">إعادة المحاولة</button>` },
+      { examId:'4', retryHtml:`<button class="btn btn-primary btn-sm" onclick="startImanArkanGame('${courseId}')">إعادة المحاولة</button>` }
+    ],
+    ajrumiyyah: [
+      { examId:'2', retryHtml:`<button class="btn btn-primary btn-sm" onclick="openAjrumFillQuiz()">إعادة المحاولة</button>` }
+    ]
+  };
+  const specialIds = (SPECIAL_EXAMS[courseId]||[]).map(sp=>sp.examId);
   Object.keys(c.exams).forEach(s=>{
-    if(courseId==='zubda' && (s==='3' || s==='4')) return; /* مُدارة يدويًا أدناه — ليست بيانات Supabase حقيقية */
+    if(specialIds.includes(s)) return; /* مُدارة يدويًا أدناه — ليست بيانات Supabase حقيقية */
     if(!c.exams[s]) return;
     if(s !== 'extra') totalReal++;
     const key = `${courseId}__${s}`;
@@ -1668,14 +1691,10 @@ async function hydrateCourseExams(courseId){
   });
   const bar = document.getElementById(`course-progress-bar-${courseId}`);
   const label = document.getElementById(`course-progress-label-${courseId}`);
-  if(courseId==='zubda'){
-    totalReal += 2;
-    const specials = [
-      { examId:'3', retryHtml:`<button class="btn btn-primary btn-sm" onclick="openMustalahatQuiz()">إعادة المحاولة</button>` },
-      { examId:'4', retryHtml:`<button class="btn btn-primary btn-sm" onclick="startImanArkanGame('${courseId}')">إعادة المحاولة</button>` }
-    ];
-    specials.forEach(sp=>{
-      const key = `zubda__${sp.examId}`;
+  if(SPECIAL_EXAMS[courseId]){
+    totalReal += SPECIAL_EXAMS[courseId].length;
+    SPECIAL_EXAMS[courseId].forEach(sp=>{
+      const key = `${courseId}__${sp.examId}`;
       const isDone = key in completed;
       if(isDone) doneCount++;
       const card = document.getElementById(`examcard-${courseId}-${sp.examId}`);
@@ -3317,6 +3336,140 @@ const MUSTALAHAT_QUESTIONS = [
   {n:19, type:'mcq', text:'«الاعتقاد الجازم بوجوده سبحانه وتعالى».', options:['الإيمان بوجود الله','الإيمان بربوبية الله','الإيمان بإلاهية الله','أركان الإيمان'], answer:'الإيمان بوجود الله'},
   {n:20, type:'mcq', text:'«الإيمان بالله، وملائكته، وكتبه، ورسله، واليوم الآخر، والقدر خيره وشره.»', options:['أركان الإيمان','الإيمان بالقدر','الإيمان بالرسل','الإيمان بالكتب'], answer:'أركان الإيمان'},
 ];
+
+/* ============================ اختبار "أكمل" — الآجرومية (اختبار ٢) ============================ */
+const AJRUM_FILL_QUESTIONS = [
+  {n:1, text:'الكلام هو: اللفظ، المركب، ____، بالوضع', answer:'المفيد'},
+  {n:2, text:'أقسام الكلام: اسم، ____، وحرف جاء لمعنى', answer:'وفعل'},
+  {n:3, text:'الاسم: كلمة تدل على شيء ____', answer:'دون وقت'},
+  {n:4, text:'الفعل: كلمة تدل على ____ مرتبط بزمان', answer:'حدث'},
+  {n:5, text:'حروف المعاني: كلمة تدل على ____ في سياق', answer:'معنى'},
+  {n:6, text:'علامات الاسم: الخفض، ____، وأل التعريف', answer:'والتنوين'},
+  {n:7, text:'حروف الخفض -الجر-: من، وإلى، وعن، وعلى، وفي، ____، والباء، والكاف، واللام', answer:'ورب'},
+  {n:8, text:'حروف القسم: الواو، والباء، ____', answer:'والتاء'},
+  {n:9, text:'علامات الفعل: ____، والسين، وسوف وتاء التأنيث الساكنة', answer:'قد'},
+  {n:10, text:'علامة الفعل (تاء التأنيث الساكنة): تدخل على الفعل ____ فقط', answer:'الماضي'},
+  {n:11, text:'علامة الفعل (قد): تدخل على الفعل ____', answer:'الماضي والمضارع'},
+  {n:12, text:'الحرف: ما لا يصلح معه دليل ____، ولا دليل الفعل', answer:'الاسم'},
+  {n:13, text:'قال ابن آجروم «وحرف جاء لمعنى» بدلًا من: اسم وفعل وحرف فقط؛ احترازًا عن حروف ____؛ حتى لا يُظن أنها من أقسام الكلام.', answer:'المباني'},
+];
+function ajrumNormalize(s){
+  return (s||'').trim()
+    .replace(/[إأآا]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+    .replace(/[ًٌٍَُِّْـ]/g,'').replace(/\s+/g,' ')
+    .replace(/^و+/,''); /* تجاهل حرف العطف "و" في أول الإجابة، سواء كتبه الطالب أو لا */
+}
+async function openAjrumFillQuiz(){
+  state.ajrumAnswers = {};
+  state.ajrumGraded = false;
+  const favs = await loadFavorites();
+  state.favIds = new Set(favs.map(f=>f.id));
+  setView('ajrumfill');
+}
+function computeAjrumFillScore(){
+  let score = 0;
+  AJRUM_FILL_QUESTIONS.forEach(q=>{
+    const given = (state.ajrumAnswers||{})[q.n];
+    if(ajrumNormalize(given) === ajrumNormalize(q.answer) && ajrumNormalize(given)) score++;
+  });
+  return score;
+}
+function gradeAjrumFillQuiz(){
+  state.ajrumGraded = true;
+  render();
+  const board = document.querySelector('.mustalahat-submit-zone');
+  if(board) board.scrollIntoView({behavior:'smooth', block:'center'});
+  const score = computeAjrumFillScore();
+  markExamCompleted('ajrumiyyah', '2', null);
+  const att = { id: Date.now()+'-'+Math.random().toString(36).slice(2,7), course:'ajrumiyyah', exam:'2', score, total:AJRUM_FILL_QUESTIONS.length, timeTaken:0, ts: Date.now() };
+  saveMyAttempt(att);
+  saveAttempt(att).catch(()=>{});
+}
+function resetAjrumFillQuiz(){
+  state.ajrumAnswers = {};
+  state.ajrumGraded = false;
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+async function toggleAjrumFillFavorite(qn){
+  const q = AJRUM_FILL_QUESTIONS.find(q=>q.n===qn);
+  if(!q) return;
+  const id = `ajrumfill-${qn}`;
+  if(!state.favIds) state.favIds = new Set();
+  const nowFav = !state.favIds.has(id);
+  if(nowFav) state.favIds.add(id); else state.favIds.delete(id);
+  render();
+  let list = await loadFavorites();
+  if(nowFav){
+    if(!list.find(f=>f.id===id)){
+      list.push({ id, courseId:'ajrumiyyah', examId:'2', text:q.text, options:[q.answer], correctText:q.answer, hint:'', ts:Date.now() });
+    }
+  }else{
+    list = list.filter(f=>f.id!==id);
+  }
+  const ok = await saveFavoritesList(list);
+  if(!ok){
+    if(nowFav) state.favIds.delete(id); else state.favIds.add(id);
+    render();
+    showToast('تعذّر حفظ التفضيل، حاول مرة أخرى');
+  }else{
+    showToast(nowFav ? 'أُضيف السؤال إلى المفضلة ❤️' : 'أُزيل السؤال من المفضلة');
+  }
+}
+function openReportAjrumFill(){
+  state.reportCtx = { id:'ajrumfill-general', courseId:'ajrumiyyah', examId:'2', text:'اختبار الآجرومية' };
+  state.modal = 'report-question';
+  render();
+}
+function renderAjrumFillQuestion(q){
+  const graded = state.ajrumGraded;
+  const given = (state.ajrumAnswers||{})[q.n];
+  const isCorrect = graded && ajrumNormalize(given) === ajrumNormalize(q.answer) && ajrumNormalize(given);
+  const isFav = state.favIds && state.favIds.has(`ajrumfill-${q.n}`);
+  return `
+    <div class="mustalahat-card">
+      <div class="mustalahat-card-top">
+        <span class="mustalahat-num">السؤال ${toArabicDigits(q.n)}</span>
+        <button class="icon-btn heart-btn mustalahat-icon ${isFav?'active':''}" onclick="toggleAjrumFillFavorite(${q.n})" title="${isFav?'إزالة من المفضلة':'أضف إلى المفضلة'}">${ICONS.heart}</button>
+      </div>
+      <p class="mustalahat-text">${q.text.replace('____','<b>____</b>')}</p>
+      <input type="text" class="mustalahat-fill-input" ${graded?'disabled':''} value="${escapeHtml(given||'')}"
+        oninput="state.ajrumAnswers['${q.n}']=this.value"
+        style="${graded ? `border-color:${isCorrect?'var(--good)':'var(--danger)'};` : ''}"
+        placeholder="اكتب الكلمة الناقصة">
+      ${graded ? (isCorrect ? `<div class="mustalahat-feedback ok">صحيح</div>` : `<div class="mustalahat-feedback no">الإجابة الصحيحة: ${escapeHtml(q.answer)}</div>`) : ''}
+    </div>
+  `;
+}
+function renderAjrumFillPage(){
+  const graded = state.ajrumGraded;
+  const total = AJRUM_FILL_QUESTIONS.length;
+  const score = graded ? computeAjrumFillScore() : 0;
+  let msg = 'واصل المراجعة';
+  if(score>=11) msg='ممتاز — إتقان تام';
+  else if(score>=8) msg='جيد جدًا';
+  else if(score>=5) msg='جيد، يحتاج مراجعة';
+  return `
+    <div class="mustalahat-top-row">
+      <button class="back-btn" onclick="go('course', {courseId:'ajrumiyyah'})">→ رجوع</button>
+      <button class="icon-btn flag-btn" onclick="openReportAjrumFill()" title="الإبلاغ عن مشكلة في هذا الاختبار">${ICONS.flag}</button>
+    </div>
+    <div class="section-title"><h2>الآجرومية</h2><span class="hint">${toArabicDigits(total)} سؤالاً</span></div>
+    <div class="mustalahat-page-wrap">
+      ${AJRUM_FILL_QUESTIONS.map(q=>renderAjrumFillQuestion(q)).join('')}
+      <div class="mustalahat-submit-zone">
+        ${graded ? `
+          <div class="mustalahat-score">
+            <div class="mustalahat-score-label">نتيجتك</div>
+            <div class="mustalahat-score-num">${toArabicDigits(score)} / ${toArabicDigits(total)}</div>
+            <div class="mustalahat-score-label">${msg}</div>
+          </div>
+          <button class="mustalahat-reset-link" onclick="resetAjrumFillQuiz()">إعادة الاختبار من جديد</button>
+        ` : `<button class="mustalahat-grade-btn" onclick="gradeAjrumFillQuiz()">صحّح الإجابات</button>`}
+      </div>
+    </div>
+  `;
+}
 function mustalahatNormalize(s){
   return (s||'').trim()
     .replace(/[إأآا]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
