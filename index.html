@@ -3370,8 +3370,8 @@ const AJRUM_FILL_QUESTIONS = [
   {n:8, text:'حروف القسم: الواو، والباء، ____', answer:'والتاء'},
   {n:9, text:'علامات الفعل: ____، والسين، وسوف وتاء التأنيث الساكنة', answer:'قد'},
   {n:10, text:'علامة الفعل (تاء التأنيث الساكنة): تدخل على الفعل ____ فقط', answer:'الماضي'},
-  {n:11, text:'علامة الفعل (قد): تدخل على الفعل ____', answer:'الماضي والمضارع'},
-  {n:12, text:'الحرف: ما لا يصلح معه دليل ____، ولا دليل الفعل', answer:'الاسم'},
+  {n:11, text:'علامة الفعل (قد): تدخل على الفعل ____', answer:'الماضي والمضارع', alt:'المضارع والماضي'},
+  {n:12, text:'الحرف: ما لا يصلح معه دليل ____، ولا دليل الفعل', answer:'الاسم', alt:'اسم'},
   {n:13, text:'قال ابن آجروم «وحرف جاء لمعنى» بدلًا من: اسم وفعل وحرف فقط؛ احترازًا عن حروف ____؛ حتى لا يُظن أنها من أقسام الكلام.', answer:'المباني'},
 ];
 function ajrumNormalize(s){
@@ -3390,8 +3390,8 @@ async function openAjrumFillQuiz(){
 function computeAjrumFillScore(){
   let score = 0;
   AJRUM_FILL_QUESTIONS.forEach(q=>{
-    const given = (state.ajrumAnswers||{})[q.n];
-    if(ajrumNormalize(given) === ajrumNormalize(q.answer) && ajrumNormalize(given)) score++;
+    const given = ajrumNormalize((state.ajrumAnswers||{})[q.n]);
+    if(given && (given===ajrumNormalize(q.answer) || (q.alt && given===ajrumNormalize(q.alt)))) score++;
   });
   return score;
 }
@@ -3445,7 +3445,8 @@ function openReportAjrumFill(){
 function renderAjrumFillQuestion(q){
   const graded = state.ajrumGraded;
   const given = (state.ajrumAnswers||{})[q.n];
-  const isCorrect = graded && ajrumNormalize(given) === ajrumNormalize(q.answer) && ajrumNormalize(given);
+  const normGiven = ajrumNormalize(given);
+  const isCorrect = graded && !!normGiven && (normGiven===ajrumNormalize(q.answer) || (q.alt && normGiven===ajrumNormalize(q.alt)));
   const isFav = state.favIds && state.favIds.has(`ajrumfill-${q.n}`);
   return `
     <div class="mustalahat-card">
