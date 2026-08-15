@@ -1589,9 +1589,10 @@ function renderCourse(){
         const isMustalahat = c.id==='zubda' && s===3;
         if(isMustalahat){
           return `<div class="exam-card" id="examcard-${c.id}-${s}">
+            <div class="exam-done-badge" id="examdone-${c.id}-${s}" style="display:none;">✓ منتهي</div>
             <div class="n">${examLabel(s)}</div>
             <div class="t">اختبار مصطلحات · ٢٠ سؤالاً</div>
-            <div class="exam-actions">
+            <div class="exam-actions" id="examactions-${c.id}-${s}">
               <button class="btn btn-primary btn-sm" onclick="openMustalahatQuiz()">ابدأ</button>
             </div>
           </div>`;
@@ -1599,9 +1600,10 @@ function renderCourse(){
         const isImanArkan = c.id==='zubda' && s===4;
         if(isImanArkan){
           return `<div class="exam-card" id="examcard-${c.id}-${s}">
+            <div class="exam-done-badge" id="examdone-${c.id}-${s}" style="display:none;">✓ منتهي</div>
             <div class="n">${examLabel(s)}</div>
             <div class="t">صنّف · ${IMAN_ARKAN_ITEMS.length} عبارة · ٥ د</div>
-            <div class="exam-actions">
+            <div class="exam-actions" id="examactions-${c.id}-${s}">
               <button class="btn btn-primary btn-sm" onclick="startImanArkanGame('${c.id}')">ابدأ</button>
             </div>
           </div>`;
@@ -1665,8 +1667,27 @@ async function hydrateCourseExams(courseId){
   const label = document.getElementById(`course-progress-label-${courseId}`);
   if(courseId==='zubda'){
     totalReal += 2;
-    if('zubda__3' in completed) doneCount++;
-    if('zubda__4' in completed) doneCount++;
+    const specials = [
+      { examId:'3', retryHtml:`<button class="btn btn-primary btn-sm" onclick="openMustalahatQuiz()">إعادة المحاولة</button>` },
+      { examId:'4', retryHtml:`<button class="btn btn-primary btn-sm" onclick="startImanArkanGame('${courseId}')">إعادة المحاولة</button>` }
+    ];
+    specials.forEach(sp=>{
+      const key = `zubda__${sp.examId}`;
+      const isDone = key in completed;
+      if(isDone) doneCount++;
+      const card = document.getElementById(`examcard-${courseId}-${sp.examId}`);
+      const badge = document.getElementById(`examdone-${courseId}-${sp.examId}`);
+      const actions = document.getElementById(`examactions-${courseId}-${sp.examId}`);
+      if(!card || !badge || !actions) return;
+      if(isDone){
+        card.classList.add('completed');
+        badge.style.display = 'flex';
+        actions.innerHTML = `
+          ${sp.retryHtml}
+          <button class="btn btn-ghost btn-sm" onclick="resetSingleExam('${courseId}','${sp.examId}')">إعادة تعيين</button>
+        `;
+      }
+    });
   }
   if(bar) bar.style.width = (totalReal? Math.round(doneCount/totalReal*100):0) + '%';
   if(label) label.textContent = totalReal ? `أكملت ${doneCount} من ${totalReal} اختبارات` : 'لا اختبارات متاحة بعد';
