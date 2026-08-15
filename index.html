@@ -1501,10 +1501,16 @@ async function hydrateHomeCoursesProgress(){
     if(!wrap || !bar || !lbl) return;
     let total = 0, done = 0;
     Object.keys(c.exams||{}).forEach(s=>{
+      if(c.id==='zubda' && (s==='3' || s==='4')) return; /* مُدارة يدويًا أدناه — ليست بيانات Supabase حقيقية */
       if(!c.exams[s] || s==='extra') return;
       total++;
       if(isExamMarkedDone(completed, `${c.id}__${s}`, c.exams[s].createdAt)) done++;
     });
+    if(c.id==='zubda'){
+      total += 2;
+      if('zubda__3' in completed) done++;
+      if('zubda__4' in completed) done++;
+    }
     if(total<=0) return;
     if(done >= total){
       wrap.style.display = 'none';
