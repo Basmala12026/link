@@ -153,20 +153,9 @@
   .section-title{ display:flex; align-items:baseline; gap:10px; margin:6px 0 14px; flex-wrap:wrap; }
   .section-title h2{ font-size:17px; color:var(--sage-deep); margin:0; font-weight:800; }
   .section-title .hint{ font-size:12px; color:var(--ink-soft); font-weight:500; }
-  .isti-nav-btn{
-    margin-inline-start:auto; background:#5D6850; color:#fff; border:none;
-    border-radius:999px; padding:6px 16px; font-size:12.5px; font-weight:800;
-    font-family:'Thmanyah Sans', 'Tajawal', sans-serif; cursor:pointer;
-  }
-  .isti-nav-btn:hover{ background:var(--sage-deep); }
-  .home-tabs-row{ display:flex; gap:8px; width:fit-content; margin:6px 0 14px; }
-  .home-tabs-hint{ margin:6px 0 14px; font-size:12px; color:var(--ink-soft); }
-  .home-swipe-container{ overflow:hidden; }
-  .home-swipe-track{ display:flex; width:200%; transition:transform .32s cubic-bezier(.22,.8,.3,1); }
-  .home-swipe-panel{ width:50%; flex:none; padding-inline-end:4px; box-sizing:border-box; }
 
   /* ---------- courses grid ---------- */
-  .courses-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:40px; }
+  .courses-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:8px; }
   @media (max-width:900px){ .courses-grid{ grid-template-columns:repeat(2,1fr);} }
   @media (max-width:520px){ .courses-grid{ grid-template-columns:1fr 1fr; gap:9px; } }
   @media (max-width:380px){ .courses-grid{ grid-template-columns:1fr; } }
@@ -711,34 +700,6 @@
   .mustalahat-score-label{ color:var(--ink-soft); font-size:14.5px; }
   .mustalahat-reset-link{ display:block; text-align:center; margin-top:14px; color:var(--sage-deep); font-size:13.5px; text-decoration:underline; cursor:pointer; background:none; border:none; font-family:inherit; }
 
-  /* ---------- الاستهداءات ---------- */
-  .isti-subtabs{ display:flex; gap:6px; margin:18px 0 20px; flex-wrap:wrap; }
-  .isti-subtab{
-    flex:1; min-width:100px; text-align:center; padding:10px 8px; border-radius:12px;
-    background:var(--card); border:1.5px solid var(--sage-pale); color:var(--ink-soft);
-    font-weight:800; font-size:13px; cursor:pointer; transition:.15s;
-  }
-  .isti-subtab.active{ background:#5D6850; color:#fff; border-color:#5D6850; }
-  .isti-wird-title{
-    font-size:13.5px; font-weight:900; color:var(--sage-deep); margin:22px 0 10px;
-    display:flex; align-items:center; gap:8px;
-  }
-  .isti-wird-title::before{ content:""; width:16px; height:2px; background:var(--sage); border-radius:2px; flex:none; }
-  .isti-wird-title:first-child{ margin-top:0; }
-  .isti-card{
-    background:var(--card); border:1.5px solid var(--sage-pale); border-radius:16px;
-    overflow:hidden; margin-bottom:14px; box-shadow:var(--shadow);
-  }
-  .isti-card-label{
-    background:#5D6850; color:#fff; font-size:12px; font-weight:800;
-    padding:7px 14px;
-  }
-  .isti-divider{ height:1px; background:var(--sage-pale); }
-  .isti-verse{
-    color:#0F7A3D; font-size:16px; font-weight:700; line-height:2; text-align:center;
-    padding:14px 16px;
-  }
-  .isti-benefit{ color:var(--ink); font-size:14.5px; line-height:1.9; padding:14px 16px; }
   .daycard-note-input{
     width:100%; border-radius:12px; border:none; padding:8px 12px; font-family:inherit; font-size:12.5px;
     resize:vertical; color:var(--ink); background:#fff; min-height:34px; max-height:70px;
@@ -1468,7 +1429,7 @@ function render(){
 
   if(state.view==='progress') hydrateProgress();
   if(state.view==='course') hydrateCourseExams(state.courseId);
-  if(state.view==='home'){ hydrateHomeStats(); hydrateQuestionCounts(); hydrateHomeCoursesProgress(); hydrateHomeSwipe(); }
+  if(state.view==='home'){ hydrateHomeStats(); hydrateQuestionCounts(); hydrateHomeCoursesProgress(); }
   hydrateOwnerNameRow();
   if(state.view==='quiz') hydrateQuizTimer();
   if(state.view==='imanarkan') hydrateImanArkanTimer();
@@ -1519,75 +1480,25 @@ function renderHome(){
   </div>
   <div id="home-reset-area"></div>
 
-  <div class="home-tabs-row">
-    <button class="nav-link ${(state.homeTab||0)===0?'active':''}" id="home-dot-0" onclick="switchHomeTab(0)">المقررات</button>
-    <button class="nav-link ${(state.homeTab||0)===1?'active':''}" id="home-dot-1" onclick="switchHomeTab(1)">الاستهداءات</button>
-  </div>
-  <p class="hint home-tabs-hint" id="home-tabs-hint" style="display:${(state.homeTab||0)===0?'block':'none'};">اختر مقررًا لبدء الاختبار</p>
-  <div class="home-swipe-container" id="home-swipe-container">
-    <div class="home-swipe-track" id="home-swipe-track">
-      <div class="home-swipe-panel">
-        <div class="courses-grid">
-          ${COURSES.map(c=>`
-            <div class="course-card ${c.status}" ${c.status==='active'?`onclick="go('course',{courseId:'${c.id}'})"`:''}>
-              <div class="q-added-badge" id="q-added-${c.id}" title="توجد أسئلة مضافة من المستخدمين لهذا المقرر" style="display:none;">
-                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-              </div>
-              <div class="course-icon">${ICONS[c.icon]}</div>
-              <h3>${c.name}</h3>
-              <p class="sub">${c.sub}</p>
-              <span class="status-chip ${c.status==='locked'?'locked':''}">${c.status==='active'?'١٠ أسئلة/اختبار':'قريبًا'}</span>
-              ${c.status==='active'?`
-              <div class="mini-progress-wrap" id="mini-progress-${c.id}" style="display:none;">
-                <div class="mini-progress-bg"><div class="mini-progress-fg" id="mini-progress-bar-${c.id}" style="width:0%"></div></div>
-                <div class="mini-progress-lbl" id="mini-progress-lbl-${c.id}"></div>
-              </div>`:''}
-            </div>
-          `).join('')}
+  <div class="section-title"><h2>المقررات</h2><span class="hint">اختر مقررًا لبدء الاختبار</span></div>
+  <div class="courses-grid">
+    ${COURSES.map(c=>`
+      <div class="course-card ${c.status}" ${c.status==='active'?`onclick="go('course',{courseId:'${c.id}'})"`:''}>
+        <div class="q-added-badge" id="q-added-${c.id}" title="توجد أسئلة مضافة من المستخدمين لهذا المقرر" style="display:none;">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         </div>
+        <div class="course-icon">${ICONS[c.icon]}</div>
+        <h3>${c.name}</h3>
+        <p class="sub">${c.sub}</p>
+        <span class="status-chip ${c.status==='locked'?'locked':''}">${c.status==='active'?'١٠ أسئلة/اختبار':'قريبًا'}</span>
+        ${c.status==='active'?`
+        <div class="mini-progress-wrap" id="mini-progress-${c.id}" style="display:none;">
+          <div class="mini-progress-bg"><div class="mini-progress-fg" id="mini-progress-bar-${c.id}" style="width:0%"></div></div>
+          <div class="mini-progress-lbl" id="mini-progress-lbl-${c.id}"></div>
+        </div>`:''}
       </div>
-      <div class="home-swipe-panel">
-        ${renderIstihdaatContent()}
-      </div>
-    </div>
+    `).join('')}
   </div>
-  `;
-}
-function renderIstihdaatContent(){
-  const tab = state.istihdaatTab || 'hidaya';
-  const groups = ISTIHDAAT_DATA[tab] || [];
-  let counter = 0;
-  const contentHtml = groups.length ? groups.map(g=>`
-    <div class="isti-wird-title">${g.wird}</div>
-    ${g.items.map(it=>{
-      counter++;
-      return `
-      <div class="isti-card">
-        <div class="isti-card-label">الفائدة ${istihdaatOrdinal(counter)}</div>
-        <div class="isti-divider"></div>
-        <div class="isti-verse">${it.verse}</div>
-        <div class="isti-divider"></div>
-        <div class="isti-benefit">${it.benefit}</div>
-      </div>
-      `;
-    }).join('')}
-  `).join('') : `<div class="empty-state"><div class="icn">📖</div>لم تُضَف فوائد بعد في هذا التبويب.</div>`;
-
-  return `
-  <div class="section-title"><h2>الاستهداءات</h2></div>
-  <p class="lede" style="margin-top:6px; font-size:12.5px; color:var(--ink-soft);">
-    ذكر شيخنا نقاط ثلاثة للاستهداء:<br><br>
-    الأولى: أن تعلموا علم اليقين بأن هذا مجالٌ ليس فيه إجابة واحدة صحيحة والبقية مغلوطة، هذا مجال قد تكون الهدايات أوسع مما نظن، فلا تأخذوا الأمثلة التي سأذكرها إلا على أنها أمثلة فقط، ليست هذه هي الإجابة الصحيحة فقط وما عداها خطأ.<br><br>
-    الثانية: إذا رزقكم الله نظرًا في القرآن أن تعلموا علم اليقين بأن المسألة أشبه باللياقة، يعني اليوم ستتعب في استخراج فائدة من وجهٍ واحد، بعدها سيكون الوجه الواحد فيه عشر فوائد مثلًا، فلا تستعجل، نترقّ.<br><br>
-    الثالثة -وهذا أمرٌ مهم جدًا-: بأن تعلم بأن الفتح في هذه الهدايات هي فتوح مدد من الله سبحانه وتعالى، فلا بد أن نصلح أعمالنا ليفهّمنا، هذه أمور لا يفتح للإنسان بالعلم وحده، وإنما فيها معطيات أخرى متعلقة بصلاح الإنسان، بقربه من الله سبحانه وتعالى، بحفاظه على الورد، بنقاء قلبه من أمراض القلوب.<br><br>
-    <b>وأوصانا بألا نقفز حرفًا واحدًا من القرآن حينما نستدل بآية، وهذا من الأدب المغفول عنه؛ فإذا كنا نحفظ الآية ونضبطها، الأفضل أن نسوقها كاملةً فنكسب أجر تلاوتها ونركز على الشاهد إن كان خفيًا.</b>
-  </p>
-  <div class="isti-subtabs">
-    <div class="isti-subtab ${tab==='hidaya'?'active':''}" onclick="switchIstihdaatTab('hidaya')">الهداية</div>
-    <div class="isti-subtab ${tab==='niam'?'active':''}" onclick="switchIstihdaatTab('niam')">النعم</div>
-    <div class="isti-subtab ${tab==='haqaiq'?'active':''}" onclick="switchIstihdaatTab('haqaiq')">كشف الحقائق</div>
-  </div>
-  ${contentHtml}
   `;
 }
 async function hydrateQuestionCounts(){
@@ -3069,64 +2980,6 @@ async function openMyFile(id){
     a.click();
     a.remove();
   }catch(e){ showToast('تعذّر فتح الملف'); }
-}
-
-/* ============================ الاستهداءات ============================ */
-const ISTIHDAAT_ORDINALS = ['الأولى','الثانية','الثالثة','الرابعة','الخامسة','السادسة','السابعة','الثامنة','التاسعة','العاشرة','الحادية عشرة','الثانية عشرة','الثالثة عشرة','الرابعة عشرة','الخامسة عشرة'];
-function istihdaatOrdinal(n){ return ISTIHDAAT_ORDINALS[n-1] || toArabicDigits(n); }
-/* بيانات تجريبية للمعاينة فقط — سيتم استبدالها ببيانات حقيقية لاحقًا */
-const ISTIHDAAT_DATA = {
-  hidaya: [
-    { wird:'الورد الأول', items:[
-      { verse:'﴿وَقُل رَّبِّ زِدْنِي عِلْمًا﴾', benefit:'دلّت الآية على أن طلب العلم عبادة يُتقرَّب بها إلى الله، وأن الازدياد من العلم مطلوب لا ينتهي عند حدٍّ.' },
-      { verse:'﴿إِنَّمَا يَخْشَى اللَّهَ مِنْ عِبَادِهِ الْعُلَمَاءُ﴾', benefit:'دلّت الآية على أن ثمرة العلم الحقيقية هي الخشية من الله، فمن لم يورثه علمه خشية فقد نقص حظه من العلم النافع.' },
-    ]},
-    { wird:'الورد الثاني', items:[
-      { verse:'﴿وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا﴾', benefit:'دلّت الآية على أن التقوى سببٌ للفرج من كل ضيق، وأن المخارج من الأزمات مرتبطة بصلاح القلب مع الله.' },
-    ]},
-  ],
-  niam: [],
-  haqaiq: [],
-};
-function switchIstihdaatTab(tab){
-  state.istihdaatTab = tab;
-  render();
-}
-function switchHomeTab(idx){
-  state.homeTab = idx;
-  render();
-  requestAnimationFrame(hydrateHomeSwipe);
-}
-function hydrateHomeSwipe(){
-  const track = document.getElementById('home-swipe-track');
-  const dot1 = document.getElementById('home-dot-1');
-  const dot0 = document.getElementById('home-dot-0');
-  const hintEl = document.getElementById('home-tabs-hint');
-  if(!track) return;
-  const idx = state.homeTab || 0;
-  track.style.transform = `translateX(${idx===1 ? '-50%' : '0%'})`;
-  if(dot1) dot1.classList.toggle('active', idx===1);
-  if(dot0) dot0.classList.toggle('active', idx===0);
-  if(hintEl) hintEl.style.display = idx===0 ? 'block' : 'none';
-  if(track.__swipeBound) return;
-  track.__swipeBound = true;
-  let startX = 0, startY = 0, dragging = false;
-  const container = document.getElementById('home-swipe-container');
-  container.addEventListener('touchstart', (e)=>{
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-    dragging = true;
-  }, {passive:true});
-  container.addEventListener('touchend', (e)=>{
-    if(!dragging) return;
-    dragging = false;
-    const dx = e.changedTouches[0].clientX - startX;
-    const dy = e.changedTouches[0].clientY - startY;
-    if(Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-    const cur = state.homeTab || 0;
-    if(dx < 0 && cur === 0) switchHomeTab(1);
-    else if(dx > 0 && cur === 1) switchHomeTab(0);
-  }, {passive:true});
 }
 
 function renderReferences(){
