@@ -392,7 +392,8 @@
   .tf-btn{ width:56px; height:44px; flex:none; border-radius:10px; border:1.5px solid var(--sage-pale); background:var(--sage-pale-2); font-weight:800; font-size:13px; cursor:pointer; color:var(--ink); transition:transform .25s cubic-bezier(.2,.8,.2,1), background .2s, border-color .2s, color .2s, box-shadow .2s; font-family:inherit; transform-origin:center; }
   .tf-btn:disabled{ cursor:default; }
   .tf-btn.tf-selected{ border-color:var(--sage); background:var(--sage-pale); }
-  .tf-btn.tf-correct-pick{ border-color:var(--good); background:var(--good-bg); color:var(--good); transform:scale(1.18); box-shadow:0 6px 16px rgba(76,122,69,0.25); position:relative; z-index:1; }
+  .tf-btn.tf-correct-pick{ border-color:var(--good); background:var(--good-bg); color:var(--good); box-shadow:0 6px 16px rgba(76,122,69,0.25); position:relative; z-index:1; animation:tfPulse .45s cubic-bezier(.2,.8,.2,1); }
+  @keyframes tfPulse{ 0%{ transform:scale(1); } 50%{ transform:scale(1.18); } 100%{ transform:scale(1); } }
   .tf-btn.tf-wrong-pick{ border-color:var(--danger); background:var(--danger-bg); color:var(--danger); }
   .tf-alert{ background:var(--danger-bg); border-radius:12px; padding:12px 14px; font-size:13px; color:var(--danger); margin-top:10px; line-height:1.8; display:flex; gap:8px; font-weight:600; }
   .quiz-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
