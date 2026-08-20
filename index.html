@@ -384,6 +384,17 @@
   .feedback-banner.correct{ background:var(--good-bg); color:var(--good); }
   .feedback-banner.wrong{ background:var(--danger-bg); color:var(--danger); }
   .hint-box{ background:var(--sage-pale-2); border-radius:12px; padding:12px 14px; font-size:13px; color:var(--sage-deep); margin-bottom:16px; line-height:1.8; display:flex; gap:8px; }
+  .tf-card{ background:var(--card); border:1px solid var(--sage-pale); border-radius:14px; padding:14px 16px; margin-bottom:12px; box-shadow:var(--shadow); }
+  .tf-card-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .tf-num{ font-size:12px; color:var(--ink-soft); font-weight:700; }
+  .tf-text{ font-size:14px; color:var(--ink); line-height:1.7; margin:0 0 10px; }
+  .tf-btn-row{ display:flex; gap:8px; }
+  .tf-btn{ width:56px; height:44px; flex:none; border-radius:10px; border:1.5px solid var(--sage-pale); background:var(--sage-pale-2); font-weight:800; font-size:13px; cursor:pointer; color:var(--ink); transition:all .15s ease; font-family:inherit; }
+  .tf-btn:disabled{ cursor:default; }
+  .tf-btn.tf-selected{ border-color:var(--sage); background:var(--sage-pale); }
+  .tf-btn.tf-correct-pick{ border-color:var(--good); background:var(--good-bg); color:var(--good); }
+  .tf-btn.tf-wrong-pick{ border-color:var(--danger); background:var(--danger-bg); color:var(--danger); }
+  .tf-alert{ background:var(--danger-bg); border-radius:12px; padding:12px 14px; font-size:13px; color:var(--danger); margin-top:10px; line-height:1.8; display:flex; gap:8px; font-weight:600; }
   .quiz-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
 
   /* ---------- result ---------- */
@@ -1431,6 +1442,7 @@ function render(){
   else if(state.view==='tasks') html = renderTasks();
   else if(state.view==='mustalahat') html = renderMustalahatPage();
   else if(state.view==='ajrumfill') html = renderAjrumFillPage();
+  else if(state.view==='ajrumtf') html = renderAjrumTFPage();
   else if(state.view==='favorites') html = renderFavoritesShell();
   else if(state.view==='progress') html = renderProgressShell();
   else if(state.view==='references') html = renderReferences();
@@ -1458,7 +1470,7 @@ function render(){
   if(state.view==='favorites'){ hydrateFavorites(); hydrateNotes(); }
   if(state.view==='result') hydrateResultAutoSave();
   if(state.view==='references') hydrateReferences();
-  if(state.view==='mustalahat' || state.view==='ajrumfill') hydrateScrollReveal();
+  if(state.view==='mustalahat' || state.view==='ajrumfill' || state.view==='ajrumtf') hydrateScrollReveal();
 }
 function hydrateScrollReveal(){
   const cards = document.querySelectorAll('.mustalahat-card:not(.reveal-ready)');
@@ -1536,7 +1548,7 @@ async function hydrateQuestionCounts(){
 }
 async function hydrateHomeCoursesProgress(){
   const completed = await loadCompletedExams();
-  const SPECIAL_EXAM_IDS = { zubda:['3','4'], ajrumiyyah:['2'] };
+  const SPECIAL_EXAM_IDS = { zubda:['3','4'], ajrumiyyah:['2','4'] };
   COURSES.forEach(c=>{
     if(c.status!=='active') return;
     const wrap = document.getElementById(`mini-progress-${c.id}`);
@@ -1669,6 +1681,17 @@ function renderCourse(){
             </div>
           </div>`;
         }
+        const isAjrumTF = c.id==='ajrumiyyah' && s===4;
+        if(isAjrumTF){
+          return `<div class="exam-card" id="examcard-${c.id}-${s}">
+            <div class="exam-done-badge" id="examdone-${c.id}-${s}" style="display:none;">✓ منتهي</div>
+            <div class="n">${examLabel(s)}</div>
+            <div class="t">صح/خطأ · ${AJRUM_TF_QUESTIONS.length} سؤالاً</div>
+            <div class="exam-actions" id="examactions-${c.id}-${s}">
+              <button class="btn btn-primary btn-sm" onclick="openAjrumTFQuiz()">ابدأ</button>
+            </div>
+          </div>`;
+        }
         const data = c.exams[s];
         const label = isExtra? 'اختبار إضافي' : `اختبار ${examLabel(s)}`;
         if(!data){
@@ -1710,7 +1733,8 @@ async function hydrateCourseExams(courseId){
       { examId:'4', retryHtml:`<button class="btn btn-primary btn-sm" onclick="startImanArkanGame('${courseId}')">إعادة المحاولة</button>` }
     ],
     ajrumiyyah: [
-      { examId:'2', retryHtml:`<button class="btn btn-primary btn-sm" onclick="openAjrumFillQuiz()">إعادة المحاولة</button>` }
+      { examId:'2', retryHtml:`<button class="btn btn-primary btn-sm" onclick="openAjrumFillQuiz()">إعادة المحاولة</button>` },
+      { examId:'4', retryHtml:`<button class="btn btn-primary btn-sm" onclick="openAjrumTFQuiz()">إعادة المحاولة</button>` }
     ]
   };
   const specialIds = (SPECIAL_EXAMS[courseId]||[]).map(sp=>sp.examId);
@@ -3466,6 +3490,156 @@ function openReportAjrumFill(){
   state.modal = 'report-question';
   render();
 }
+
+/* ============================ اختبار "صح/خطأ" — الآجرومية (اختبار ٤) ============================ */
+const AJRUM_TF_QUESTIONS = [
+  {n:1, text:'الإعراب هو ثبات أواخر الكلِم مهما اختلفت العوامل الداخلة عليها.', correct:false, correction:'الإعراب هو تغيير أواخر الكلِم، لاختلاف العوامل الداخلة عليها لفظًا أو تقديرًا.'},
+  {n:2, text:'الإعراب هو تغيير أواخر الكلِم، لاختلاف العوامل الداخلة عليها لفظًا أو تقديرًا.', correct:true, correction:'صح.'},
+  {n:3, text:'أقسام الإعراب ثلاثة.', correct:false, correction:'أقسام الإعراب أربعة.'},
+  {n:4, text:'علامة الرفع الأصلية هي الفتحة.', correct:false, correction:'علامة الرفع الأصلية هي الضمة.'},
+  {n:5, text:'علامة النصب الأصلية هي الفتحة.', correct:true, correction:'صح.'},
+  {n:6, text:'علامة الخفض (الجر) الأصلية هي السكون.', correct:false, correction:'علامة الخفض الأصلية هي الكسرة.'},
+  {n:7, text:'علامة الجزم الأصلية هي السكون.', correct:true, correction:'صح.'},
+  {n:8, text:'في جملة "رأيت محمدًا"، كلمة "محمدًا" جاءت فاعلًا وعلامته الضمة.', correct:false, correction:'كلمة "محمدًا" مفعول به وعلامته الفتحة.'},
+  {n:9, text:'النصب يدخل على الأسماء والأفعال معًا.', correct:true, correction:'صح.'},
+  {n:10, text:'الخفض (الجر) يدخل على الأسماء والأفعال.', correct:false, correction:'الخفض يدخل على الأسماء فقط.'},
+  {n:11, text:'الجزم يدخل على الأسماء والأفعال معًا.', correct:false, correction:'الجزم يدخل على الأفعال فقط.'},
+  {n:12, text:'الرفع يدخل على الأسماء والأفعال، وعلامته الأصلية الضمة.', correct:true, correction:'صح.'},
+  {n:13, text:'في جملة "جاء محمدٌ"، كلمة "محمدٌ" جاءت مفعولًا به وحركتها الفتحة.', correct:false, correction:'"محمدٌ" جاءت فاعلًا وحركته الضمة لأنه فاعل.'},
+  {n:14, text:'في جملة "رأيت محمدًا"، "محمدًا" حركته الفتحة لأنه منصوب.', correct:true, correction:'صح.'},
+  {n:15, text:'الخفض لا يدخل إلا على الأسماء.', correct:true, correction:'صح.'},
+  {n:16, text:'دخول "أل" على كلمة دليل على أنها فعل.', correct:false, correction:'دخول "أل" إحدى العلامات التي تدل على أن الكلمة اسم.'},
+  {n:17, text:'علامة الرفع الأصلية هي الضمة، ولها علامات فرعية أيضًا.', correct:true, correction:'صح.'},
+  {n:18, text:'علامة النصب الأصلية تدخل على الأسماء فقط دون الأفعال.', correct:false, correction:'علامة النصب الأصلية (الفتحة) تدخل على الأسماء والأفعال.'},
+  {n:19, text:'الخفض علامته الكسرة ويدخل على الأسماء والأفعال معًا.', correct:false, correction:'الخفض يدخل على الأسماء فقط.'},
+  {n:20, text:'الجزم علامته السكون ويدخل على الأفعال فقط.', correct:true, correction:'صح.'},
+];
+async function openAjrumTFQuiz(){
+  state.ajrumTFAnswers = {};
+  state.ajrumTFGraded = false;
+  const favs = await loadFavorites();
+  state.favIds = new Set(favs.map(f=>f.id));
+  setView('ajrumtf');
+}
+function computeAjrumTFScore(){
+  let score = 0;
+  AJRUM_TF_QUESTIONS.forEach(q=>{
+    const given = (state.ajrumTFAnswers||{})[q.n];
+    if(given !== undefined && given === q.correct) score++;
+  });
+  return score;
+}
+function pickAjrumTF(n, val){
+  if(!state.ajrumTFAnswers) state.ajrumTFAnswers = {};
+  if(state.ajrumTFAnswers[n] !== undefined) return; /* الإجابة تُقفل بعد أول اختيار */
+  state.ajrumTFAnswers[n] = val;
+  const answeredCount = Object.keys(state.ajrumTFAnswers).length;
+  if(answeredCount === AJRUM_TF_QUESTIONS.length && !state.ajrumTFGraded){
+    state.ajrumTFGraded = true;
+    const score = computeAjrumTFScore();
+    markExamCompleted('ajrumiyyah', '4', null);
+    const att = { id: Date.now()+'-'+Math.random().toString(36).slice(2,7), course:'ajrumiyyah', exam:'4', score, total:AJRUM_TF_QUESTIONS.length, timeTaken:0, ts: Date.now() };
+    saveMyAttempt(att);
+    saveAttempt(att).catch(()=>{});
+  }
+  render();
+}
+function resetAjrumTFQuiz(){
+  state.ajrumTFAnswers = {};
+  state.ajrumTFGraded = false;
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+async function toggleAjrumTFFavorite(qn){
+  const q = AJRUM_TF_QUESTIONS.find(q=>q.n===qn);
+  if(!q) return;
+  const id = `ajrumtf-${qn}`;
+  if(!state.favIds) state.favIds = new Set();
+  const nowFav = !state.favIds.has(id);
+  if(nowFav) state.favIds.add(id); else state.favIds.delete(id);
+  render();
+  let list = await loadFavorites();
+  if(nowFav){
+    if(!list.find(f=>f.id===id)){
+      list.push({ id, courseId:'ajrumiyyah', examId:'4', text:q.text, options:['صح','خطأ'], correctText:(q.correct?'صح':'خطأ'), hint:q.correction||'', ts:Date.now() });
+    }
+  }else{
+    list = list.filter(f=>f.id!==id);
+  }
+  const ok = await saveFavoritesList(list);
+  if(!ok){
+    if(nowFav) state.favIds.delete(id); else state.favIds.add(id);
+    render();
+    showToast('تعذّر حفظ التفضيل، حاول مرة أخرى');
+  }else{
+    showToast(nowFav ? 'أُضيف السؤال إلى المفضلة ❤️' : 'أُزيل السؤال من المفضلة');
+  }
+}
+function openReportAjrumTF(){
+  state.reportCtx = { id:'ajrumtf-general', courseId:'ajrumiyyah', examId:'4', text:'اختبار الآجرومية (صح/خطأ)' };
+  state.modal = 'report-question';
+  render();
+}
+function renderAjrumTFQuestion(q){
+  const given = (state.ajrumTFAnswers||{})[q.n];
+  const answered = given !== undefined;
+  const isCorrect = answered && given === q.correct;
+  const isFav = state.favIds && state.favIds.has(`ajrumtf-${q.n}`);
+  function btnClass(val){
+    let cls = 'tf-btn';
+    if(answered && given===val){
+      cls += (given===q.correct) ? ' tf-correct-pick' : ' tf-wrong-pick';
+    }
+    return cls;
+  }
+  return `
+    <div class="tf-card">
+      <div class="tf-card-top">
+        <span class="tf-num">السؤال ${toArabicDigits(q.n)}</span>
+        <button class="icon-btn heart-btn ${isFav?'active':''}" onclick="toggleAjrumTFFavorite(${q.n})" title="${isFav?'إزالة من المفضلة':'أضف إلى المفضلة'}">${ICONS.heart}</button>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; justify-content:space-between;">
+        <p class="tf-text" style="flex:1;">${escapeHtml(q.text)}</p>
+        <div class="tf-btn-row">
+          <button class="${btnClass(true)}" ${answered?'disabled':''} onclick="pickAjrumTF(${q.n}, true)">صح</button>
+          <button class="${btnClass(false)}" ${answered?'disabled':''} onclick="pickAjrumTF(${q.n}, false)">خطأ</button>
+        </div>
+      </div>
+      ${answered && !isCorrect ? `<div class="tf-alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="13"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> <span>${escapeHtml(q.correction||'')}</span></div>` : ''}
+    </div>
+  `;
+}
+function renderAjrumTFPage(){
+  const total = AJRUM_TF_QUESTIONS.length;
+  const answeredCount = Object.keys(state.ajrumTFAnswers||{}).length;
+  const graded = state.ajrumTFGraded;
+  const score = graded ? computeAjrumTFScore() : 0;
+  let msg = 'واصل المراجعة';
+  if(score>=17) msg='ممتاز — إتقان تام';
+  else if(score>=13) msg='جيد جدًا';
+  else if(score>=8) msg='جيد، يحتاج مراجعة';
+  return `
+    <div class="mustalahat-top-row">
+      <button class="back-btn" onclick="go('course', {courseId:'ajrumiyyah'})">→ رجوع</button>
+      <button class="icon-btn flag-btn" onclick="openReportAjrumTF()" title="الإبلاغ عن مشكلة في هذا الاختبار">${ICONS.flag}</button>
+    </div>
+    <div class="section-title"><h2>الآجرومية</h2><span class="hint">${toArabicDigits(total)} سؤالاً · صح/خطأ</span></div>
+    <div class="mustalahat-page-wrap">
+      ${AJRUM_TF_QUESTIONS.map(q=>renderAjrumTFQuestion(q)).join('')}
+      <div class="mustalahat-submit-zone ajrumtf-submit-zone">
+        ${graded ? `
+          <div class="mustalahat-score">
+            <div class="mustalahat-score-label">نتيجتك</div>
+            <div class="mustalahat-score-num">${toArabicDigits(score)} / ${toArabicDigits(total)}</div>
+            <div class="mustalahat-score-label">${msg}</div>
+          </div>
+          <button class="mustalahat-reset-link" onclick="resetAjrumTFQuiz()">إعادة الاختبار من جديد</button>
+        ` : `<div style="color:var(--ink-soft); font-size:13px;">أجبت ${toArabicDigits(answeredCount)} من ${toArabicDigits(total)}</div>`}
+      </div>
+    </div>
+  `;
+}
+
 function renderAjrumFillQuestion(q){
   const graded = state.ajrumGraded;
   const given = (state.ajrumAnswers||{})[q.n];
