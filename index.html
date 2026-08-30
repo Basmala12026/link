@@ -340,12 +340,12 @@
   .hometab-btn.active{ background:var(--sage); color:#fff; }
   .anki-counts{ display:flex; gap:8px; justify-content:center; font-size:12px; font-weight:800; margin-top:2px; }
   .anki-counts-row{ display:flex; gap:14px; font-size:12.5px; font-weight:700; margin:8px 0 4px; }
-  .anki-c-new{ color:#1F5FA8; }
+  .anki-c-new{ color:var(--ink-soft); }
   .anki-c-learn{ color:var(--danger); }
   .anki-c-mastered{ color:var(--good); }
   .anki-legend{ display:flex; justify-content:center; gap:14px; font-size:10px; color:var(--ink-soft); font-weight:700; margin-top:10px; }
   .anki-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-inline-end:4px; }
-  .anki-dot-new{ background:#1F5FA8; }
+  .anki-dot-new{ background:var(--ink-soft); }
   .anki-dot-learn{ background:var(--danger); }
   .anki-dot-mastered{ background:var(--good); }
   .anki-subtabs{ display:flex; gap:6px; margin:12px 0; }
@@ -843,8 +843,11 @@
 
 <div class="wrap" id="app"><p style="text-align:center;padding:70px 16px;color:var(--ink-soft);">جارٍ تحميل المحتوى…</p></div>
 
-<button class="fab" onclick="openAddQuestion()" title="أضف سؤالك الخاص">
+<button class="fab" id="fab-question" onclick="openAddQuestion()" title="أضف سؤالك الخاص">
   <span class="plus">+</span><span>أضف سؤالك</span>
+</button>
+<button class="fab" id="fab-anki-add" onclick="ankiFabAdd()" title="أضف بطاقة" style="display:none;">
+  <span class="plus">+</span><span>أضف بطاقة</span>
 </button>
 
 <div id="modal-root"></div>
@@ -1402,7 +1405,6 @@ function setAnkiSide(side){ state.ankiSide = side; render(); }
 function renderAnkiCoursePage(){
   const course = ANKI_COURSES.find(c=>c.id===state.ankiCourseId);
   if(!course) return renderAnkiCoursesGrid();
-  const side = state.ankiSide || 'matn';
   const counts = ankiCourseCounts(course.id);
   return `
   <button class="back-btn" onclick="go('home',{homeTab:'anki'})"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> رجوع</button>
@@ -1412,11 +1414,6 @@ function renderAnkiCoursePage(){
     <span class="anki-c-learn">${counts.learning} قيد التعلّم</span>
     <span class="anki-c-mastered">${counts.mastered} متقنة</span>
   </div>
-  <div class="anki-subtabs">
-    <button class="anki-subtab-btn ${side==='matn'?'active':''}" onclick="setAnkiSide('matn')">المتن</button>
-    <button class="anki-subtab-btn ${side==='sharh'?'active':''}" onclick="setAnkiSide('sharh')">الشرح</button>
-  </div>
-  <button class="btn-primary anki-add-easy" onclick="openAnkiAdd('${course.id}','${side}')">+ إضافة بطاقة</button>
   <div class="anki-stats-tuck"><span onclick="go('ankiStats',{ankiCourseId:'${course.id}'})">الإحصاءات</span></div>
   `;
 }
@@ -1587,7 +1584,7 @@ function renderAnkiStats(){
   <div class="panel" style="margin-top:12px;">
     <div class="anki-stats-title">أنواع البطاقات</div>
     <div class="anki-pie-row">
-      <div class="anki-pie" style="background:conic-gradient(#1F5FA8 0% ${p1}%, var(--danger) ${p1}% ${p1+p2}%, var(--good) ${p1+p2}% 100%);"></div>
+      <div class="anki-pie" style="background:conic-gradient(var(--ink-soft) 0% ${p1}%, var(--danger) ${p1}% ${p1+p2}%, var(--good) ${p1+p2}% 100%);"></div>
       <div class="anki-pie-legend">
         <div><i class="anki-dot anki-dot-new"></i>جديدة — ${counts.new}</div>
         <div><i class="anki-dot anki-dot-learn"></i>قيد التعلّم — ${counts.learning}</div>
@@ -1598,6 +1595,13 @@ function renderAnkiStats(){
   `;
 }
 function openAnkiAdd(courseId, side){ state.modal='anki-add'; state.ankiAddCourse=courseId; state.ankiAddSide=side; render(); }
+function ankiFabAdd(){
+  const courseId = state.ankiCourseId;
+  if(!courseId) return;
+  const current = Array.isArray(state.ankiQueue) ? state.ankiQueue[state.ankiQueueIndex||0] : null;
+  const side = (current && current.side) || state.ankiSide || 'matn';
+  openAnkiAdd(courseId, side);
+}
 function openAnkiDeleteConfirm(cardId){ state.modal='anki-delete'; state.ankiDeleteId=cardId; render(); }
 async function confirmAnkiDelete(){
   const id = state.ankiDeleteId;
@@ -2046,6 +2050,14 @@ function render(){
 
   html += `<div class="footer-note">مبادرة مستقلة غير تابعة لإدارة البرنامج<br><span class="pill-note">ساعة علم وساعة عمل</span></div>`;
   app.innerHTML = html;
+
+  const ankiCourseViews = ['ankiCourse','ankiReview','ankiAgain','ankiStats'];
+  const inAnkiHome = state.view==='home' && state.homeTab==='anki';
+  const inAnkiCourse = ankiCourseViews.includes(state.view);
+  const qFab = document.getElementById('fab-question');
+  const aFab = document.getElementById('fab-anki-add');
+  if(qFab) qFab.style.display = (inAnkiHome || inAnkiCourse) ? 'none' : '';
+  if(aFab) aFab.style.display = inAnkiCourse ? '' : 'none';
 
   const toastRoot = document.getElementById('toast-root');
   if(state.toast){
