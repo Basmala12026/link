@@ -332,61 +332,6 @@
     font-weight:900; font-size:14px; padding:6px 14px; border-radius:999px; font-variant-numeric:tabular-nums;
   }
   .timer-chip.low{ background:var(--danger-bg); color:var(--danger); animation:pulse 1s infinite; }
-
-  /* ---------- Anki ---------- */
-  p.hint{ font-size:12px; color:var(--ink-soft); font-weight:500; }
-  .hometab-toggle{ display:flex; gap:6px; margin-bottom:14px; }
-  .hometab-btn{ flex:1; border:none; border-radius:999px; padding:9px 0; font-size:13px; font-weight:700; background:var(--sage-pale-2); color:var(--ink-soft); }
-  .hometab-btn.active{ background:var(--sage); color:#fff; }
-  .anki-counts{ display:flex; gap:8px; justify-content:center; font-size:12px; font-weight:800; margin-top:2px; }
-  .anki-counts-row{ display:flex; gap:14px; font-size:12.5px; font-weight:700; margin:8px 0 4px; }
-  .anki-c-new{ color:var(--ink-soft); }
-  .anki-c-learn{ color:var(--danger); }
-  .anki-c-mastered{ color:var(--good); }
-  .anki-legend{ display:flex; justify-content:center; gap:14px; font-size:10px; color:var(--ink-soft); font-weight:700; margin-top:10px; }
-  .anki-dot{ display:inline-block; width:8px; height:8px; border-radius:50%; margin-inline-end:4px; }
-  .anki-dot-new{ background:var(--ink-soft); }
-  .anki-dot-learn{ background:var(--danger); }
-  .anki-dot-mastered{ background:var(--good); }
-  .anki-subtabs{ display:flex; gap:6px; margin:12px 0; }
-  .anki-subtab-btn{ flex:1; border:none; border-radius:10px; padding:8px 0; font-size:12.5px; font-weight:700; background:var(--sage-pale-2); color:var(--sage-deep); }
-  .anki-subtab-btn.active{ background:var(--sage); color:#fff; }
-  .anki-actions-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
-  .anki-actions-row button{ flex:1; min-width:110px; }
-  .anki-list{ display:flex; flex-direction:column; gap:8px; }
-  .anki-list-item{ display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--card); border:1px solid var(--sage-pale); border-radius:12px; padding:10px 12px; }
-  .anki-list-front{ font-size:13px; flex:1; }
-  .anki-list-del{ background:transparent; border:none; color:var(--danger); width:26px; height:26px; padding:0; flex:none; }
-  .anki-list-del svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; }
-  .anki-card{ background:var(--card); border:1px solid var(--sage-pale); border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 16px; text-align:center; position:relative; }
-  .anki-card-del{ position:absolute; top:10px; inset-inline-start:10px; background:transparent; border:none; color:var(--danger); width:26px; height:26px; padding:0; }
-  .anki-card-del svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; }
-  .anki-add-easy{ width:100%; padding:12px 0; font-size:13.5px; margin-bottom:14px; }
-  .anki-card-progress{ font-size:10.5px; color:var(--ink-soft); font-weight:700; margin-bottom:12px; }
-  .anki-card-front, .anki-card-back{ font-family:'Thmanyah Sans', 'Tajawal', sans-serif; font-size:19px; font-weight:700; line-height:1.9; }
-  .anki-card-divider{ border-top:1px dashed var(--sage-pale); margin:14px 0; }
-  .anki-card-back{ color:var(--sage-deep); }
-  .anki-reveal-btn{ background:var(--sage-pale-2); color:var(--sage-deep); border:none; border-radius:10px; padding:10px 20px; font-size:13px; font-weight:700; margin-top:6px; }
-  .anki-answer-row{ display:flex; gap:6px; margin-top:16px; }
-  .anki-ans{ flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; border:none; border-radius:12px; padding:9px 0 8px; }
-  .anki-ans-time{ font-size:10px; font-weight:700; opacity:.75; }
-  .anki-ans-again{ background:var(--danger-bg); color:var(--danger); }
-  .anki-ans-hard{ background:#FAEEDA; color:#854F0B; }
-  .anki-ans-good{ background:var(--good-bg); color:var(--good); }
-  .anki-ans-easy{ background:#D9E6F5; color:#1F5FA8; }
-  .anki-stats-title{ font-size:12px; font-weight:800; color:var(--sage-deep); margin-bottom:8px; }
-  .anki-stats-line{ font-size:12.5px; line-height:2; }
-  .anki-forecast{ display:flex; align-items:flex-end; gap:4px; height:50px; }
-  .anki-forecast-bar{ flex:1; background:var(--sage); border-radius:2px 2px 0 0; }
-  .anki-pie-row{ display:flex; align-items:center; gap:14px; }
-  .anki-pie{ width:70px; height:70px; border-radius:50%; flex:none; }
-  .anki-pie-legend{ font-size:10.5px; line-height:1.9; font-weight:700; }
-  .anki-cloze .cloze-given{ color:#A85B4B; }
-  .anki-cloze .cloze-blank{ color:#1F5FA8; }
-  .anki-stats-tuck{ text-align:center; margin-top:22px; }
-  .anki-stats-tuck span{ font-size:10px; color:var(--sage-pale); cursor:pointer; }
-  .anki-separator{ padding:38px 16px; }
-  .anki-separator-text{ font-size:15px; font-weight:800; color:var(--sage-deep); }
   @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.55;} }
   .progress-bar{ height:7px; background:var(--sage-pale-2); border-radius:999px; overflow:hidden; margin-bottom:18px; }
   .progress-bar > div{ height:100%; background:var(--sage); transition:width .3s; }
@@ -843,11 +788,8 @@
 
 <div class="wrap" id="app"><p style="text-align:center;padding:70px 16px;color:var(--ink-soft);">جارٍ تحميل المحتوى…</p></div>
 
-<button class="fab" id="fab-question" onclick="openAddQuestion()" title="أضف سؤالك الخاص">
+<button class="fab" onclick="openAddQuestion()" title="أضف سؤالك الخاص">
   <span class="plus">+</span><span>أضف سؤالك</span>
-</button>
-<button class="fab" id="fab-anki-add" onclick="ankiFabAdd()" title="أضف بطاقة" style="display:none;">
-  <span class="plus">+</span><span>أضف بطاقة</span>
 </button>
 
 <div id="modal-root"></div>
@@ -1104,15 +1046,6 @@ let state = {
   modal:null,
   showSplash:true,
   deviceName:null,
-  homeTab:'courses',
-  ankiCourseId:null,
-  ankiSide:'matn',
-  ankiQueue:null,
-  ankiQueueIndex:0,
-  ankiRevealed:false,
-  ankiAddCourse:null,
-  ankiAddSide:'matn',
-  ankiDeleteId:null,
 };
 
 function setView(v, extra={}){ state = {...state, view:v, ...extra}; render(); window.scrollTo({top:0, behavior:'smooth'}); }
@@ -1126,7 +1059,6 @@ function go(v, extra={}){
     }
   }
 }
-function setHomeTab(tab){ state.homeTab = tab; render(); }
 
 /* ============================ المقررات والاختبارات (من Supabase) ============================ */
 /* تُقرأ من جداول courses / exams / quiz_questions في Supabase، وتُبنى بنفس
@@ -1161,534 +1093,6 @@ async function loadCoursesFromSupabase(){
   }catch(e){
     console.error('تعذّر تحميل المقررات من Supabase', e);
     return false;
-  }
-}
-
-/* ============================ Anki: بطاقات المراجعة المتباعدة ============================ */
-/* يطبّق خوارزمية Anki الأصلية (SM-2) كما هي: خطوات تعلّم ١ و١٠ دقائق، فاصل
-   تخرّج يوم واحد، فاصل "سهل" ٤ أيام، عامل سهولة ابتدائي ٢٥٠٪ (حد أدنى ١٣٠٪)،
-   مضاعف "صعب" ١.٢×، خطوات إعادة تعلّم ١٠ دقائق ثم فاصل يوم، عتبة عَلَقة ٨
-   إخفاقات (تعليق تلقائي + وسم)، وضبابية عشوائية على الفواصل (تقريب لمنحنى
-   Anki: ±١٥٪ حتى ٧ أيام، ±٥٪ حتى ٣٠ يومًا، ±٢.٥٪ بعدها).
-   البطاقات المعتمدة تُخزَّن في Supabase (جدول anki_cards) وتظهر للجميع فورًا،
-   بنفس نمط جداول courses/exams/quiz_questions الحالية. حالة كل بطاقة لكل
-   زائر (الفاصل، السهولة، الاستحقاق) وبطاقاته الخاصة وحذفه الشخصي تُخزَّن على
-   جهازه فقط عبر localData، تمامًا كتقدّم المقررات والملاحظات الحالية. */
-
-const ANKI_COURSES = [
-  { id:'nahw',    name:'النحو',   icon:'pen',      status:'active' },
-  { id:'aqidah',  name:'العقيدة', icon:'scale',    status:'soon' },
-  { id:'tajweed', name:'التجويد', icon:'crescent', status:'soon' },
-  { id:'seerah',  name:'السيرة',  icon:'path',     status:'soon' },
-];
-const ANKI_MATN_NEW_PER_DAY = 10;
-const ANKI_SHARH_NEW_PER_DAY = 5;
-const ANKI_LEARNING_STEPS_MIN = [1, 10];
-const ANKI_RELEARNING_STEPS_MIN = [10];
-const ANKI_GRADUATING_DAYS = 1;
-const ANKI_EASY_DAYS = 4;
-const ANKI_STARTING_EASE = 2.5;
-const ANKI_MIN_EASE = 1.3;
-const ANKI_HARD_MULT = 1.2;
-const ANKI_INTERVAL_MOD = 1.0;
-const ANKI_LEECH_THRESHOLD = 8;
-
-let ANKI_CARDS = [];   // البطاقات المعتمدة (من Supabase، مشتركة للجميع)
-let ANKI_PRIVATE = []; // بطاقاتي الخاصة (على هذا الجهاز فقط)
-let ANKI_HIDDEN = [];  // معرّفات بطاقات حذفتُها من عندي فقط
-let ANKI_STATE = {};   // حالة الجدولة لكل بطاقة + عدادات/سجلّات يومية، على هذا الجهاز
-let ANKI_LOG = [];     // سجلّ مراجعاتي (لعرض الإحصاءات)
-
-async function loadAnkiCards(){
-  try{
-    const { data, error } = await sb.from('anki_cards').select('*').eq('status','approved').order('order_index');
-    if(error) throw error;
-    ANKI_CARDS = data || [];
-  }catch(e){ console.error('loadAnkiCards', e); ANKI_CARDS = []; }
-}
-async function loadAnkiPrivate(){
-  try{ const r = await localData.get('anki_private'); ANKI_PRIVATE = r && r.value ? JSON.parse(r.value) : []; }
-  catch(e){ ANKI_PRIVATE = []; }
-}
-async function saveAnkiPrivate(){ await localData.set('anki_private', JSON.stringify(ANKI_PRIVATE)); }
-async function loadAnkiHidden(){
-  try{ const r = await localData.get('anki_hidden'); ANKI_HIDDEN = r && r.value ? JSON.parse(r.value) : []; }
-  catch(e){ ANKI_HIDDEN = []; }
-}
-async function saveAnkiHidden(){ await localData.set('anki_hidden', JSON.stringify(ANKI_HIDDEN)); }
-async function loadAnkiState(){
-  try{ const r = await localData.get('anki_state'); ANKI_STATE = r && r.value ? JSON.parse(r.value) : {}; }
-  catch(e){ ANKI_STATE = {}; }
-}
-async function saveAnkiState(){ await localData.set('anki_state', JSON.stringify(ANKI_STATE)); }
-async function loadAnkiLog(){
-  try{ const r = await localData.get('anki_log'); ANKI_LOG = r && r.value ? JSON.parse(r.value) : []; }
-  catch(e){ ANKI_LOG = []; }
-}
-async function saveAnkiLog(){
-  if(ANKI_LOG.length > 3000) ANKI_LOG = ANKI_LOG.slice(-3000);
-  await localData.set('anki_log', JSON.stringify(ANKI_LOG));
-}
-async function initAnkiData(){
-  await Promise.all([loadAnkiCards(), loadAnkiPrivate(), loadAnkiHidden(), loadAnkiState(), loadAnkiLog()]);
-}
-function ankiTodayKey(){ return todayStr(); }
-
-function ankiDeck(course, side){
-  const approved = ANKI_CARDS.filter(c=>c.course_id===course && c.side===side)
-    .map(c=>({ id:c.id, front:c.front, back:c.back, order:c.order_index||0, course, side }));
-  const priv = ANKI_PRIVATE.filter(c=>c.course===course && c.side===side)
-    .map(c=>({ id:c.id, front:c.front, back:c.back, order:c.order ?? 9999, course, side }));
-  return [...approved, ...priv].filter(c=>!ANKI_HIDDEN.includes(c.id)).sort((a,b)=>a.order-b.order);
-}
-function ankiCardState(id){
-  if(!ANKI_STATE[id] || typeof ANKI_STATE[id] !== 'object' || !ANKI_STATE[id].status){
-    ANKI_STATE[id] = { status:'new', step:0, ease:ANKI_STARTING_EASE, interval:0, due:0, lapses:0, suspended:false };
-  }
-  return ANKI_STATE[id];
-}
-function ankiNewShownToday(course, side){
-  const key = '__newcount_'+course+'_'+side+'_'+ankiTodayKey();
-  return ANKI_STATE[key] || 0;
-}
-function ankiBumpNewShown(course, side){
-  const key = '__newcount_'+course+'_'+side+'_'+ankiTodayKey();
-  ANKI_STATE[key] = (ANKI_STATE[key]||0) + 1;
-}
-function ankiMinutes(min){ return min*60000; }
-function ankiDays(d){ return d*86400000; }
-function ankiFuzz(days){
-  if(days < 2.5) return days;
-  let pct; if(days<=7) pct=0.15; else if(days<=30) pct=0.05; else pct=0.025;
-  const span = days*pct;
-  return Math.max(1, days + (Math.random()*2-1)*span);
-}
-function ankiGrade(cs, rating, now){
-  now = now || Date.now();
-  cs = { ...cs };
-  if(cs.status==='new' || cs.status==='learning'){
-    if(rating==='again'){
-      cs.status='learning'; cs.step=0; cs.due = now + ankiMinutes(ANKI_LEARNING_STEPS_MIN[0]);
-    }else if(rating==='hard'){
-      let delay;
-      if(ANKI_LEARNING_STEPS_MIN.length===1) delay = ANKI_LEARNING_STEPS_MIN[0]*1.5;
-      else delay = (ANKI_LEARNING_STEPS_MIN[0]+ANKI_LEARNING_STEPS_MIN[1])/2;
-      cs.status='learning'; cs.due = now + ankiMinutes(delay);
-    }else if(rating==='good'){
-      const next = (cs.step||0)+1;
-      if(next < ANKI_LEARNING_STEPS_MIN.length){
-        cs.status='learning'; cs.step=next; cs.due = now + ankiMinutes(ANKI_LEARNING_STEPS_MIN[next]);
-      }else{
-        cs.status='review'; cs.interval = ANKI_GRADUATING_DAYS; cs.due = now + ankiDays(cs.interval);
-      }
-    }else if(rating==='easy'){
-      cs.status='review'; cs.interval = ANKI_EASY_DAYS; cs.due = now + ankiDays(cs.interval);
-    }
-  }else if(cs.status==='review'){
-    if(rating==='again'){
-      cs.lapses = (cs.lapses||0)+1;
-      cs.ease = Math.max(ANKI_MIN_EASE, cs.ease-0.2);
-      if(cs.lapses>0 && cs.lapses % ANKI_LEECH_THRESHOLD===0){ cs.suspended=true; cs.leech=true; }
-      if(ANKI_RELEARNING_STEPS_MIN.length){
-        cs.status='relearning'; cs.step=0; cs.due = now + ankiMinutes(ANKI_RELEARNING_STEPS_MIN[0]);
-      }else{ cs.interval=1; cs.due = now + ankiDays(1); }
-    }else if(rating==='hard'){
-      cs.ease = Math.max(ANKI_MIN_EASE, cs.ease-0.15);
-      cs.interval = ankiFuzz(cs.interval*ANKI_HARD_MULT*ANKI_INTERVAL_MOD);
-      cs.due = now + ankiDays(cs.interval);
-    }else if(rating==='good'){
-      cs.interval = ankiFuzz(cs.interval*cs.ease*ANKI_INTERVAL_MOD);
-      cs.due = now + ankiDays(cs.interval);
-    }else if(rating==='easy'){
-      cs.ease = cs.ease+0.15;
-      cs.interval = ankiFuzz(cs.interval*cs.ease*1.3*ANKI_INTERVAL_MOD);
-      cs.due = now + ankiDays(cs.interval);
-    }
-  }else if(cs.status==='relearning'){
-    if(rating==='again'){
-      cs.step=0; cs.due = now + ankiMinutes(ANKI_RELEARNING_STEPS_MIN[0]);
-    }else{
-      const next = (cs.step||0)+1;
-      if(next < ANKI_RELEARNING_STEPS_MIN.length){
-        cs.step=next; cs.due = now + ankiMinutes(ANKI_RELEARNING_STEPS_MIN[next]);
-      }else{ cs.status='review'; cs.interval=1; cs.due = now + ankiDays(1); }
-    }
-  }
-  return cs;
-}
-function ankiFmtInterval(ms){
-  const mins = ms/60000;
-  if(mins < 60) return toArabicDigits(Math.max(1,Math.round(mins))) + ' د';
-  const hours = mins/60;
-  if(hours < 24) return toArabicDigits(Math.round(hours)) + ' س';
-  const days = Math.round(hours/24);
-  if(days < 30) return toArabicDigits(days) + (days===1?' يوم':' أيام');
-  const months = Math.round(days/30);
-  return toArabicDigits(months) + (months===1?' شهر':' أشهر');
-}
-function ankiIsCloze(front, back){
-  const blanks = String(front||'').match(/(\.{3,}|…+)/g) || [];
-  if(blanks.length===0) return false;
-  const segments = String(back||'').split('|');
-  return segments.length === blanks.length;
-}
-function ankiRenderCloze(front, back, revealed){
-  const parts = String(front||'').split(/(\.{3,}|…+)/);
-  const answers = String(back||'').split('|');
-  let ai = 0;
-  return parts.map(p=>{
-    if(/^(\.{3,}|…+)$/.test(p)){
-      const ans = answers[ai] !== undefined ? answers[ai] : '';
-      ai++;
-      return revealed ? `<span class="cloze-blank">${ans}</span>` : `<span class="cloze-blank">......</span>`;
-    }
-    return p ? `<span class="cloze-given">${p}</span>` : '';
-  }).join('');
-}
-function ankiPreview(cs){
-  const now = Date.now();
-  const out = {};
-  ['again','hard','good','easy'].forEach(r=>{ out[r] = ankiFmtInterval(ankiGrade(cs, r, now).due - now); });
-  return out;
-}
-function ankiCardType(cs){
-  if(cs.status==='new') return 'new';
-  if(cs.status==='learning' || cs.status==='relearning') return 'learning';
-  return 'mastered';
-}
-function ankiCourseCounts(course){
-  const all = [...ankiDeck(course,'matn'), ...ankiDeck(course,'sharh')];
-  const counts = { new:0, learning:0, mastered:0 };
-  all.forEach(c=>{
-    const cs = ankiCardState(c.id);
-    if(cs.suspended) return;
-    counts[ankiCardType(cs)]++;
-  });
-  return counts;
-}
-function ankiIcon(course){ return ICONS[course.icon] || ICONS.book; }
-
-/* ---------- الواجهات ---------- */
-function renderAnkiCoursesGrid(){
-  return `
-  <div class="courses-grid">
-    ${ANKI_COURSES.map(c=>{
-      if(c.status!=='active'){
-        return `
-        <div class="course-card locked">
-          <div class="course-icon">${ankiIcon(c)}</div>
-          <h3>${c.name}</h3>
-          <span class="status-chip locked">قريبًا</span>
-        </div>`;
-      }
-      const counts = ankiCourseCounts(c.id);
-      return `
-      <div class="course-card active" onclick="startAnkiReview('${c.id}')">
-        <div class="course-icon">${ankiIcon(c)}</div>
-        <h3>${c.name}</h3>
-        <div class="anki-counts">
-          <span class="anki-c-new">${counts.new}</span>
-          <span class="anki-c-learn">${counts.learning}</span>
-          <span class="anki-c-mastered">${counts.mastered}</span>
-        </div>
-      </div>`;
-    }).join('')}
-  </div>
-  <div class="anki-legend">
-    <span><i class="anki-dot anki-dot-new"></i>جديدة</span>
-    <span><i class="anki-dot anki-dot-learn"></i>قيد التعلّم</span>
-    <span><i class="anki-dot anki-dot-mastered"></i>متقنة</span>
-  </div>
-  `;
-}
-function setAnkiSide(side){ state.ankiSide = side; render(); }
-function renderAnkiCoursePage(){
-  const course = ANKI_COURSES.find(c=>c.id===state.ankiCourseId);
-  if(!course) return renderAnkiCoursesGrid();
-  const counts = ankiCourseCounts(course.id);
-  return `
-  <button class="back-btn" onclick="go('home',{homeTab:'anki'})"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> رجوع</button>
-  <div class="section-title"><h2>${course.name} · Anki</h2></div>
-  <div class="anki-counts-row">
-    <span class="anki-c-new">${counts.new} جديدة</span>
-    <span class="anki-c-learn">${counts.learning} قيد التعلّم</span>
-    <span class="anki-c-mastered">${counts.mastered} متقنة</span>
-  </div>
-  <div class="anki-stats-tuck"><span onclick="go('ankiStats',{ankiCourseId:'${course.id}'})">الإحصاءات</span></div>
-  `;
-}
-function ankiBuildSideQueue(courseId, side, dailyCap){
-  const now = Date.now();
-  const deck = ankiDeck(courseId, side);
-  const due = [], fresh = [];
-  deck.forEach(c=>{
-    const cs = ankiCardState(c.id);
-    if(cs.suspended) return;
-    if(cs.status==='new') fresh.push(c);
-    else if(cs.due<=now) due.push(c);
-  });
-  due.sort((a,b)=>ankiCardState(a.id).due - ankiCardState(b.id).due);
-  const room = Math.max(0, dailyCap - ankiNewShownToday(courseId, side));
-  return [...due, ...fresh.slice(0, room)];
-}
-function startAnkiReview(courseId){
-  const matnQueue = ankiBuildSideQueue(courseId, 'matn', ANKI_MATN_NEW_PER_DAY);
-  const sharhQueue = ankiBuildSideQueue(courseId, 'sharh', ANKI_SHARH_NEW_PER_DAY);
-  const queue = [
-    ...matnQueue,
-    ...(matnQueue.length && sharhQueue.length ? [{ type:'separator', side:'sharh' }] : []),
-    ...sharhQueue,
-  ];
-  if(queue.length===0){ showToast('لا بطاقات مستحقّة الآن في هذا المقرر 🎉'); return; }
-  go('ankiReview', { ankiCourseId:courseId, ankiQueue:queue, ankiQueueIndex:0, ankiRevealed:false });
-}
-function renderAnkiReview(){
-  const queue = state.ankiQueue || [];
-  const idx = state.ankiQueueIndex || 0;
-  if(idx >= queue.length){
-    setTimeout(()=>go('ankiAgain', {}), 0);
-    return `<p class="hint">جارٍ التحويل...</p>`;
-  }
-  const card = queue[idx];
-  if(card.type==='separator'){
-    return `
-    <div class="anki-card anki-separator">
-      <div class="anki-separator-text">البطاقات القادمة من الشرح</div>
-      <button class="btn-primary" style="margin-top:14px;" onclick="ankiContinueFromSeparator()">متابعة</button>
-    </div>
-    `;
-  }
-  const course = ANKI_COURSES.find(c=>c.id===card.course) || ANKI_COURSES.find(c=>c.id===state.ankiCourseId);
-  const cs = ankiCardState(card.id);
-  const preview = ankiPreview(cs);
-  const revealed = state.ankiRevealed;
-  const answerRow = `
-    <div class="anki-answer-row">
-      <button class="anki-ans anki-ans-again" onclick="answerAnki('again')"><span class="anki-ans-time">${preview.again}</span><span>مجددًا</span></button>
-      <button class="anki-ans anki-ans-hard" onclick="answerAnki('hard')"><span class="anki-ans-time">${preview.hard}</span><span>صعب</span></button>
-      <button class="anki-ans anki-ans-good" onclick="answerAnki('good')"><span class="anki-ans-time">${preview.good}</span><span>جيد</span></button>
-      <button class="anki-ans anki-ans-easy" onclick="answerAnki('easy')"><span class="anki-ans-time">${preview.easy}</span><span>سهل</span></button>
-    </div>`;
-  const revealBtn = `<button class="anki-reveal-btn" onclick="revealAnkiAnswer()">إظهار الإجابة</button>`;
-  const isCloze = ankiIsCloze(card.front, card.back);
-  const bodyHtml = isCloze ? `
-    <div class="anki-card-front anki-cloze">${ankiRenderCloze(card.front, card.back, revealed)}</div>
-    ${revealed ? answerRow : revealBtn}
-  ` : `
-    <div class="anki-card-front">${card.front}</div>
-    ${revealed ? `
-    <div class="anki-card-divider"></div>
-    <div class="anki-card-back">${card.back}</div>
-    ${answerRow}` : revealBtn}
-  `;
-  return `
-  <button class="back-btn" onclick="go('ankiCourse',{ankiCourseId:'${course?course.id:state.ankiCourseId}', ankiSide:'${card.side}'})"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> رجوع</button>
-  <div class="anki-card">
-    <button class="anki-card-del" aria-label="حذف البطاقة" onclick="openAnkiDeleteConfirm('${card.id}')">${ICONS.trash}</button>
-    <div class="anki-card-progress">بطاقة ${idx+1} من ${queue.length} · ${course?course.name:''} · ${card.side==='matn'?'المتن':'الشرح'}</div>
-    ${bodyHtml}
-  </div>
-  `;
-}
-function revealAnkiAnswer(){ state.ankiRevealed = true; render(); }
-function ankiContinueFromSeparator(){
-  state.ankiQueueIndex = (state.ankiQueueIndex||0) + 1;
-  state.ankiRevealed = false;
-  render();
-}
-async function answerAnki(rating){
-  const queue = state.ankiQueue || [];
-  const idx = state.ankiQueueIndex || 0;
-  const card = queue[idx];
-  if(!card) return;
-  const cs = ankiCardState(card.id);
-  const wasNew = cs.status==='new';
-  ANKI_STATE[card.id] = ankiGrade(cs, rating);
-  if(wasNew) ankiBumpNewShown(card.course || state.ankiCourseId, card.side);
-  ANKI_LOG.push({ ts:Date.now(), cardId:card.id, course:card.course || state.ankiCourseId, rating });
-  const key = 'anki_again_'+ankiTodayKey();
-  const list = ANKI_STATE[key] || [];
-  if(rating==='again'){
-    if(!list.includes(card.id)) list.push(card.id);
-  }else{
-    const i = list.indexOf(card.id);
-    if(i>-1) list.splice(i,1);
-  }
-  ANKI_STATE[key] = list;
-  await saveAnkiState();
-  await saveAnkiLog();
-  state.ankiQueueIndex = idx+1;
-  state.ankiRevealed = false;
-  render();
-}
-function renderAnkiAgainBucket(){
-  const ids = ANKI_STATE['anki_again_'+ankiTodayKey()] || [];
-  const all = [
-    ...ANKI_CARDS.map(c=>({ id:c.id, front:c.front, back:c.back, course:c.course_id, side:c.side })),
-    ...ANKI_PRIVATE.map(c=>({ id:c.id, front:c.front, back:c.back, course:c.course, side:c.side })),
-  ];
-  const cards = ids.map(id=>all.find(c=>c.id===id)).filter(Boolean);
-  return `
-  <button class="back-btn" onclick="go('home',{homeTab:'anki'})"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> الرئيسية</button>
-  <div class="section-title"><h2>أتممت بطاقات اليوم 🎉</h2><span class="hint">البطاقات التي لم تُتقنها اليوم</span></div>
-  ${cards.length===0 ? `<p class="hint">لا توجد بطاقات "مجددًا" اليوم — أتقنت كل شيء!</p>` : `
-  <div class="anki-list">
-    ${cards.map(c=>`<div class="anki-list-item"><div class="anki-list-front">${c.front}</div></div>`).join('')}
-  </div>
-  <button class="btn-primary" style="width:100%; margin-top:14px;" onclick="reviewAgainBucket()">مراجعة هذه البطاقات الآن</button>
-  `}
-  `;
-}
-function reviewAgainBucket(){
-  const ids = ANKI_STATE['anki_again_'+ankiTodayKey()] || [];
-  const all = [
-    ...ANKI_CARDS.map(c=>({ id:c.id, front:c.front, back:c.back, course:c.course_id, side:c.side })),
-    ...ANKI_PRIVATE.map(c=>({ id:c.id, front:c.front, back:c.back, course:c.course, side:c.side })),
-  ];
-  const queue = ids.map(id=>all.find(c=>c.id===id)).filter(Boolean);
-  if(!queue.length) return;
-  go('ankiReview', { ankiQueue:queue, ankiQueueIndex:0, ankiRevealed:false });
-}
-function renderAnkiStats(){
-  const course = ANKI_COURSES.find(c=>c.id===state.ankiCourseId) || {name:''};
-  const todayLog = ANKI_LOG.filter(l=>l.course===state.ankiCourseId && new Date(l.ts).toDateString()===new Date().toDateString());
-  const correct = todayLog.filter(l=>l.rating!=='again').length;
-  const pct = todayLog.length ? Math.round(correct/todayLog.length*100) : 0;
-  const deck = [...ankiDeck(state.ankiCourseId,'matn'), ...ankiDeck(state.ankiCourseId,'sharh')];
-  const forecast = [0,0,0,0,0,0,0];
-  deck.forEach(c=>{
-    const cs = ankiCardState(c.id);
-    if(cs.suspended || cs.status==='new' || !cs.due) return;
-    const daysAhead = Math.floor((cs.due - Date.now())/86400000);
-    if(daysAhead>=0 && daysAhead<7) forecast[daysAhead]++;
-  });
-  const maxF = Math.max(1, ...forecast);
-  const counts = ankiCourseCounts(state.ankiCourseId);
-  const totalTypes = counts.new+counts.learning+counts.mastered || 1;
-  const p1 = Math.round(counts.new/totalTypes*100);
-  const p2 = Math.round(counts.learning/totalTypes*100);
-  return `
-  <button class="back-btn" onclick="go('ankiCourse',{ankiCourseId:'${state.ankiCourseId}'})"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> رجوع</button>
-  <div class="section-title"><h2>إحصاءات ${course.name}</h2></div>
-  <div class="panel">
-    <div class="anki-stats-title">اليوم</div>
-    <div class="anki-stats-line">البطاقات المُراجَعة: <b>${todayLog.length}</b></div>
-    <div class="anki-stats-line">الإجابات الصحيحة: <b>%${toArabicDigits(pct)}</b></div>
-  </div>
-  <div class="panel" style="margin-top:12px;">
-    <div class="anki-stats-title">المستحقّة قادمًا (٧ أيام)</div>
-    <div class="anki-forecast">
-      ${forecast.map(v=>`<div class="anki-forecast-bar" style="height:${Math.max(2,Math.round(v/maxF*100))}%"></div>`).join('')}
-    </div>
-  </div>
-  <div class="panel" style="margin-top:12px;">
-    <div class="anki-stats-title">أنواع البطاقات</div>
-    <div class="anki-pie-row">
-      <div class="anki-pie" style="background:conic-gradient(var(--ink-soft) 0% ${p1}%, var(--danger) ${p1}% ${p1+p2}%, var(--good) ${p1+p2}% 100%);"></div>
-      <div class="anki-pie-legend">
-        <div><i class="anki-dot anki-dot-new"></i>جديدة — ${counts.new}</div>
-        <div><i class="anki-dot anki-dot-learn"></i>قيد التعلّم — ${counts.learning}</div>
-        <div><i class="anki-dot anki-dot-mastered"></i>متقنة — ${counts.mastered}</div>
-      </div>
-    </div>
-  </div>
-  `;
-}
-function openAnkiAdd(courseId, side){ state.modal='anki-add'; state.ankiAddCourse=courseId; state.ankiAddSide=side; render(); }
-function ankiFabAdd(){
-  const courseId = state.ankiCourseId;
-  if(!courseId) return;
-  const current = Array.isArray(state.ankiQueue) ? state.ankiQueue[state.ankiQueueIndex||0] : null;
-  const side = (current && current.side) || state.ankiSide || 'matn';
-  openAnkiAdd(courseId, side);
-}
-function openAnkiDeleteConfirm(cardId){ state.modal='anki-delete'; state.ankiDeleteId=cardId; render(); }
-async function confirmAnkiDelete(){
-  const id = state.ankiDeleteId;
-  if(id && !ANKI_HIDDEN.includes(id)){
-    ANKI_HIDDEN.push(id);
-    await saveAnkiHidden();
-  }
-  state.modal=null; state.ankiDeleteId=null;
-  if(state.view==='ankiReview' && Array.isArray(state.ankiQueue)){
-    const idx = state.ankiQueueIndex||0;
-    if(state.ankiQueue[idx] && state.ankiQueue[idx].id===id){
-      state.ankiQueue = state.ankiQueue.slice(0, idx).concat(state.ankiQueue.slice(idx+1));
-      state.ankiRevealed = false;
-    }
-  }
-  render();
-  showToast('تم حذف البطاقة من عندك');
-}
-function renderAnkiDeleteModal(){
-  return `
-  <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
-    <div class="modal-card">
-      <h3>حذف البطاقة؟</h3>
-      <p class="sub-note">ستُحذف من عندك فقط ولن تظهر لك مجددًا. هذا الإجراء لا يمكن التراجع عنه.</p>
-      <div style="display:flex; gap:8px; margin-top:14px;">
-        <button class="btn-ghost" style="flex:1;" onclick="closeModal()">إلغاء</button>
-        <button class="btn-primary" style="flex:1; background:var(--danger);" onclick="confirmAnkiDelete()">حذف نهائي من عندي</button>
-      </div>
-    </div>
-  </div>`;
-}
-function renderAnkiAddModal(){
-  const course = ANKI_COURSES.find(c=>c.id===state.ankiAddCourse);
-  return `
-  <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
-    <div class="modal-card">
-      <button class="btn-ghost btn-sm modal-close" onclick="closeModal()" style="border-radius:50%; width:32px; height:32px; padding:0;">✕</button>
-      <h3>إضافة بطاقة — ${course?course.name:''}</h3>
-      <div class="field">
-        <label>القسم</label>
-        <select id="aa-side">
-          <option value="matn" ${state.ankiAddSide==='matn'?'selected':''}>المتن</option>
-          <option value="sharh" ${state.ankiAddSide==='sharh'?'selected':''}>الشرح</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>وجه البطاقة (السؤال)</label>
-        <textarea id="aa-front" rows="2"></textarea>
-      </div>
-      <div class="field">
-        <label>ظهر البطاقة (الإجابة)</label>
-        <textarea id="aa-back" rows="3"></textarea>
-      </div>
-      <div class="field">
-        <label>النوع</label>
-        <select id="aa-visibility">
-          <option value="private">خاص (تظهر لك فقط، وتُحسب ضمن مراجعتك)</option>
-          <option value="public">عام (تُرسَل لإضافات المجتمع بانتظار اعتمادها)</option>
-        </select>
-      </div>
-      <button class="btn-primary" style="width:100%; margin-top:10px;" onclick="submitAnkiAdd()">إضافة</button>
-    </div>
-  </div>`;
-}
-async function submitAnkiAdd(){
-  const side = document.getElementById('aa-side').value;
-  const front = document.getElementById('aa-front').value.trim();
-  const back = document.getElementById('aa-back').value.trim();
-  const vis = document.getElementById('aa-visibility').value;
-  if(!front || !back){ showToast('أكمل وجه وظهر البطاقة'); return; }
-  const course = state.ankiAddCourse;
-  if(vis==='private'){
-    const id = 'local_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
-    ANKI_PRIVATE.push({ id, course, side, front, back });
-    await saveAnkiPrivate();
-    closeModal();
-    showToast('أُضيفت البطاقة عندك');
-  }else{
-    try{
-      const { error } = await sb.from('anki_submitted_cards').insert({ course_id:course, side, front, back });
-      if(error) throw error;
-      closeModal();
-      showToast('أُرسلت للمراجعة قبل اعتمادها للجميع');
-    }catch(e){
-      console.error('submitAnkiAdd', e);
-      showToast('تعذّر الإرسال، حاول مجددًا');
-    }
   }
 }
 
@@ -2043,21 +1447,9 @@ function render(){
   else if(state.view==='favorites') html = renderFavoritesShell();
   else if(state.view==='progress') html = renderProgressShell();
   else if(state.view==='references') html = renderReferences();
-  else if(state.view==='ankiCourse') html = renderAnkiCoursePage();
-  else if(state.view==='ankiReview') html = renderAnkiReview();
-  else if(state.view==='ankiAgain') html = renderAnkiAgainBucket();
-  else if(state.view==='ankiStats') html = renderAnkiStats();
 
   html += `<div class="footer-note">مبادرة مستقلة غير تابعة لإدارة البرنامج<br><span class="pill-note">ساعة علم وساعة عمل</span></div>`;
   app.innerHTML = html;
-
-  const ankiCourseViews = ['ankiCourse','ankiReview','ankiAgain','ankiStats'];
-  const inAnkiHome = state.view==='home' && state.homeTab==='anki';
-  const inAnkiCourse = ankiCourseViews.includes(state.view);
-  const qFab = document.getElementById('fab-question');
-  const aFab = document.getElementById('fab-anki-add');
-  if(qFab) qFab.style.display = (inAnkiHome || inAnkiCourse) ? 'none' : '';
-  if(aFab) aFab.style.display = inAnkiCourse ? '' : 'none';
 
   const toastRoot = document.getElementById('toast-root');
   if(state.toast){
@@ -2124,11 +1516,6 @@ function renderHome(){
   </div>
   <div id="home-reset-area"></div>
 
-  <div class="hometab-toggle">
-    <button class="hometab-btn ${state.homeTab!=='anki'?'active':''}" onclick="setHomeTab('courses')">المقررات</button>
-    <button class="hometab-btn ${state.homeTab==='anki'?'active':''}" onclick="setHomeTab('anki')">Anki</button>
-  </div>
-  ${state.homeTab==='anki' ? renderAnkiCoursesGrid() : `
   <div class="section-title"><h2>المقررات</h2><span class="hint">اختر مقررًا لبدء الاختبار</span></div>
   <div class="courses-grid">
     ${COURSES.map(c=>`
@@ -2148,7 +1535,6 @@ function renderHome(){
       </div>
     `).join('')}
   </div>
-  `}
   `;
 }
 async function hydrateQuestionCounts(){
@@ -4692,8 +4078,6 @@ function renderModal(){
   if(state.modal === 'set-name'){ root.innerHTML = renderSetNameModal(); return; }
   if(state.modal === 'howto'){ root.innerHTML = renderHowToModal(); return; }
   if(state.modal === 'day-card'){ root.innerHTML = renderDayCardModal(state.modalDate); return; }
-  if(state.modal === 'anki-add'){ root.innerHTML = renderAnkiAddModal(); return; }
-  if(state.modal === 'anki-delete'){ root.innerHTML = renderAnkiDeleteModal(); return; }
   if(state.modal !== 'add-question'){ root.innerHTML = ''; return; }
   root.innerHTML = `
     <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
@@ -5078,7 +4462,6 @@ function manualPlaySplash(){
 renderSplash();
 (async function initApp(){
   await loadCoursesFromSupabase();
-  await initAnkiData();
   render();
   loadDeviceName().then(n=>{ state.deviceName = n; hydrateOwnerNameRow(); });
   setupRealtimeSync();
