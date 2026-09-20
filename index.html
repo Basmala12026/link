@@ -3091,7 +3091,7 @@ async function hydrateReferences(){
 
 /* ============================ مهامي (TASKS) ============================ */
 const TASKS_START = '2026-08-12';
-const TASKS_END = '2026-09-16';
+const TASKS_END = '2026-09-24';
 function buildDateRange(startStr, endStr){
   const days = [];
   let d = new Date(startStr+'T12:00:00');
@@ -3218,7 +3218,14 @@ function renderTasks(){
   const completedDays = TASKS_DAYS.filter(d => dowOf(d)!==6 && isDayComplete(d)).length;
   const streak = computeTasksStreak();
   const idxToday = TASKS_DAYS.indexOf(todayStr());
-  const remaining = idxToday>=0 ? Math.max(0, TASKS_DAYS.length - idxToday - 1) : TASKS_DAYS.length;
+  let remaining;
+  if(idxToday>=0){
+    remaining = Math.max(0, TASKS_DAYS.length - idxToday - 1);
+  } else if(todayStr() > TASKS_END){
+    remaining = 0;
+  } else {
+    remaining = TASKS_DAYS.length;
+  }
   return `
     <div class="section-title"><h2>مهامي</h2><span class="hint">ساعة علم وساعة عمل يوميًا</span></div>
     <div class="tasks-stats-bar">
