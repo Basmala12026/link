@@ -765,6 +765,188 @@
     .task-check input[type=checkbox]{ width:19px; height:19px; }
     .daycard-foot{ padding:11px 14px 14px; }
   }
+
+  /* ============================ تبويب المراجعة ============================ */
+  /* تبويبان بلا خلفية بيضاء؛ النشط زيتي */
+  .home-tabs{ display:flex; gap:4px; padding:0 2px; margin:4px 0 12px; background:transparent; }
+  .home-tab{ border:none; background:transparent; color:var(--ink-soft); padding:8px 22px; border-radius:999px; font-weight:800; font-size:13.5px; font-family:inherit; cursor:pointer; transition:background .18s,color .18s; }
+  .home-tab:not(.active):hover{ color:var(--sage-deep); }
+  .home-tab.active{ background:var(--sage); color:#fff; }
+
+  /* شريط إحصائيات الجميع (زيتي) متصل بالمستطيل الذي تحته */
+  .rv-strip{ display:grid; grid-template-columns:repeat(3,1fr); align-items:center; background:var(--sage); color:#fff; border-radius:var(--radius) var(--radius) 0 0; padding:12px 4px; margin-bottom:0; }
+  .rv-strip-item{ text-align:center; padding:0 6px; min-width:0; }
+  .rv-strip-item + .rv-strip-item{ border-inline-start:1px solid rgba(255,255,255,.25); }
+  .rv-strip-item .num{ font-size:17px; font-weight:900; font-variant-numeric:tabular-nums; line-height:1.4; }
+  .rv-strip-item .num.rv-strip-name{ font-size:13.5px; line-height:1.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rv-strip-item .lbl{ font-size:10.5px; font-weight:700; opacity:.88; margin-top:2px; line-height:1.4; }
+
+  /* رمزا الهدف والمقارنة: صغيران، بجانب بعض، في أعلى اليسار خارج الشريط */
+  .home-tabs{ align-items:center; }
+  .home-tools{ margin-inline-start:auto; display:flex; gap:6px; padding-inline-end:2px; }
+  .rv-tool{ position:relative; width:26px; height:26px; border-radius:50%; border:none; background:var(--sage-pale-2); display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; transition:background .15s; }
+  .rv-tool:hover{ background:var(--sage-pale); }
+  .rv-tool.ring{ background:conic-gradient(var(--sage) calc(var(--p) * 1%), var(--sage-pale) 0); }
+  .rv-tool.ring::before{ content:""; position:absolute; inset:2.5px; border-radius:50%; background:var(--cream); }
+  .rv-tool svg{ position:relative; width:13px; height:13px; stroke:var(--sage-deep); fill:none; }
+
+  /* مستطيل المهمة / الصعبة: بعرض الصفحة وبطول نحيف */
+  .rv-flagbox{ display:flex; align-items:stretch; background:var(--card); border:1.5px solid var(--sage-pale); border-top:none; border-radius:0 0 var(--radius) var(--radius); box-shadow:var(--shadow); margin-bottom:14px; overflow:hidden; }
+  .rv-flagbox-half{ flex:1; border:none; background:transparent; font-family:inherit; display:flex; align-items:center; gap:9px; padding:7px 14px; cursor:pointer; transition:.15s; min-width:0; }
+  .rv-flagbox-half:hover{ background:var(--sage-pale-2); }
+  .rv-flagbox-half b{ font-size:14px; color:var(--sage-deep); font-weight:900; white-space:nowrap; }
+  .rv-flagbox-sep{ width:1.5px; background:var(--sage-pale); flex:none; }
+  .rv-flagbox-ico{ width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none; }
+  .rv-flagbox-ico svg{ width:17px; height:17px; fill:none; stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+  .rv-flagbox-half.important .rv-flagbox-ico{ background:#F6ECC9; } .rv-flagbox-half.important svg{ stroke:#B8860B; fill:#F2D27A; }
+  .rv-flagbox-half.hard .rv-flagbox-ico{ background:#FBE3D6; } .rv-flagbox-half.hard svg{ stroke:#C2492B; fill:none; }
+  .rv-count{ font-weight:900; font-size:11.5px; color:var(--sage-deep); background:var(--sage-pale-2); border-radius:999px; min-width:22px; text-align:center; padding:2px 7px; flex:none; margin-inline-start:auto; }
+  .rv-mini-i{ width:13px; height:13px; flex:none; vertical-align:-2px; }
+  .rv-tiny{ display:flex; gap:7px; font-size:8.5px; font-weight:800; color:var(--ink-soft); } .rv-tiny span{ display:inline-flex; align-items:center; gap:2px; } .rv-tiny .rv-mini-i{ width:7px; height:7px; vertical-align:0; }
+  .rv-stat .lbl .rv-mini-i{ width:16px; height:16px; vertical-align:-3px; }
+
+  /* البطاقات المهمة/الصعبة: مربعات صغيرة مجمّعة حسب المقرر */
+  .rv-group-title{ display:flex; align-items:center; gap:8px; margin:16px 0 8px; font-size:13.5px; font-weight:900; color:var(--sage-deep); }
+  .rv-group-title .rv-count{ margin-inline-start:0; }
+  .rv-sq-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(86px,1fr)); gap:8px; }
+  .rv-sq{ position:relative; aspect-ratio:1/1; background:var(--cream); border:1px solid var(--sage-pale); border-radius:12px; padding:8px 7px 6px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer; transition:.15s; overflow:hidden; }
+  .rv-sq:hover{ border-color:var(--sage); transform:translateY(-2px); box-shadow:var(--shadow); }
+  .rv-sq .rv-badges{ position:absolute; top:5px; left:5px; }
+  .rv-sq .rv-badge{ width:17px; height:17px; } .rv-sq .rv-badge svg{ width:10px; height:10px; }
+  .rv-sq-text{ font-size:10.5px; font-weight:700; line-height:1.55; color:var(--ink); display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; margin-top:12px; white-space:pre-line; }
+  .rv-sq-foot{ font-size:9.5px; font-weight:800; color:var(--sage); }
+
+  .rv-lesson-num{ font-weight:900; font-size:16px; color:var(--sage-deep); }
+  .rv-lessons{ margin-top:12px; }
+  .rv-svg-i{ width:1.15em; height:1.15em; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vertical-align:-3px; }
+  .rv-done-ico{ width:54px; height:54px; margin:0 auto 8px; color:#4F7A3A; } .rv-done-ico svg{ width:54px; height:54px; fill:none; stroke:#4F7A3A; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+
+  .rv-empty{ text-align:center; color:var(--ink-soft); font-size:13.5px; line-height:2; padding:26px 8px 10px; margin:0; }
+
+  /* صفحة الدرس: صفوف الأشكال */
+  .rv-mode-row{ border:1.5px solid var(--sage-pale); border-radius:14px; padding:13px 14px; margin-top:12px; background:var(--cream); }
+  .rv-mode-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+  .rv-mode-head b{ font-size:15px; color:var(--sage-deep); font-weight:900; }
+  .rv-mode-n{ font-size:11.5px; color:var(--ink-soft); font-weight:700; }
+  .rv-mini-counts{ display:flex; flex-wrap:wrap; gap:6px 14px; font-size:12px; color:var(--ink-soft); margin-bottom:7px; }
+  .rv-mini-counts b{ color:var(--sage-deep); font-variant-numeric:tabular-nums; }
+  .rv-mini-counts .ok b{ color:#4F7A3A; } .rv-mini-counts .bad b{ color:#A5472F; }
+  .rv-mode-actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:11px; }
+
+  /* قائمة البطاقات المهمة / الصعبة */
+  .rv-ico-important svg{ stroke:#A9810E !important; fill:#E9C65A !important; }
+  .rv-ico-hard svg{ stroke:#A5472F !important; fill:none !important; }
+
+  /* شاشة المراجعة */
+  .rv-study-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+  .rv-study-head h2{ margin:0; font-size:16px; color:var(--sage-deep); }
+  .rv-stats{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:12px; }
+  .rv-stat{ background:var(--sage-pale-2); border-radius:12px; padding:8px 4px; text-align:center; }
+  .rv-stat .num{ font-size:17px; font-weight:900; color:var(--sage-deep); font-variant-numeric:tabular-nums; }
+  .rv-stat .lbl{ font-size:10.5px; color:var(--ink-soft); font-weight:800; }
+  .rv-stat.ok .num{ color:#4F7A3A; } .rv-stat.bad .num{ color:#A5472F; }
+
+  .rv-card-bar{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .rv-card-pos{ font-size:12.5px; font-weight:800; color:var(--ink-soft); }
+  .rv-card-bar .rv-flag-tools{ margin-inline-start:auto; }
+  .rv-flag-tools{ display:flex; gap:6px; flex:none; }
+  .rv-flag-btn{ width:36px; height:36px; border-radius:50%; border:1.5px solid var(--sage-pale); background:var(--card); display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; transition:.15s; }
+  .rv-flag-btn svg{ width:19px; height:19px; fill:none; stroke:var(--ink-soft); stroke-width:1.8; stroke-linejoin:round; stroke-linecap:round; }
+  .rv-flag-btn:active{ transform:scale(.92); }
+  .rv-flag-btn.important.on{ background:#F6ECC9; border-color:#E2C063; } .rv-flag-btn.important.on svg{ stroke:#A9810E; fill:#E9C65A; }
+  .rv-flag-btn.hard.on{ background:#F4DDD4; border-color:#DDA08C; } .rv-flag-btn.hard.on svg{ stroke:#A5472F; fill:none; }
+  .rv-badges{ display:inline-flex; gap:4px; }
+  .rv-badge{ width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; }
+  .rv-badge svg{ width:14px; height:14px; fill:none; stroke-width:1.8; stroke-linejoin:round; stroke-linecap:round; }
+  .rv-badge.important{ background:#F6ECC9; } .rv-badge.important svg{ stroke:#A9810E; fill:#E9C65A; }
+  .rv-badge.hard{ background:#F4DDD4; } .rv-badge.hard svg{ stroke:#A5472F; fill:none; }
+
+  .rv-stack{ display:flex; flex-direction:column; gap:10px; cursor:pointer; }
+  .rv-face, .rv-cloze-card{ position:relative; background:var(--cream); border:1.5px solid var(--sage-pale); border-radius:18px; padding:14px 18px 28px; min-height:210px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; box-shadow:var(--shadow); }
+  .rv-face{ min-height:150px; }
+  .rv-back{ min-height:96px; padding:22px 20px; background:var(--sage-pale-2); border-color:var(--sage); animation:rvAnsIn .25s ease; cursor:default; }
+  @keyframes rvAnsIn{ from{ opacity:0; transform:translateY(-8px); } to{ opacity:1; transform:none; } }
+  .rv-cloze-card{ cursor:pointer; }
+  .rv-cloze-card.revealed{ background:var(--sage-pale-2); border-color:var(--sage); cursor:default; }
+  .rv-face-label{ position:absolute; top:11px; right:14px; font-size:10.5px; font-weight:800; color:var(--sage); letter-spacing:.4px; }
+  .rv-text{ font-size:18px; font-weight:700; color:var(--ink); line-height:2.1; white-space:pre-line; word-break:break-word; }
+  .rv-tap{ position:absolute; bottom:9px; left:0; right:0; font-size:11px; color:var(--ink-soft); }
+  .rv-blank{ display:inline-block; min-width:74px; height:1.05em; border-bottom:2.5px solid var(--sage); margin:0 5px; vertical-align:-2px; }
+  .rv-ans{ background:var(--sage); color:#fff; border-radius:8px; padding:1px 9px; margin:0 3px; font-weight:800; }
+  .rv-ans-box{ margin-top:12px; background:var(--sage); color:#fff; border-radius:10px; padding:8px 14px; font-weight:800; font-size:16px; white-space:pre-line; }
+
+  .rv-actions{ display:flex; gap:10px; margin-top:14px; }
+  .rv-actions .btn{ flex:1; padding:14px 10px; font-size:15px; }
+  .rv-btn-right{ background:#5F8A47; color:#fff; box-shadow:var(--shadow); } .rv-btn-right:hover{ background:#4F7A3A; }
+  .rv-btn-wrong{ background:#B5543A; color:#fff; box-shadow:var(--shadow); } .rv-btn-wrong:hover{ background:#A5472F; }
+  .rv-prev{ display:block; margin:12px auto 0; background:none; border:none; color:var(--ink-soft); font-family:inherit; font-size:12.5px; font-weight:700; cursor:pointer; text-decoration:underline; }
+  .rv-done{ text-align:center; padding:26px 8px 8px; }
+  .rv-done-title{ font-size:19px; font-weight:900; color:var(--sage-deep); margin-bottom:6px; }
+  .rv-done p{ color:var(--ink-soft); font-size:13.5px; margin:0 0 4px; }
+
+
+  /* علامة «أُتمّ بلا خطأ» على مربع الدرس (خاصة بالمستخدم) */
+  .rv-perfect{ position:absolute; top:6px; left:6px; width:19px; height:19px; color:var(--sage); display:flex; }
+  .rv-perfect svg{ width:19px; height:19px; }
+  /* ملخص النهاية بالأشكال فقط */
+  .rv-done-sum{ display:flex; justify-content:center; gap:18px; font-size:17px; font-weight:900; color:var(--sage-deep); margin:2px 0 10px !important; }
+  .rv-done-sum span{ display:inline-flex; align-items:center; gap:6px; } .rv-done-sum .rv-mini-i{ width:18px; height:18px; }
+  /* صفحة المهمة/الصعبة: زر مراجعة الكل + حذف أسفل كل مربع */
+  .rv-all-row{ display:flex; gap:8px; margin:0 0 4px; }
+  .rv-all-btn{ flex:1; padding:13px 10px; font-size:15px; }
+  .rv-all-reset{ flex:none; padding:13px 16px; }
+  .rv-sqw{ display:flex; flex-direction:column; align-items:center; gap:2px; min-width:0; }
+  .rv-sqw .rv-sq{ width:100%; }
+  .rv-sq-del{ background:transparent; border:none; color:var(--ink-soft); border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; }
+  .rv-sq-del svg{ width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:1.8; }
+  .rv-sq-del:hover{ background:var(--danger-bg); color:var(--danger); }
+
+  /* زر «تم» (علامة صح) */
+  .rv-ok-btn{ min-width:76px; }
+  .rv-tick{ width:22px; height:22px; fill:none; stroke:#fff; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+  .rv-mini-ln{ width:12px; height:12px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vertical-align:-2px; flex:none; }
+  .rv-best{ display:inline-flex; align-items:center; gap:3px; font-size:9.5px; font-weight:900; color:var(--sage-deep); }
+  .rv-best .rv-mini-ln{ width:10px; height:10px; }
+  .rv-goal, .rv-goal-empty{ display:block; width:100%; box-sizing:border-box; background:var(--card); border:1.5px solid var(--sage-pale); border-radius:var(--radius); padding:10px 13px 11px; margin-bottom:14px; box-shadow:var(--shadow); text-align:right; }
+  .rv-goal-empty{ display:flex; align-items:center; justify-content:center; gap:8px; border-style:dashed; color:var(--sage-deep); font-family:inherit; font-weight:800; font-size:13px; cursor:pointer; background:transparent; box-shadow:none; }
+  .rv-goal-empty .rv-mini-ln{ width:16px; height:16px; }
+  .rv-goal-top{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .rv-goal-ttl{ display:inline-flex; align-items:center; gap:6px; font-weight:900; font-size:13px; color:var(--sage-deep); }
+  .rv-goal-ttl .rv-mini-ln{ width:15px; height:15px; }
+  .rv-goal-num{ margin-inline-start:auto; display:inline-flex; align-items:center; gap:4px; font-weight:900; font-size:13px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+  .rv-goal-num.done{ color:#4F7A3A; } .rv-goal-num svg{ width:15px; height:15px; fill:none; stroke:#4F7A3A; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .rv-goal-edit{ background:transparent; border:none; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer; color:var(--ink-soft); }
+  .rv-goal-edit svg{ width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:1.8; } .rv-goal-edit:hover{ background:var(--sage-pale-2); color:var(--sage-deep); }
+  .rv-goal-input{ width:100%; box-sizing:border-box; border:1.5px solid var(--sage-pale); border-radius:12px; padding:11px 12px; font-size:16px; font-family:inherit; text-align:center; background:var(--cream); color:var(--ink); margin:4px 0 10px; }
+  .rv-goal-chips{ display:flex; gap:8px; justify-content:center; margin-bottom:6px; }
+  .rv-chip{ border:1.5px solid var(--sage-pale); background:var(--card); border-radius:999px; padding:5px 14px; font-family:inherit; font-weight:800; font-size:13px; color:var(--sage-deep); cursor:pointer; }
+  .rv-link-btn{ display:inline-flex; align-items:center; gap:5px; background:transparent; border:none; font-family:inherit; font-weight:800; font-size:12px; color:var(--sage-deep); cursor:pointer; padding:4px 2px; }
+  .rv-cmp-row{ display:flex; gap:11px; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--sage-pale-2); }
+  .rv-cmp-rank{ width:28px; height:28px; border-radius:50%; background:var(--sage-pale-2); color:var(--sage-deep); font-weight:900; font-size:13px; display:flex; align-items:center; justify-content:center; flex:none; margin-top:1px; }
+  .rv-cmp-main{ flex:1; min-width:0; }
+  .rv-cmp-top{ display:flex; align-items:center; gap:7px; margin-bottom:7px; flex-wrap:wrap; }
+  .rv-cmp-top b{ font-size:14.5px; color:var(--sage-deep); font-weight:900; }
+  .rv-cmp-pct{ margin-inline-start:auto; font-weight:900; font-size:14px; color:var(--sage-deep); }
+  .rv-cmp-tag{ display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:800; padding:2px 8px; border-radius:999px; }
+  .rv-cmp-tag .rv-mini-ln{ width:11px; height:11px; }
+  .rv-cmp-tag.best{ background:#F6ECC9; color:#9A730A; } .rv-cmp-tag.weak{ background:#FBE3D6; color:#B2401F; }
+  .rv-cmp-meta{ display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:8px; font-size:11px; color:var(--ink-soft); font-weight:700; }
+  .rv-cmp-meta span{ display:inline-flex; align-items:center; gap:4px; }
+  .rv-perfect-i{ display:inline-flex; width:12px; height:12px; color:var(--sage); } .rv-perfect-i svg{ width:12px; height:12px; }
+  .rv-cmp-rest{ display:flex; flex-wrap:wrap; gap:6px; } .rv-cmp-chip{ background:var(--sage-pale-2); color:var(--ink-soft); border-radius:999px; padding:4px 12px; font-size:12px; font-weight:800; }
+
+  /* تقدّم الهدف داخل نافذة الهدف */
+  .rv-goal-prog{ margin:2px 0 12px; }
+  .rv-goal-line{ display:flex; align-items:center; justify-content:center; gap:5px; margin-top:7px; font-size:12.5px; font-weight:800; color:var(--ink-soft); }
+  .rv-goal-line.done{ color:#4F7A3A; } .rv-goal-line svg{ width:15px; height:15px; fill:none; stroke:#4F7A3A; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* مجموعة البطاقة وعنوان الباب */
+  .rv-group-cap{ text-align:center; font-size:11.5px; font-weight:800; color:var(--ink-soft); margin:0 0 8px; line-height:1.6; }
+  .rv-card-h{ align-self:center; font-size:11px; font-weight:800; color:var(--sage-deep); background:var(--sage-pale-2); border-radius:999px; padding:3px 12px; margin-bottom:12px; }
+
+  /* عنوان المجموعة أعلى البطاقة + جسم البطاقة */
+  .rv-card-title{ align-self:stretch; text-align:center; font-size:12.5px; font-weight:900; color:var(--sage-deep); line-height:1.6; padding-bottom:9px; border-bottom:1px dashed var(--sage-pale); }
+  .rv-body{ flex:1; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px 0 14px; }
 </style>
 </head>
 <body>
@@ -1046,6 +1228,12 @@ let state = {
   modal:null,
   showSplash:true,
   deviceName:null,
+  homeTab:'questions',   /* تبويب الصفحة الرئيسية: questions = أسئلة، review = بطاقات مراجعة */
+  rvCourseId:null,
+  rvLessonId:null,
+  rvFlagKind:null,
+  rvResetKey:null,
+  rv:null,
 };
 
 function setView(v, extra={}){ state = {...state, view:v, ...extra}; render(); window.scrollTo({top:0, behavior:'smooth'}); }
@@ -1058,6 +1246,863 @@ function go(v, extra={}){
       openDayModal(t);
     }
   }
+}
+
+/* ============================ المراجعة (بطاقات الدروس) ============================ */
+/* تبويب «مراجعة»: لكل مقرر مجموعة دروس، ولكل درس بطاقات تخرج للطالب بشكلين:
+   «وجه وقفا» و«إكمال الفراغ».
+
+   نصوص الدروس والبطاقات تُنقل حرفيًا من الملفات التي يرسلها صاحب الموقع،
+   دون إعادة صياغة. تُضاف هنا بهذه الصيغة :
+
+   REVIEW_DATA['aqeedah'] = [   // المفاتيح: bidayat-alabid / ajrumiyyah / aqeedah / seerah / tuhfat-alatfal
+     { id:'1', title:'عنوان الدرس',
+       cards:[
+         { t:'flip',  f:'نص الوجه', b:'نص القفا' },
+         { t:'cloze', f:'نص فيه …… فراغ', b:'الإجابة' },
+         // أكثر من فراغ: افصل الإجابات بالرمز | بنفس ترتيب الفراغات
+         { t:'cloze', f:'…… و …… ', b:'الأولى|الثانية' },
+       ] },
+   ];
+
+   • اختياري: g:'اسم المجموعة' يظهر فوق البطاقة، وh:'عنوان الباب' يظهر أعلى البطاقة.
+   • علامة الفراغ في النص: ……
+   • تقدّم الطالب والبطاقات المهمة/الصعبة تُحفظ في متصفح جهازه (localStorage). */
+const REVIEW_DATA = {};
+
+/* مقررات المراجعة (ثابتة): المفتاح يُستعمل في REVIEW_DATA */
+const REVIEW_COURSES = [
+  { id:'tuhfat-alatfal', name:'تحفة الأطفال', icon:'book' },
+  { id:'bidayat-alabid', name:'بداية العابد', icon:'crescent' },
+  { id:'ajrumiyyah',     name:'الأجرومية',    icon:'pen' },
+  { id:'aqeedah',        name:'العقيدة',      icon:'heart' },
+  { id:'seerah',         name:'السيرة',       icon:'path' },
+];
+
+/* تحفة الأطفال: ٤ دروس — النصوص منقولة حرفيًا من ملف البطاقات المرسل (بلا إعادة صياغة).
+   g = اسم المجموعة داخل الدرس، h = عنوان الباب أعلى البطاقة (إن وُجد).
+   بطاقة «إكمال»: موضع كل {{c1::…}} في الملف صار «……» في f، والكلمات المحذوفة في b مفصولة بـ | بنفس الترتيب. */
+REVIEW_DATA['tuhfat-alatfal'] = [
+  { id:"1", title:"الدرس الأول", cards:[
+    { t:"flip", g:"مقدمة الشيخ على متن تحفة الأطفال (ص١)", f:"ما المتن المختار في مادة التجويد ضمن برنامج بسملة؟", b:"«تحفة الأطفال والغلمان في تجويد القرآن» للشيخ سليمان الجمزوري -رحمه الله-." },
+    { t:"cloze", g:"مقدمة الشيخ على متن تحفة الأطفال (ص١)", f:"في مقدمة شرح تحفة الأطفال: للعلوم (ومنها التجويد) شِقٌّ …… وشِقٌّ …….", b:"نظري|عملي" },
+    { t:"flip", g:"مقدمة الشيخ على متن تحفة الأطفال (ص١)", f:"في مقدمة شرح تحفة الأطفال: لماذا لا يُكتفى بالجزء النظري؟ وماذا لا بد منه بعده؟", b:"لأن الاكتفاء به لا يجعل الإنسان مجوِّدًا، وإنما يفهم تصورًا أوليًّا عن البعد النظري، ثم لا بد بعد ذلك من الانطلاق والقراءة على الأشياخ." },
+    { t:"cloze", g:"مقدمة الشيخ على متن تحفة الأطفال (ص١)", f:"عدد أبيات تحفة الأطفال …… بيتًا، وبحرها …….", b:"٦١|الرَّجَز" },
+    { t:"cloze", g:"مقدمة الشيخ على متن تحفة الأطفال (ص١)", f:"يُقرأ متن تحفة الأطفال في هذا الشرح بتحقيق الشيخ …… -حفظه الله-.", b:"عبد المحسن القاسم" },
+    { t:"cloze", g:"مقدمة الشيخ على متن تحفة الأطفال (ص١)", f:"يُستفتح متن تحفة الأطفال بالبسملة لأمور ثلاثة: ……، و……، و…….", b:"للبركة|الاستعانة|الإشارة إلى أن القصيدة فيها خير وبِرّ" },
+    { t:"flip", g:"مقدمة الشيخ على متن تحفة الأطفال (ص١)", f:"في شرح استفتاح تحفة الأطفال بالبسملة: ما حكم تصدير الشعر الذي فيه ما لا يحسن بالبسملة عند الفقهاء، خاصة الحنابلة؟", b:"لا يجوز أن يُصدَّر بالبسملة، يحرم عندنا في المذهب." },
+    { t:"cloze", g:"البيت الأول «يقول راجي» (ص٢)", f:"البيت الأول من تحفة الأطفال: «يَقُولُ رَاجِي رَحمةِ الغَفُورِ ... ……»", b:"دَوْماً سُلَيْمَانُ هُوَ الْجَمْزُورِي" },
+    { t:"cloze", g:"البيت الأول «يقول راجي» (ص٢)", f:"في «يقول راجي رحمة الغفور» (البيت الأول من تحفة الأطفال): «راجي» معناها …… رحمة الله سبحانه وتعالى.", b:"مؤمّل" },
+    { t:"flip", g:"البيت الأول «يقول راجي» (ص٢)", f:"«يَقُولُ رَاجِي رَحمةِ الغَفُورِ ...» ما معنى «الغفور» في هذا البيت من تحفة الأطفال؟", b:"الذي كثُر عفوه ومغفرته." },
+    { t:"flip", g:"البيت الأول «يقول راجي» (ص٢)", f:"«يَقُولُ رَاجِي رَحمةِ الغَفُورِ ... دَوْماً سُلَيْمَانُ هُوَ الْجَمْزُورِي» ما معنى «دَوْماً» في هذا البيت؟", b:"أي دائمًا ومستمرًّا، هو دائمًا يرجو الله سبحانه وتعالى." },
+    { t:"flip", g:"البيت الأول «يقول راجي» (ص٢)", f:"«يَقُولُ رَاجِي رَحمةِ الغَفُورِ ...» مَن «راجي رحمة الغفور» في هذا البيت من تحفة الأطفال؟", b:"سليمان الجمزوري." },
+    { t:"flip", g:"البيت الأول «يقول راجي» (ص٢)", f:"«... دَوْماً سُلَيْمَانُ هُوَ الْجَمْزُورِي» «الجمزوري» نسبة إلى ماذا؟", b:"إلى جَمْزور؛ البلدة التي نُسب إليها." },
+    { t:"cloze", g:"البيت الثاني «الحمد لله» (ص٢)", f:"البيت الثاني من تحفة الأطفال: «الْحَمْدُ لِلَّهِ مُصَلِّياً عَلَى ... ……»", b:"مُحَمَّدٍ وآلِهِ وَمَنْ تَلاَ" },
+    { t:"flip", g:"البيت الثاني «الحمد لله» (ص٢)", f:"«الْحَمْدُ لِلَّهِ مُصَلِّياً عَلَى ...» لماذا بدأ الناظم تحفة الأطفال بـ«الحمد»؟", b:"اقتداءً بطريقة أهل العلم في افتتاح المؤلفات." },
+    { t:"flip", g:"البيت الثاني «الحمد لله» (ص٢)", f:"«الْحَمْدُ لِلَّهِ مُصَلِّياً عَلَى ...» ما معنى «الحمد» في هذا البيت؟", b:"الثناء على الله سبحانه وتعالى بما هو أهله." },
+    { t:"flip", g:"البيت الثاني «الحمد لله» (ص٢)", f:"«الْحَمْدُ لِلَّهِ مُصَلِّياً عَلَى ... مُحَمَّدٍ» ما معنى «مصلّيًا على محمد»؟", b:"داعيًا الله سبحانه وتعالى أن يصلي ويسلّم على نبينا محمد ﷺ." },
+    { t:"flip", g:"البيت الثاني «الحمد لله» (ص٢)", f:"«... مُحَمَّدٍ وآلِهِ وَمَنْ تَلاَ» ما معنى «الآل» في «وآله»؟", b:"معنًى يختلف بحسب السياق: أحيانًا بمعنى الأهل وقرابة النبي ﷺ، وأحيانًا بمعنى الأتباع." },
+    { t:"flip", g:"البيت الثاني «الحمد لله» (ص٢)", f:"«... مُحَمَّدٍ وآلِهِ وَمَنْ تَلاَ» ما معنى «تلا» في هذا البيت؟", b:"«تَلا» بمعنى تَبِع؛ أي مَن تبع النبي ﷺ." },
+    { t:"flip", g:"البيت الثاني «الحمد لله» (ص٢)", f:"«... مُحَمَّدٍ وآلِهِ وَمَنْ تَلاَ» إذا كان «تلا» بمعنى تبع (أتباع) فما المراد بـ«الآل» هنا؟", b:"قرابة النبي ﷺ وأهل بيته (بحسب السياق)." },
+    { t:"flip", g:"البيت الثاني «الحمد لله» (ص٢)", f:"«الْحَمْدُ لِلَّهِ مُصَلِّياً عَلَى ... مُحَمَّدٍ وآلِهِ وَمَنْ تَلاَ» أين تظهر براعة الاستهلال في هذا البيت؟ وما الإشارة التي تفيدها عن النظم؟", b:"في كلمة «تلا»: فهي تأتي بمعنى تبع، وتأتي أيضًا بمعنى التلاوة؛ فكأنه يشير إشارة خفية إلى أن هذا النظم له صلة بالتلاوة، وله صلة بالقرآن الكريم." },
+    { t:"flip", g:"البيت الثاني «الحمد لله» (ص٢)", f:"«الْحَمْدُ لِلَّهِ مُصَلِّياً عَلَى ... مُحَمَّدٍ وآلِهِ وَمَنْ تَلاَ» ما «براعة الاستهلال» عند البلاغيين؟ ومثّل لها بكلمة من هذا البيت.", b:"أن يشير الإنسان في مقدمته إلى مقصوده، لكن بإشارة خفية. ومثالها كلمة «تلا» في «وآله ومن تلا»؛ إذ تشير بمعنى التلاوة إلى صلة النظم بالقرآن." },
+    { t:"cloze", g:"البيت الثالث «وبعد» (ص٢–٣)", f:"البيت الثالث من تحفة الأطفال: «وَبَعْدُ هَذَا النَّظْمُ لِلْمُرِيدِ ... ……»", b:"فِي النُّونِ والتَّنْوِينِ وَالمُدُودِ" },
+    { t:"flip", g:"البيت الثالث «وبعد» (ص٢–٣)", f:"«وَبَعْدُ هَذَا النَّظْمُ لِلْمُرِيدِ ...» ما معنى «وبعدُ» في هذا البيت؟", b:"عبارة انتقال من المقدمة إلى المقصود." },
+    { t:"flip", g:"البيت الثالث «وبعد» (ص٢–٣)", f:"«وَبَعْدُ هَذَا النَّظْمُ لِلْمُرِيدِ ...» ما معاني كلمة «المريد»؟ وما المراد بها هنا؟", b:"تأتي بعدة معانٍ: الراغب (يعني من أراد) وعند أهل التصوف: طبقة من المقربين التلاميذ. والمراد هنا: لمن يريد تعلُّم التجويد، الراغب في تعلم التجويد." },
+    { t:"flip", g:"البيت الثالث «وبعد» (ص٢–٣)", f:"«وَبَعْدُ هَذَا النَّظْمُ لِلْمُرِيدِ ... فِي النُّونِ والتَّنْوِينِ وَالمُدُودِ» هل تقتصر تحفة الأطفال على النون والتنوين والمدود فقط؟", b:"لا؛ ذكرها من باب التمثيل وليس حصرًا." },
+    { t:"cloze", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"البيت الرابع من تحفة الأطفال: «سَمَّيْتُهُ بِـ\"تُحْفَةِ الأَطْفَالِ\" ... ……»", b:"عَنْ شَيْخِنَا \"الْمَيْهِيِّ\" ذِي الْكَمَالِ" },
+    { t:"flip", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"«سَمَّيْتُهُ بِـ\"تُحْفَةِ الأَطْفَالِ\" ...» ما معنى «التحفة» في هذا الاسم؟", b:"في أصلها الهدية." },
+    { t:"flip", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"«سَمَّيْتُهُ بِـ\"تُحْفَةِ الأَطْفَالِ\" ...» مَن المقصود بـ«الأطفال» في هذا الاسم؟", b:"الأطفال حقيقةً، أو المبتدئون في الطلب؛ فحتى لو كان إنسان قد تجاوز مرحلة الطفولة فهو في طفولته العلمية." },
+    { t:"flip", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"«سَمَّيْتُهُ بِـ\"تُحْفَةِ الأَطْفَالِ\" ...» ما الاسم الكامل لهذا النظم؟", b:"«تحفة الأطفال والغلمان في تجويد القرآن»." },
+    { t:"flip", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"«... عَنْ شَيْخِنَا \"الْمَيْهِيِّ\" ذِي الْكَمَالِ» ما اسم هذا الشيخ كاملًا؟ وما مكانته عند الناظم؟", b:"نور الدين علي بن عمر الميهي، وهو الذي تلقّى عنه الناظم التجويد، ومن أشهر شيوخ الجمزوري في القرآن والتجويد والقراءات." },
+    { t:"flip", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"«... عَنْ شَيْخِنَا \"الْمَيْهِيِّ\" ذِي الْكَمَالِ» ما المقصود بـ«ذي الكمال» في وصف الميهي؟", b:"الكمال البشري؛ فلا يقصد به العصمة، يعني من الأوصاف البشرية فلا تُحمّل ما لا تحتمل." },
+    { t:"cloze", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"البيت الخامس من تحفة الأطفال: «أَرْجُو بِهِ أَنْ يَنْفَعَ الطُّلاَّبَا ... ……»", b:"وَالأَجْرَ وَالْقَبُولَ وَالثَّوَابا" },
+    { t:"flip", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"«أَرْجُو بِهِ أَنْ يَنْفَعَ الطُّلاَّبَا ...» على ماذا تعود الهاء في «به»؟", b:"على النظم." },
+    { t:"flip", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"«أَرْجُو بِهِ أَنْ يَنْفَعَ الطُّلاَّبَا ...» ما أهم مهمات الشارح التي ذكرها الشيخ بدر آل مرعي عند شرح «أرجو به»؟", b:"كشف الضمائر، يعني جعلها ظاهرة." },
+    { t:"flip", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"«أَرْجُو بِهِ أَنْ يَنْفَعَ الطُّلاَّبَا ...» ما معنى «أرجو به أن ينفع الطلابا»؟", b:"آمُل بهذا النظم أن ينتفع به طلاب التجويد." },
+    { t:"flip", g:"تسمية النظم والشيخ والرجاء (ص٣)", f:"«... وَالأَجْرَ وَالْقَبُولَ وَالثَّوَابا» ما معنى هذا الشطر في آخر مقدمة تحفة الأطفال؟", b:"نسأل الله أن يقبله وأن يثيبه عليه." },
+    { t:"cloze", g:"أحكام النون الساكنة والتنوين: العدد (ص٤)", f:"أحكام النون الساكنة والتنوين: «لِلنُّونِ إِنْ تَسْكُنْ وَلِلتَّنْوِينِ ... ……»", b:"أَرْبَعُ أَحْكَامٍ فَخُذْ تَبْيِينِي" },
+    { t:"cloze", g:"أحكام النون الساكنة والتنوين: العدد (ص٤)", f:"أحكام النون الساكنة والتنوين أربعة: ……، و……، و……، و…….", b:"الإظهار|الإدغام|الإقلاب|الإخفاء" },
+    { t:"flip", g:"أحكام النون الساكنة والتنوين: العدد (ص٤)", f:"«لِلنُّونِ إِنْ تَسْكُنْ وَلِلتَّنْوِينِ ...» لماذا قال الناظم «وللتنوين» في أحكام النون الساكنة؟", b:"لأن التنوين يشارك النون الساكنة في الأحكام التي سيعرضها الناظم." },
+    { t:"cloze", g:"الإظهار الحلقي (ص٤)", f:"أحكام النون الساكنة (الإظهار): «فَالأَوَّلُ الإِظْهَارُ قَبْلَ أَحْرُفِ ... ……»", b:"لِلْحَلْقِ سِتٌّ رُتِّبَتْ فَلْتَعْرِفِ" },
+    { t:"cloze", g:"الإظهار الحلقي (ص٤)", f:"أحكام النون الساكنة (حروف الإظهار): «هَمْزٌ فَهَاءٌ ثُمَّ عَيْنٌ حَاءُ ... ……»", b:"مُهْمَلَتَانِ ثُمَّ غَيْنٌ خَاءُ" },
+    { t:"flip", g:"الإظهار الحلقي (ص٤)", f:"«فَالأَوَّلُ الإِظْهَارُ قَبْلَ أَحْرُفِ ...» ما تعريف الإظهار في أحكام النون الساكنة والتنوين؟", b:"نطق النون الساكنة والتنوين بوضوح من غير إدغام ولا إخفاء." },
+    { t:"cloze", g:"الإظهار الحلقي (ص٤)", f:"حروف الإظهار الحلقي ستة، تخرج من الحلق: ……، ……، ……، ……، ……، …….", b:"همز|هاء|عين|حاء|غين|خاء" },
+    { t:"flip", g:"الإظهار الحلقي (ص٤)", f:"«هَمْزٌ فَهَاءٌ ثُمَّ عَيْنٌ حَاءُ ... مُهْمَلَتَانِ ثُمَّ غَيْنٌ خَاءُ» في حروف الإظهار الحلقي: لماذا تسمى العين والحاء «مهملتين»؟", b:"لأن العين بلا نقطة والحاء بلا نقطة. (والغين والخاء «معجمتان»: منقوطتان)." },
+    { t:"flip", g:"الإظهار الحلقي (ص٤)", f:"في أحكام النون الساكنة والتنوين: ما الحكم إذا جاء أحد حروف الحلق الستة بعد النون الساكنة أو التنوين؟", b:"يجب إظهار النون والتنوين." },
+    { t:"flip", g:"الإظهار الحلقي (ص٤)", f:"«﴿مَنْ ءَامَنَ﴾» بيّن حكم النون الساكنة في هذا الشاهد (من أحكام النون الساكنة والتنوين).", b:"نون ساكنة بعدها همزة، فتُظهر." },
+    { t:"flip", g:"الإظهار الحلقي (ص٤)", f:"«﴿مِنْ هَادٍ﴾» بيّن حكم النون الساكنة في هذا الشاهد (من أحكام النون الساكنة والتنوين).", b:"نون ساكنة بعدها هاء، فتُظهر." },
+    { t:"flip", g:"الإظهار الحلقي (ص٤)", f:"«﴿مِنْ حَكِيمٍ﴾» بيّن حكم النون الساكنة في هذا الشاهد (من أحكام النون الساكنة والتنوين).", b:"نون ساكنة بعدها حاء، فتُظهر." },
+    { t:"flip", g:"الإظهار الحلقي (ص٤)", f:"«﴿مِنْ غِلٍّ إِخْوَانًا﴾» بيّن حكم النون الساكنة في هذا الشاهد (من أحكام النون الساكنة والتنوين).", b:"هنا نون ساكنة ثم أتى بعدها الغين، فصار الحكم إظهارًا." },
+    { t:"cloze", g:"الإدغام (ص٤–٥)", f:"أحكام النون الساكنة (الإدغام): «وَالثَّانِ إِدْغَامٌ بِسِتَّةٍ أَتَتْ ... ……»", b:"فِي \"يَرْمُلُونَ\" عِنْدَهُمْ قَدْ ثَبَتَتْ" },
+    { t:"flip", g:"الإدغام (ص٤–٥)", f:"«وَالثَّانِ إِدْغَامٌ بِسِتَّةٍ أَتَتْ ...» ما معنى الإدغام في أحكام النون الساكنة والتنوين؟", b:"في أصله إدخال؛ والمراد: إدخال النون الساكنة والتنوين في الحرف الذي بعدهما فيصبحان حرفًا واحدًا." },
+    { t:"cloze", g:"الإدغام (ص٤–٥)", f:"في إدغام النون الساكنة والتنوين: حروف الإدغام ستة، تُجمع في كلمة واحدة هي ……، وهي: الياء، والراء، والميم، واللام، والواو، والنون.", b:"«يَرْمُلُونَ»" },
+    { t:"cloze", g:"الإدغام (ص٤–٥)", f:"أحكام النون الساكنة (قسما الإدغام): «لَكِنَّهَا قِسْمَانِ قِسْمٌ يُدْغَمَا ... ……»", b:"فِيهِ بِغُنَّةٍ بِـ\"يَنْمُو\" عُلِمَا" },
+    { t:"cloze", g:"الإدغام (ص٤–٥)", f:"في إدغام النون الساكنة والتنوين: حروف الإدغام بغنة أربعة، تُجمع في كلمة واحدة هي ……، وهي: الياء، والنون، والميم، والواو.", b:"«يَنْمُو»" },
+    { t:"cloze", g:"الإدغام (ص٤–٥)", f:"في إدغام النون الساكنة والتنوين: الإدغام بغير غنة يكون في حرفين: …… و…….", b:"اللام|الراء" },
+    { t:"flip", g:"الإدغام (ص٤–٥)", f:"ما تعريف الغنة في التجويد؟", b:"صوت يخرج من الخيشوم." },
+    { t:"cloze", g:"الإدغام (ص٤–٥)", f:"في أحكام النون الساكنة (الاستثناء من الإدغام): «إِلاَّ إِذَا كَانَا بِكَلِمَةٍ فَلاَ ... ……»", b:"تُدْغِمْ كَـ\"دُنْيَا\" ثُمَّ \"صِنْوَانٍ\" تَلاَ" },
+    { t:"flip", g:"الإدغام (ص٤–٥)", f:"ما الاستثناء من الإدغام بغنة في النون الساكنة؟", b:"إذا جاءت النون الساكنة وبعدها الياء أو الواو في كلمة واحدة فلا تُدغم." },
+    { t:"flip", g:"الإدغام (ص٤–٥)", f:"لا تُدغم النون الساكنة مع الياء أو الواو إذا كانتا في كلمة واحدة، من أمثلة ذلك:", b:"«دُنْيَا»، «صِنْوَانٍ»، «قِنْوَان»، «بُنْيَان»." },
+    { t:"flip", g:"الإدغام (ص٤–٥)", f:"«دُنْيَا» و«صِنْوَانٍ»: لماذا لم تُدغم النون فيهما مع أن الياء والواو من حروف «ينمو»؟", b:"لأنها استثناءات؛ الأصل في الياء والواو بعد النون أنه إدغام بغنة، لكنهما هنا في كلمة واحدة." },
+    { t:"cloze", g:"الإدغام (ص٤–٥)", f:"أحكام النون الساكنة (الإدغام بغير غنة): «وَالثَّانِ إِدْغَامٌ بِغَيْرِ غُنَّهْ ... ……»", b:"فِي اللاَّمِ وَالرَّا ثُمَّ كَرِّرَنَّهْ" },
+    { t:"flip", g:"الإدغام (ص٤–٥)", f:"في إدغام النون الساكنة والتنوين: أي حروف «يرملون» يكون إدغامها بغنة؟", b:"الياء، والنون، والميم، والواو (يجمعها «ينمو»)." },
+    { t:"flip", g:"الإدغام (ص٤–٥)", f:"في إدغام النون الساكنة والتنوين: أي حروف «يرملون» يكون إدغامها بغير غنة؟", b:"الراء واللام." },
+  ] },
+  { id:"2", title:"الدرس الثاني", cards:[
+    { t:"cloze", g:"الإقلاب (ص٥)", f:"أحكام النون الساكنة (الإقلاب): «وَالثَّالِثُ الإِقْلاَبُ عِنْدَ الْبَاءِ ... ……»", b:"مِيماً بِغُنَّةٍ مَعَ الإِخْفَاءِ" },
+    { t:"cloze", g:"الإقلاب (ص٥)", f:"حروف الإقلاب في أحكام النون الساكنة والتنوين حرف واحد فقط، هو …….", b:"الباء" },
+    { t:"flip", g:"الإقلاب (ص٥)", f:"«﴿أَنۢبِئْهُم﴾» بيّن حكم النون الساكنة في هذا الشاهد (من أحكام النون الساكنة والتنوين).", b:"نون ساكنة أتى بعدها الباء فأصبحت إقلابًا؛ كأننا نطقناها ميمًا مخفاة مع الغنة." },
+    { t:"flip", g:"الإقلاب (ص٥)", f:"«﴿أَنْ بُورِكَ مَنْ فِي النَّارِ﴾» بيّن حكم النون الساكنة في هذا الشاهد (من أحكام النون الساكنة والتنوين).", b:"نون ساكنة أتى بعدها الباء فأصبحت إقلابًا؛ كأننا نطقناها ميمًا بغنة مع الإخفاء." },
+    { t:"cloze", g:"الإخفاء (ص٦)", f:"أحكام النون الساكنة (الإخفاء): «وَالرَّابِعُ الإِخْفَاءُ عِنْدَ الْفَاضِلِ ... ……»", b:"مِنَ الحُرُوفِ وَاجِبٌ لِلْفَاضِلِ" },
+    { t:"flip", g:"الإخفاء (ص٦)", f:"«وَالرَّابِعُ الإِخْفَاءُ عِنْدَ الْفَاضِلِ ...» ما المراد بـ«الفاضل» في هذا البيت؟", b:"الذي يفضل، يعني يتبقى: ما لم يُذكر في الإظهار والإدغام والإقلاب، فهو الباقي من الأحرف الهجائية." },
+    { t:"cloze", g:"الإخفاء (ص٦)", f:"عدد حروف الإخفاء عند النون الساكنة والتنوين …… حرفًا.", b:"خمسة عشر" },
+    { t:"cloze", g:"الإخفاء (ص٦)", f:"حروف الإخفاء: «فِي خَمْسَةٍ مِنْ بَعْدِ عَشْرٍ رَمْزُهَا ... ……»", b:"فِي كِلِمْ هَذَا الْبَيْتِ قَدْ ضَمَّنْتُهَا" },
+    { t:"cloze", g:"الإخفاء (ص٦)", f:"حروف الإخفاء: «صِفْ ذَا ثَنَا كَمْ جَادَ شَخْصٌ قَدْ سَمَا ... ……»", b:"دُمْ طَيِّباً زِدْ فِي تُقًى ضَعْ ظَالِمَا" },
+    { t:"flip", g:"الإخفاء (ص٦)", f:"«فِي خَمْسَةٍ مِنْ بَعْدِ عَشْرٍ رَمْزُهَا ... فِي كِلِمْ هَذَا الْبَيْتِ قَدْ ضَمَّنْتُهَا» ما المقصود بقوله «في كلم هذا البيت قد ضمنتها»؟", b:"يقصد البيت التالي («صِفْ ذَا ثَنَا…»): ضمَّن أوائل كلماته، فأول حرف من كل كلمة فيه هو حرف من حروف الإخفاء." },
+    { t:"flip", g:"الإخفاء (ص٦)", f:"«﴿أَنفُسَكُمْ﴾» بيّن حكم النون الساكنة في هذا الشاهد (من أحكام النون الساكنة والتنوين).", b:"نون ساكنة أتى بعدها الفاء، والفاء من حروف الإخفاء." },
+    { t:"flip", g:"الإخفاء (ص٦)", f:"«﴿مِن ثَمَرَةٍ﴾» بيّن حكم النون الساكنة في هذا الشاهد (من أحكام النون الساكنة والتنوين).", b:"إخفاء: نون ساكنة بعدها الثاء، والثاء من حروف الإخفاء." },
+    { t:"flip", g:"الإخفاء (ص٦)", f:"«﴿مِن صَلْصَالٍ﴾» بيّن حكم النون الساكنة في هذا الشاهد (من أحكام النون الساكنة والتنوين).", b:"إخفاء: نون ساكنة بعدها الصاد، والصاد من حروف الإخفاء." },
+    { t:"cloze", g:"أحكام الميم والنون المشددتين (ص٧)", f:"أحكام الميم والنون المشددتين: «وَغُنَّ مِيماً ثُمَّ نُوناً شُدِّدَا ... ……»", b:"وَسَمِّ كُلاًّ حَرْفَ غُنَّةٍ بَدَا" },
+    { t:"flip", g:"أحكام الميم والنون المشددتين (ص٧)", f:"«وَغُنَّ مِيماً ثُمَّ نُوناً شُدِّدَا ...» ما معنى «غُنَّ» في هذا البيت؟", b:"أظهر الغنة." },
+    { t:"flip", g:"أحكام الميم والنون المشددتين (ص٧)", f:"«وَغُنَّ مِيماً ثُمَّ نُوناً شُدِّدَا ...» متى يجب إظهار الغنة في الميم والنون المشددتين؟", b:"إذا جاءت الميم أو النون وعليها شدة، سواء كانت الشدة أصلية أو أتت من الإدغام، لا فرق." },
+    { t:"flip", g:"أحكام الميم والنون المشددتين (ص٧)", f:"«وَغُنَّ مِيماً ثُمَّ نُوناً شُدِّدَا ...» ماذا نسمّي الميم والنون المشددتين؟ ولماذا؟", b:"نسمّيهما «حرف غنة»؛ لأن الغنة صفة ملازمة لهما، تخرج من الخيشوم." },
+    { t:"flip", g:"أحكام الميم والنون المشددتين (ص٧)", f:"«... وَسَمِّ كُلاًّ حَرْفَ غُنَّةٍ بَدَا» ما مقدار الغنة في الميم والنون المشددتين؟", b:"حركتان." },
+    { t:"cloze", g:"أحكام الميم الساكنة: التعريف والعدد (ص٧)", f:"أحكام الميم الساكنة: «وَالْمِيمُ إِنْ تَسْكُنْ تَجِي قَبْلَ الْهِجَا ... ……»", b:"لاَ أَلِفٍ لَيِّنَةٍ لِذِي الْحِجَا" },
+    { t:"flip", g:"أحكام الميم الساكنة: التعريف والعدد (ص٧)", f:"ما الميم الساكنة في باب أحكام الميم الساكنة؟", b:"الميم التي لا يكون عليها ضمة ولا فتحة ولا كسرة؛ أي ساكنة." },
+    { t:"flip", g:"أحكام الميم الساكنة: التعريف والعدد (ص٧)", f:"«وَالْمِيمُ إِنْ تَسْكُنْ تَجِي قَبْلَ الْهِجَا ... لاَ أَلِفٍ لَيِّنَةٍ» ما معنى «تجي قبل الهجا لا ألف لينة»؟", b:"أي قبل حروف الهجاء؛ ولا تقع الميم الساكنة قبل حروف المد الثلاثة: الألف والواو والياء." },
+    { t:"flip", g:"أحكام الميم الساكنة: التعريف والعدد (ص٧)", f:"«... لاَ أَلِفٍ لَيِّنَةٍ لِذِي الْحِجَا» ما معنى «لذي الحجا» في هذا البيت؟", b:"لذي العقل." },
+    { t:"cloze", g:"أحكام الميم الساكنة: التعريف والعدد (ص٧)", f:"أحكام الميم الساكنة: «أَحْكَامُهَا ثَلاَثَةٌ لِمَنْ ضَبَطْ ... ……»", b:"إِخْفَاءٌ إِدْغَامٌ وَإِظْهَارٌ فَقَطْ" },
+    { t:"cloze", g:"الإخفاء الشفوي (ص٧)", f:"أحكام الميم الساكنة (الإخفاء الشفوي): «فَالأَوَّلُ الإِخْفَاءُ عِنْدَ الْبَاءِ ... ……»", b:"وَسَمِّهِ الشَّفْوِيَّ لِلْقُرَّاءِ" },
+    { t:"flip", g:"الإخفاء الشفوي (ص٧)", f:"في أحكام الميم الساكنة من تحفة الأطفال: ما أول أحكامها؟ وما شرطه؟", b:"الإخفاء الشفوي: إذا جاءت ميم ساكنة بعدها باء." },
+    { t:"flip", g:"الإخفاء الشفوي (ص٧)", f:"«﴿وَمَنْ يَعْتَصِمْ بِاللَّهِ﴾» بيّن حكم الميم الساكنة في هذا الشاهد (من أحكام الميم الساكنة).", b:"إخفاء شفوي: ميم ساكنة بعدها باء." },
+    { t:"flip", g:"الإخفاء الشفوي (ص٧)", f:"كيف تُنطق الميم الساكنة قبل الباء في الإخفاء الشفوي؟", b:"كأنك تنطق الميم بين الإظهار والإدغام بغنة." },
+    { t:"cloze", g:"إدغام الميم الساكنة (ص٧–٨)", f:"أحكام الميم الساكنة (الإدغام): «وَالثَّانِ إِدْغَامٌ بِمِثْلِهَا أَتَى ... ……»", b:"وَسَمِّ إِدْغَاماً صَغِيراً يَا فَتَى" },
+    { t:"flip", g:"إدغام الميم الساكنة (ص٧–٨)", f:"«﴿لَكُم مَّا﴾» كيف تُنطق الميمان في هذا الشاهد (من أحكام الميم الساكنة)؟", b:"تُدغم الميم الساكنة في الميم المتحركة وتصبح ميمًا مشددة مع غنة؛ لأن الحرفين متماثلان." },
+    { t:"flip", g:"إدغام الميم الساكنة (ص٧–٨)", f:"في أحكام الميم الساكنة: ما الفرق بين الإدغام الكبير والإدغام الصغير؟", b:"الكبير: الحرفان متحركان. الصغير: الأول ساكن وأتت بعده ميم متحركة." },
+    { t:"cloze", g:"الإظهار الشفوي وتحذيره (ص٨)", f:"أحكام الميم الساكنة (الإظهار الشفوي): «وَالثَّالِثُ الإِظْهَارُ فِي الْبَقِيَّهْ ... ……»", b:"مِنْ أَحْرُفٍ وَسَمِّهَا شَفْوِيَّهْ" },
+    { t:"flip", g:"الإظهار الشفوي وتحذيره (ص٨)", f:"في أحكام الميم الساكنة من تحفة الأطفال: ما حكم الميم الساكنة إذا جاء بعدها أي حرف من حروف الهجاء غير الباء والميم؟", b:"الإظهار الشفوي، وهو الحكم الثالث من أحكامها." },
+    { t:"flip", g:"الإظهار الشفوي وتحذيره (ص٨)", f:"«﴿لَعَلَّكُمْ تَتَّقُونَ﴾» بيّن حكم الميم الساكنة في هذا الشاهد (من أحكام الميم الساكنة).", b:"إظهار شفوي: ميم ساكنة أتى بعدها التاء، فتُظهر الميم تمامًا." },
+    { t:"cloze", g:"الإظهار الشفوي وتحذيره (ص٨)", f:"أحكام الميم الساكنة: «وَاحْذَرْ لَدَى وَاوٍ وَفَا أَنْ تَخْتَفِي ... ……»", b:"لِقُرْبِهَا وَالاِتِّحَادِ فَاعْرِفِ" },
+    { t:"flip", g:"الإظهار الشفوي وتحذيره (ص٨)", f:"«وَاحْذَرْ لَدَى وَاوٍ وَفَا ...» في الإظهار الشفوي: مِمَّ يُحذر عند الواو والفاء بعد الميم الساكنة؟ ولماذا؟", b:"يُحذر أن تختفي الميم، فلا بد أن تظهرها بوضوح؛ لقرب الميم من الفاء في المخرج، واتحاد الميم والواو في المخرج، فلا بد أن تظهر الميم وأن تطبق الشفتين بها." },
+    { t:"flip", g:"الإظهار الشفوي وتحذيره (ص٨)", f:"«﴿عَلَيْهِمْ وَلاَ﴾» بيّن حكم الميم الساكنة في هذا الشاهد، وما الذي يجب الانتباه إليه فيه (من أحكام الميم الساكنة).", b:"إظهار شفوي: ميم ساكنة بعدها واو، فيجب إظهار الميم وعدم إخفائها." },
+  ] },
+  { id:"3", title:"الدرس الثالث", cards:[
+    { t:"cloze", g:"لام «أل»: الإظهار القمري (ص٨–٩)", f:"أحكام لام «أل» ولام الفعل: «لِلاَّمِ \"أَلْ\" حَالاَنِ قَبْلَ الأَحْرُفِ ... ……»", b:"أُولاَهُمَا إِظْهَارُهَا فَلْتَعْرِفِ" },
+    { t:"flip", g:"لام «أل»: الإظهار القمري (ص٨–٩)", f:"ما المقصود بلام «أل» في باب أحكام لام «أل» ولام الفعل؟", b:"لام التعريف في «أل»." },
+    { t:"cloze", g:"لام «أل»: الإظهار القمري (ص٨–٩)", f:"إذا جاءت لام «أل» قبل حرف من حروف الهجاء فلها حالان: …… أو …….", b:"إظهار|إدغام" },
+    { t:"flip", g:"لام «أل»: الإظهار القمري (ص٨–٩)", f:"ما الإظهار في لام «أل»؟ وما اسم اللام التي تُظهَر؟", b:"النطق باللام الساكنة نطقًا واضحًا، وتسمى لامًا قمرية، وهو الحكم الأول." },
+    { t:"flip", g:"لام «أل»: الإظهار القمري (ص٨–٩)", f:"في كلمة «الْكِتَاب»: ما نوع لام «أل»؟ وما حكمها؟", b:"لام قمرية، وحكمها الإظهار." },
+    { t:"cloze", g:"لام «أل»: الإظهار القمري (ص٨–٩)", f:"حروف الإظهار القمري: «قَبْلَ ارْبَعٍ مَعْ عَشْرَةٍ خُذْ عِلْمَهُ ... ……»", b:"مِنِ \"ابْغِ حَجَّكَ وَخَفْ عَقِيمَهُ\"" },
+    { t:"flip", g:"لام «أل»: الإظهار القمري (ص٨–٩)", f:"كم عدد حروف الإظهار القمري عند لام «أل»؟", b:"أربعة عشر حرفًا." },
+    { t:"flip", g:"لام «أل»: الإظهار القمري (ص٨–٩)", f:"هل حروف الإظهار القمري هي أوائل حروف عبارة «ابغ حجك وخف عقيمه» أم كلها؟", b:"هي كل حروف العبارة، وليست أوائلها فقط." },
+    { t:"cloze", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"لام «أل» (الإدغام الشمسي): «ثَانِيهِمَا إِدْغَامُهَا فِي أَرْبَعِ ... ……»", b:"وَعَشْرَةٍ أَيْضاً وَرَمْزُهَا فَعِ" },
+    { t:"cloze", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"حروف الإدغام الشمسي: «طِبْ ثُمَّ صِلْ رَحْماً تَفُزْ ضِفْ ذَا نِعَمْ ... ……»", b:"دَعْ سُوءَ ظَنٍّ زُرْ شَرِيفاً لِلْكَرَمْ" },
+    { t:"flip", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"كم عدد حروف الهجاء؟", b:"٢٨ حرفًا." },
+    { t:"flip", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"كم عدد الحروف القمرية، وكم عدد الحروف الشمسية؟", b:"١٤ حرفًا تأتي للقمرية، و١٤ حرفًا تكون للشمسية." },
+    { t:"cloze", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"اللام التي يكون حكمها إدغامًا تسمى ……، واللام التي يكون حكمها إظهارًا تسمى …….", b:"الشمسية|القمرية" },
+    { t:"flip", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"ما معنى الإدغام في لام «أل»؟ (المقصود: شرح المعنى وليس ذكر الحروف)", b:"إدخال اللام في الحرف الذي بعدها وتشديده." },
+    { t:"flip", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"في قوله تعالى ﴿مِنَ الْجِنَّةِ وَالنَّاسِ﴾: ما حكم لام «أل» في «الجنة»؟ وما حكمها في «الناس»؟", b:"«الجِنّة»: إظهار (قمرية). و«النّاسِ»: إدغام (شمسية)." },
+    { t:"flip", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"ما الذي نلاحظه على الحرف الذي بعد لام «أل» في الإدغام الشمسي؟ مثل كلمة ﴿الطَّامَّةُ﴾.", b:"يكون مشددًا؛ فالطاء في «الطَّامَّةُ» مشددة." },
+    { t:"flip", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"في كلمة «الرَّحْمَن»: ما نوع لام «أل»؟ وما حكمها؟", b:"لام شمسية، وحكمها الإدغام." },
+    { t:"flip", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"لماذا سُمّيت اللام المظهرة قمرية، والمدغمة شمسية؟", b:"نسبةً إلى المثالين: «القمر» لامها ظاهرة، و«الشمس» لامها مدغمة." },
+    { t:"cloze", g:"لام «أل»: الإدغام الشمسي (ص٩)", f:"لام «أل»: «وَاللاَّمَ الأُولَى سَمِّهَا قَمَرِيَّهْ ... ……»", b:"وَاللاَّمَ الأُخْرَى سَمِّهَا شَمْسِيَّهْ" },
+    { t:"cloze", g:"لام الفعل (ص٩–١٠)", f:"لام الفعل: «وَأَظْهِرَنَّ لاَمَ فِعْلٍ مُطْلَقَا ... ……»", b:"فِي نَحْوِ قُلْ نَعَمْ وَقُلْنَا وَالتَقَى" },
+    { t:"flip", g:"لام الفعل (ص٩–١٠)", f:"ما حكم لام الفعل (اللام الأصلية في الفعل)؟", b:"تُظهر دائمًا (مطلقًا)." },
+    { t:"flip", g:"لام الفعل (ص٩–١٠)", f:"ما حكم اللام في «قُلْ نَعَمْ»؟ ولماذا؟", b:"تُظهر؛ لأنها لام فعل (أصلية) وليست «أل»." },
+    { t:"flip", g:"لام الفعل (ص٩–١٠)", f:"ما حكم اللام في «وَالتَقَى»؟ ولماذا؟", b:"تُظهر؛ لأنها لام فعل (التقى يلتقي) وليست «أل»." },
+    { t:"flip", g:"لام الفعل (ص٩–١٠)", f:"ما الذي تفعله «أل» التعريف بالكلمة؟", b:"تحوّلها من نكرة إلى معرفة؛ فـ«كتاب» تصبح «الكتاب»." },
+    { t:"flip", g:"لام الفعل (ص٩–١٠)", f:"أي لام تنطبق عليها أحكام القمرية والشمسية؟", b:"لام «أل» التعريف فقط. أما اللام الأصلية في الكلمة فلا تُسمّى شمسية ولا قمرية." },
+    { t:"flip", g:"لام الفعل (ص٩–١٠)", f:"ما حكم اللام في الكلمة «الْتَقَطَهُ» من قوله تعالى ﴿فَالْتَقَطَهُ آلُ فِرْعَوْنَ﴾؟ ولماذا؟", b:"لا تُدغم؛ لأنها لام أصلية (لام فعل) وليست «أل»." },
+    { t:"flip", g:"المثلان والمتقاربان والمتجانسان (ص١٠)", h:"المثلين والمتقاربين والمتجانسين", f:"ما الصفة؟", b:"كيفية الأداء (كيف يُنطق الحرف)." },
+    { t:"flip", g:"المثلان والمتقاربان والمتجانسان (ص١٠)", h:"المثلين والمتقاربين والمتجانسين", f:"ما المخرج؟", b:"الموضع؛ أي من أين خرج الصوت." },
+    { t:"flip", g:"المثلان والمتقاربان والمتجانسان (ص١٠)", h:"المثلين والمتقاربين والمتجانسين", f:"«الهمس» و«الجهر»: هل هما من الصفات أم من المخارج؟", b:"من الصفات؛ لأنهما تصفان كيفية نطق الحرف لا موضع خروجه (ومثلهما الشدة والرخاوة والاستعلاء والاستفال)." },
+    { t:"cloze", g:"المثلان والمتقاربان والمتجانسان (ص١٠)", f:"باب المثلين (الحرفان المثلان): «إِنْ فِي الصِّفَاتِ وَالْمَخَارِجِ اتَّفَقْ ... ……»", b:"حَرْفَانِ فَالْمِثْلاَنِ فِيهِمَا أَحَقْ" },
+    { t:"flip", g:"المثلان والمتقاربان والمتجانسان (ص١٠)", f:"متى يكون الحرفان «مثلين»؟", b:"إذا اتفق حرفان في المخرج والصفة معًا." },
+    { t:"flip", g:"المثلان والمتقاربان والمتجانسان (ص١٠)", f:"الباء مع الباء، والدال مع الدال، واللام مع اللام: ما نوع الحرفين في كل مثال؟", b:"مثلان؛ لاتفاقهما في المخرج والصفة." },
+  ] },
+  { id:"4", title:"الدرس الرابع", cards:[
+    { t:"cloze", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"باب المثلين والمتقاربين والمتجانسين: «وَإِنْ يَكُونَا مَخْرَجاً تَقَارَبَا ... ……»", b:"وَفِي الصِّفَاتِ اخْتَلَفَا يُلَقَّبَا" },
+    { t:"cloze", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"باب المثلين والمتقاربين والمتجانسين: «مُتَقَارِبَيْنِ أَوْ يَكُونَا اتَّفَقَا ... ……»", b:"فِي مَخْرَجٍ دُونَ الصِّفَاتِ حُقِّقَا" },
+    { t:"cloze", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"باب المثلين والمتقاربين والمتجانسين: «بِالْمُتَجَانِسَيْنِ ثُمَّ إِنْ سَكَنْ ... ……»", b:"أَوَّلُ كُلٍّ فَالصَّغِيرَ سَمِّيَنْ" },
+    { t:"cloze", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"باب المثلين والمتقاربين والمتجانسين: «أَوْ حُرِّكَ الْحَرْفَانِ فِي كُلٍّ فَقُلْ ... ……»", b:"كُلٌّ كَبِيرٌ وَافْهَمَنْهُ بِالْمُثُلْ" },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"متى يكون الحرفان «متقاربين» في باب المثلين والمتقاربين والمتجانسين؟", b:"إذا كان المخرج متقاربًا والصفة مختلفة." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿قَدْ سَمِعَ اللَّهُ قَوْلَ الَّتِي تُجَادِلُكَ﴾: ما نوع الدال والسين في «قَدْ سَمِعَ»؟", b:"متقاربان؛ مخرجهما متقارب وصفتهما مختلفة." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿أَلَمْ نَخْلُقكُّم﴾: ما نوع القاف والكاف في «نَخْلُقكُّم»؟", b:"متقاربان؛ مخرجهما متقارب وصفاتهما مختلفة." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿مِنْ لَدُنْهُ﴾: ما نوع النون واللام في «مِنْ لَدُنْهُ»؟", b:"متقاربان؛ مخرجهما متقارب وصفاتهما مختلفة." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿قُلْ رَبِّ﴾: ما نوع اللام والراء في «قُلْ رَبِّ»؟", b:"متقاربان؛ مخرجهما متقارب وصفاتهما مختلفة." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"متى يكون الحرفان «متجانسين»؟", b:"إذا اتفقا في المخرج واختلفا في الصفات." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿ارْكَب مَّعَنَا﴾: ما نوع الباء والميم في «ارْكَب مَّعَنَا»؟", b:"متجانسان؛ من مخرج واحد وصفاتهما مختلفة." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿قَالَت طَّائِفَةٌ﴾: ما نوع التاء والطاء في «قَالَت طَّائِفَةٌ»؟", b:"متجانسان؛ من مخرج واحد وصفاتهما مختلفة." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿قَد تَّبَيَّنَ الرُّشْدُ مِنَ الْغَيِّ﴾: ما نوع الدال والتاء في «قَد تَّبَيَّنَ»؟", b:"متجانسان؛ من مخرج واحد وصفاتهما مختلفة." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿حَصَدتُّمْ﴾: ما نوع الدال والتاء في «حَصَدتُّمْ»؟", b:"متجانسان." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿يَلْهَث ذَّٰلِكَ﴾: ما نوع الثاء والذال في «يَلْهَث ذَّٰلِكَ»؟", b:"متجانسان." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿إِذ ظَّلَمْتُمْ﴾: ما نوع الذال والظاء في «إِذ ظَّلَمْتُمْ»؟", b:"متجانسان." },
+    { t:"cloze", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"اتحاد المخرج والصفات: ……. تقارب المخرج مع اختلاف الصفات: ……. اتحاد المخرج مع اختلاف الصفات: …….", b:"متماثلان|متقاربان|متجانسان" },
+    { t:"cloze", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في المثلين والمتقاربين والمتجانسين: إذا سكن الحرف الأول فهو ……، وإذا تحرك الحرفان فهو …….", b:"صغير|كبير" },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"ما الأقسام الثلاثة التي ينقسم إليها الحرفان من حيث اتفاق المخرج والصفة أو اختلافهما؟", b:"مثلان، ومتقاربان، ومتجانسان؛ ولكل قسم منها صغير وكبير." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"ما الاسمان اللذان يُطلقان على الحرفين المتفقين في المخرج والصفة؟", b:"«مثلان» و«متماثلان»." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿اذْهَب بِّكِتَابِي﴾: ما نوع الباء والباء؟ ولماذا؟", b:"مثلان صغير؛ مثلان لأن الباء مثل الباء (اتفقا في المخرج والصفة)، وصغير لأن الأول منهما ساكن." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿قَدْ سَمِعَ﴾: ما نوع الدال والسين من حيث الصغير والكبير؟", b:"متقاربان صغير؛ لأن الأول منهما ساكن." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿كَذَّبَتْ ثَمُودُ﴾: ما نوع التاء والثاء؟ ولماذا؟", b:"متقاربان صغير؛ متقاربان لقرب المخرج واختلاف الصفة، وصغير لأن الأول منهما ساكن." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿فَآمَنَت طَّائِفَةٌ﴾: ما نوع التاء والطاء؟ ولماذا؟", b:"متجانسان صغير؛ متجانسان لاتفاقهما في المخرج واختلافهما في الصفات، وصغير لأن الأول منهما ساكن." },
+    { t:"flip", g:"المتقاربان والمتجانسان والصغير والكبير (ص١١–١٢)", f:"في قوله تعالى ﴿مَّنَاسِكَكُمْ﴾: ما نوع الكافين؟ ولماذا؟", b:"مثلان كبير؛ الكاف والكاف مثلان، والكاف الأولى متحركة وليست ساكنة، فهو كبير." },
+    { t:"cloze", g:"المد الطبيعي والفرعي (ص١٣)", f:"باب أقسام المد: «وَالْمَدُّ أَصْلِيٌّ وَفَرْعِيٌّ لَهُ ... ……»", b:"وَسَمِّ أَوَّلاً طَبِيعِيّاً وَهُوَ" },
+    { t:"cloze", g:"المد الطبيعي والفرعي (ص١٣)", f:"ينقسم المد إلى قسمين: …… و……، والأصلي يسمى …….", b:"أصلي|فرعي|المد الطبيعي" },
+    { t:"cloze", g:"المد الطبيعي والفرعي (ص١٣)", f:"المد الطبيعي: «مَا لاَ تَوَقُّفٌ لَهُ عَلَى سَبَبْ ... ……»", b:"وَلاَ بِدُونِهِ الْحُرُوفُ تُجْتَلَبْ" },
+    { t:"cloze", g:"المد الطبيعي والفرعي (ص١٣)", f:"المد الطبيعي: «بَلْ أَيُّ حَرْفٍ غَيْرِ هَمْزٍ أَوْ سُكُونْ ... ……»", b:"جَا بَعْدَ مَدٍّ فَالطَّبِيعِيَّ يَكُونْ" },
+    { t:"flip", g:"المد الطبيعي والفرعي (ص١٣)", f:"متى يكون المد طبيعيًّا؟", b:"إذا جاء بعد حرف المد أي حرف غير الهمز والسكون." },
+    { t:"cloze", g:"المد الطبيعي والفرعي (ص١٣)", f:"المد الطبيعي مقداره …….", b:"حركتان" },
+    { t:"flip", g:"المد الطبيعي والفرعي (ص١٣)", f:"في كلمة ﴿قَالَ﴾: ما نوع المد في الألف؟ وكم مقداره؟", b:"مد طبيعي مقداره حركتان؛ ولا يُطال فلا نقول «قاااال»." },
+    { t:"cloze", g:"المد الطبيعي والفرعي (ص١٣)", f:"المد الفرعي: «وَالآخَرُ الْفَرْعِيُّ مَوْقُوفٌ عَلَى ... ……»", b:"سَبَبْ كَهَمْزٍ أَوْ سُكُونٍ مُسْجَلاَ" },
+    { t:"flip", g:"المد الطبيعي والفرعي (ص١٣)", f:"ما المد الفرعي؟", b:"المد الذي يتوقف على سبب من همز أو سكون؛ وهو القسم الثاني من أقسام المد." },
+    { t:"flip", g:"المد الطبيعي والفرعي (ص١٣)", f:"ما معنى كلمة «مُسْجَلاً» في بيت المد الفرعي؟", b:"بمعنى مطلقًا." },
+    { t:"cloze", g:"حروف المد وشروطها وحروف اللين (ص١٤)", f:"حروف المد: «حُرُوفُهُ ثَلاَثَةٌ فَعِيهَا ... ……»", b:"مِنْ لَفْظِ وَايٍ وَهْيَ فِي نُوحِيهَا" },
+    { t:"flip", g:"حروف المد وشروطها وحروف اللين (ص١٤)", f:"غير كلمة «نُوحِيهَا»: ما كلمة أخرى ذكرها الشيخ وفيها حروف المد الثلاثة؟", b:"﴿أُوذِينَا﴾ في ﴿قَالُوا أُوذِينَا﴾، وكذلك ﴿وَأُوتِينَا﴾؛ فيهما الواو والياء والألف." },
+    { t:"cloze", g:"حروف المد وشروطها وحروف اللين (ص١٤)", f:"شروط حروف المد: «وَالْكَسْرُ قَبْلَ الْيَا وَقَبْلَ الْوَاوِ ضَمّْ ... ……»", b:"شَرْطٌ وَفَتْحٌ قَبْلَ أَلْفٍ يُلْتَزَمْ" },
+    { t:"cloze", g:"حروف المد وشروطها وحروف اللين (ص١٤)", f:"شرط حروف المد: الياء ما قبلها …… (مثل ﴿قِيلَ﴾)، والواو ما قبلها …… (مثل ﴿يَقُولُ﴾)، والألف ما قبلها …… (مثل ﴿قَالَ﴾).", b:"مكسور|مضموم|مفتوح" },
+    { t:"cloze", g:"حروف المد وشروطها وحروف اللين (ص١٤)", f:"حروف اللين: «وَاللِّينُ مِنْهَا الْيَا وَوَاوٌ سُكِّنَا ... ……»", b:"إِنِ انْفِتَاحٌ قَبْلَ كُلٍّ أُعْلِنَا" },
+    { t:"flip", g:"حروف المد وشروطها وحروف اللين (ص١٤)", f:"ما حروف اللين من حروف المد؟ وما شرطها؟", b:"الياء والواو الساكنتان إن سبقهما مفتوح." },
+    { t:"flip", g:"حروف المد وشروطها وحروف اللين (ص١٤)", f:"في كلمة ﴿بَيْتٍ﴾: ما نوع الياء الساكنة بعد الفتحة؟", b:"حرف لين (مد لين)؛ لأنها ياء ساكنة قبلها مفتوح." },
+    { t:"flip", g:"حروف المد وشروطها وحروف اللين (ص١٤)", f:"لماذا لا تُعدّ الواو في ﴿قَوْمٍ﴾ حرف مد؟", b:"لأن ما قبلها مفتوح وليس مضمومًا (والواو المدية يُشترط قبلها الضم)؛ فهي حرف لين." },
+    { t:"cloze", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"أحكام المد الفرعي: «لِلْمَدِّ أَحْكَامٌ ثَلاَثَةٌ تَدُومْ ... ……»", b:"وَهْيَ الْوُجُوبُ وَالْجَوَازُ وَاللُّزُومْ" },
+    { t:"flip", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"في بيت «لِلْمَدِّ أَحْكَامٌ ثَلاَثَةٌ»: أي مدٍّ يقصده الناظم؟", b:"المد الفرعي، وليس الأصلي الطبيعي." },
+    { t:"cloze", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"أحكام المد الفرعي ثلاثة: ……، و……، و…….", b:"الوجوب|الجواز|اللزوم" },
+    { t:"cloze", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"أحكام المد الفرعي (الوجوب): «فَوَاجِبٌ إِنْ جَاءَ هَمْزٌ بَعْدَ مَدْ ... ……»", b:"فِي كِلْمَةٍ وَذَا بِمُتَّصِلْ يُعَدْ" },
+    { t:"flip", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"إذا جاء بعد حرف المد همز في كلمة واحدة: فما حكم المد؟ وما اسمه؟", b:"واجب، ويسمى المد المتصل." },
+    { t:"flip", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"في كلمة ﴿السَّمَاءِ﴾: ما نوع المد في الألف؟", b:"مد متصل واجب؛ لأن الهمز جاء بعد حرف المد في كلمة واحدة (ومثله ﴿قُرُوءٍ﴾)." },
+    { t:"cloze", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"المد المتصل يُمدّ من …… حركات عندنا في حفص.", b:"أربع إلى خمس" },
+    { t:"cloze", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"أحكام المد الفرعي (الجواز): «وَجَائِزٌ مَدٌّ وَقَصْرٌ إِنْ فُصِلْ ... ……»", b:"كُلٌّ بِكِلْمَةٍ وَهَذَا الْمُنْفَصِلْ" },
+    { t:"flip", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"إذا كان حرف المد في كلمة والهمز بعده في كلمة أخرى: فما حكم المد؟ وما اسمه؟", b:"الجواز (جواز المد والقصر)، ويسمى المد المنفصل." },
+    { t:"flip", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"في قوله تعالى ﴿قُوا أَنفُسَكُمْ﴾: ما نوع المد في «قُوا»؟ ولماذا؟", b:"مد منفصل؛ لأن حرف المد في كلمة والهمز في كلمة أخرى (ومثله ﴿إِنَّا أَعْطَيْنَاكَ﴾)." },
+    { t:"flip", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"لماذا يقال لحكم المد المنفصل «الجواز»؟", b:"لأنه يجوز فيه المد والقصر؛ فمن الناس من يقرأ بالمد ومنهم من يقرأ بالقصر." },
+    { t:"flip", g:"أحكام المد الفرعي: الوجوب والجواز (ص١٤–١٥)", f:"ما مقدار المد المنفصل في رواية حفص عن عاصم من طريق الشاطبية؟", b:"أربع إلى خمس حركات." },
+    { t:"cloze", g:"المد العارض للسكون ومد البدل (ص١٥–١٦)", f:"المد العارض للسكون: «وَمِثْلُ ذَا إِنْ عَرَضَ السُّكُونُ ... ……»", b:"وَقْفاً كَتَعْلَمُونَ نَسْتَعِينُ" },
+    { t:"flip", g:"المد العارض للسكون ومد البدل (ص١٥–١٦)", f:"ما المد العارض للسكون؟", b:"مد حرف المد إذا جاء بعده سكون عارض بسبب الوقف." },
+    { t:"flip", g:"المد العارض للسكون ومد البدل (ص١٥–١٦)", f:"المد العارض للسكون مثل أي مدٍّ في الحكم؟", b:"مثل المد المنفصل في جواز المد والقصر." },
+    { t:"flip", g:"المد العارض للسكون ومد البدل (ص١٥–١٦)", f:"في كلمة ﴿نَسْتَعِينُ﴾ عند الوقف عليها: ما نوع المد في الياء؟", b:"مد عارض للسكون." },
+    { t:"cloze", g:"المد العارض للسكون ومد البدل (ص١٥–١٦)", f:"المد العارض للسكون إما …… أو …… أو …… حركات جوازًا.", b:"حركتان|أربع|ست" },
+    { t:"flip", g:"المد العارض للسكون ومد البدل (ص١٥–١٦)", f:"أين يكثر المد العارض للسكون في القرآن؟", b:"في أواخر الآيات." },
+    { t:"cloze", g:"المد العارض للسكون ومد البدل (ص١٥–١٦)", f:"مد البدل: «أَوْ قُدِّمَ الْهَمْزُ عَلَى الْمَدِّ وَذَا ... ……»", b:"بَدَلٌ كَآمَنُوا وَإِيمَاناً خُذَا" },
+    { t:"flip", g:"المد العارض للسكون ومد البدل (ص١٥–١٦)", f:"ما مد البدل؟", b:"أن يتقدم الهمز على حرف المد." },
+    { t:"flip", g:"المد العارض للسكون ومد البدل (ص١٥–١٦)", f:"في كلمة ﴿ءَامَنُوا﴾: ما نوع المد في الألف بعد الهمزة؟", b:"مد بدل؛ لأن الهمز تقدّم على حرف المد." },
+    { t:"flip", g:"المد العارض للسكون ومد البدل (ص١٥–١٦)", f:"لماذا سُمّي مد البدل «بدلًا»؟", b:"لأنه مبدل من الهمزة؛ فأصل ﴿ءَامَنُوا﴾ همزتان «أأمنوا» سُهّلت فصارت ﴿ءَامَنُوا﴾، وكذلك «أأدم» صارت ﴿ءَادَمَ﴾." },
+    { t:"cloze", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"المد اللازم: «وَلاَزِمٌ إِنِ السُّكُونُ أُصِّلاَ ... ……»", b:"وَصْلاً وَوَقْفاً بَعْدَ مَدٍّ طُوِّلاَ" },
+    { t:"flip", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"ما شرط المد اللازم؟", b:"أن يجيء السكون أصليًّا بعد حرف المد، وصلًا ووقفًا؛ وهو الحكم الثالث من أحكام المد الفرعي." },
+    { t:"flip", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"أين يكثر المد اللازم في القرآن؟", b:"في الأحرف المقطعة في أوائل السور." },
+    { t:"flip", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"في فاتحة سورة مريم ﴿كٓهيعٓصٓ﴾: ما نوع المد في هذه الأحرف؟ ولماذا؟", b:"مد لازم؛ لأن السكون أصلي بعد حرف المد في الحروف المقطعة." },
+    { t:"cloze", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"أقسام المد اللازم: «أَقْسَامُ لاَزِمٍ لَدَيْهِمْ أَرْبَعَهْ ... ……» «كِلاَهُمَا مُخَفَّفٌ مُثَقَّلُ ... ……»", b:"وَتِلْكَ كِلْمِيٌّ وَحَرْفِيٌّ مَعَهْ|فَهَذِهِ أَرْبَعَةٌ تُفَصَّلُ" },
+    { t:"cloze", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"أقسام المد اللازم أربعة: ……، وكلمي مثقل، و……، و…….", b:"كلمي مخفف|حرفي مخفف|حرفي مثقل" },
+    { t:"cloze", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"المد اللازم الكلمي: «فَإِنْ بِكِلْمَةٍ سُكُونٌ اجْتَمَعْ ... ……»", b:"مَعْ حَرْفِ مَدٍّ فَهْوَ كِلْمِيٌّ وَقَعْ" },
+    { t:"flip", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"ما المد اللازم الكلمي؟", b:"إذا اجتمع السكون مع حرف المد في كلمة واحدة." },
+    { t:"cloze", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"المد اللازم الحرفي: «أَوْ فِي ثُلاَثِيِّ الْحُرُوفِ وُجِدَا ... ……»", b:"وَالْمَدُّ وَسْطَهُ فَحَرْفِيٌّ بَدَا" },
+    { t:"flip", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"ما المد اللازم الحرفي؟", b:"إذا اجتمع السكون مع حرف المد في كلمة مكوّنة من ثلاثة أحرف أوسطها حرف مد." },
+    { t:"cloze", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"المثقل والمخفف: «كِلاَهُمَا مُثَقَّلٌ إِنْ أُدْغِمَا ... ……»", b:"مُخَفَّفٌ كُلٌّ إِذَا لَمْ يُدْغَمَا" },
+    { t:"cloze", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"المد اللازم يكون مثقلًا إذا ……، ومخففًا إذا …….", b:"أُدغم|لم يُدغم" },
+    { t:"flip", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"ما نوع المد في ﴿الْحَاقَّةُ﴾ من أقسام المد اللازم الأربعة؟", b:"كلمي مثقل." },
+    { t:"flip", g:"المد اللازم وأقسامه (ص١٦–١٧)", f:"ما نوع المد في ﴿الٓمٓ﴾ من أقسام المد اللازم الأربعة؟", b:"حرفي مثقل." },
+    { t:"cloze", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"المد اللازم الحرفي: «وَاللاَّزِمُ الْحَرْفِيُّ أَوَّلَ السُّوَرْ ... ……»", b:"وُجُودُهُ وَفِي ثَمَانٍ انْحَصَرْ" },
+    { t:"cloze", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"يوجد المد اللازم الحرفي في ……، وينحصر في …… أحرف.", b:"أوائل السور|ثمانية" },
+    { t:"cloze", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"أحرف المد اللازم الحرفي: «يَجْمَعُهَا حُرُوفُ كَمْ عَسَلْ نَقَصْ ... ……»", b:"وَعَيْنُ ذُو وَجْهَيْنِ وَالطُّولُ أَخَصْ" },
+    { t:"cloze", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"الأحرف الثمانية للمد اللازم الحرفي يجمعها ……، ويقال أيضًا «نقص عسلكم»، وبعض القراء يقول «سنقص علمك»؛ كلها نفس الأحرف.", b:"«كَمْ عَسَلْ نَقَصْ»" },
+    { t:"cloze", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"مد حروف فواتح السور الأخرى: «وَمَا سِوَى الْحَرْفِ الثُّلاَثِي لاَ أَلِفْ ... ……»", b:"فَمَدُّهُ مَدّاً طَبِيعِيّاً أُلِفْ" },
+    { t:"flip", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"ما حكم المد في حروف فواتح السور التي ليست من «كم عسل نقص»؟", b:"تُمدّ مدًّا طبيعيًّا بمقدار حركتين؛ وذلك باستثناء الأحرف الثمانية «كم عسل نقص» وباستثناء حرف الألف." },
+    { t:"flip", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"في فاتحة ﴿حم﴾: ما نوع المد في حرف الحاء؟ وكم مقداره؟", b:"مد طبيعي مقداره حركتان (ومثله الياء في ﴿يس﴾)." },
+    { t:"cloze", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"مد حروف فواتح السور الأخرى: «وَذَاكَ أَيْضاً فِي فَوَاتِحِ السُّوَرْ ... ……»", b:"فِي لَفْظِ حَيٍّ طَاهِرٍ قَدِ انْحَصَرْ" },
+    { t:"flip", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"ما الأحرف التي تُمدّ مدًّا طبيعيًّا في فواتح السور حسب لفظ «حيّ طاهر»؟", b:"هي حروف «حَيٌّ طَاهِرٌ» (ستة أحرف) دون الألف؛ أي «حي طهر»، وتُمدّ مدًّا طبيعيًّا." },
+    { t:"cloze", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"عدد حروف فواتح السور: «وَيَجْمَعُ الْفَوَاتِحَ الأَرْبَعَ عَشَرْ ... ……»", b:"صِلْهُ سُحَيْراً مَنْ قَطَعْكَ ذَا اشْتَهَرْ" },
+    { t:"cloze", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"الحروف الواردة في فواتح السور …… حرفًا: «كم عسل نقص» …… أحرف، و«حيّ طاهر» …… أحرف.", b:"أربعة عشر|ثمانية|ستة" },
+    { t:"flip", g:"اللازم الحرفي في فواتح السور (ص١٧)", f:"غير عبارة «صله سحيرا من قطعك»: ما العبارات الأخرى التي ذكرها الشيخ لجمع حروف فواتح السور؟", b:"«نص حكيم قاطع له سر»، أو «طرق سمعك النصيحة»، على حسب القراء." },
+    { t:"cloze", g:"خاتمة تحفة الأطفال (ص١٨)", f:"خاتمة تحفة الأطفال: «وَتَمَّ ذَا النَّظْمُ بِحَمْدِ اللَّهِ ... ……»", b:"عَلَى تَمَامِهِ بِلاَ تَنَاهِي" },
+    { t:"flip", g:"خاتمة تحفة الأطفال (ص١٨)", f:"ما معنى «بلا تناهي» في خاتمة تحفة الأطفال؟", b:"بلا نهاية؛ أي الحمد لله سبحانه وتعالى بلا نهاية." },
+    { t:"cloze", g:"خاتمة تحفة الأطفال (ص١٨)", f:"خاتمة تحفة الأطفال: «ثُمَّ الصَّلاَةُ وَالسَّلاَمُ أَبَداً ... ……»", b:"عَلَى خِتَامِ الأَنْبِيَاءِ أَحْمَدَا" },
+    { t:"cloze", g:"خاتمة تحفة الأطفال (ص١٨)", f:"خاتمة تحفة الأطفال: «وَالآلِ وَالصَّحْبِ وَكُلِّ تَابِعِ ... ……»", b:"وَكُلِّ قَارِئٍ وَكُلِّ سَامِعِ" },
+    { t:"cloze", g:"خاتمة تحفة الأطفال (ص١٨)", f:"خاتمة تحفة الأطفال: «أَبْيَاتُهُ نَدٌّ بَدَا لِذِي النُّهَى ... ……»", b:"تَارِيخُهَا بُشْرَى لِمَنْ يُتْقِنُهَا" },
+    { t:"flip", g:"خاتمة تحفة الأطفال (ص١٨)", f:"ما المعنى اللغوي لكلمة «نَدٌّ» في «أَبْيَاتُهُ نَدٌّ بَدَا»؟ وهل هو المقصود؟", b:"«النَّدّ» نبت طيب الرائحة، و«بدا» أي ظهر؛ لكن هذا ليس هو المقصود." },
+    { t:"flip", g:"خاتمة تحفة الأطفال (ص١٨)", f:"ما المقصود بـ«نَدٌّ بَدَا» في بيت ختام تحفة الأطفال؟", b:"حساب الجُمَّل؛ فلكل حرف قيمة عددية، ومجموع «نَدٌّ بَدَا» = ٦١ (ن٥٠ + د٤ + ب٢ + د٤ + ا١)، وهو عدد أبيات المنظومة." },
+    { t:"flip", g:"خاتمة تحفة الأطفال (ص١٨)", f:"ما المقصود بـ«تاريخها بشرى لمن يتقنها» في ختام تحفة الأطفال؟", b:"إذا جُمعت أحرف «بشرى لمن يتقنها» بحساب الجُمَّل كان الناتج ١١٩٨، وهذا هو تاريخ هذا النظم." },
+  ] },
+];
+
+const RV_KEY = 'bs_review_v1';
+function rvLoadStore(){
+  try{
+    const r = JSON.parse(localStorage.getItem(RV_KEY) || 'null');
+    if(r && typeof r === 'object') return { progress: r.progress || {}, flags: r.flags || {}, lessons: r.lessons || {}, acc: r.acc || {}, days: r.days || {}, goal: +r.goal || 0 };
+  }catch(e){}
+  return { progress:{}, flags:{}, lessons:{}, acc:{}, days:{}, goal:0 };
+}
+let RV_STORE = rvLoadStore();
+function rvSave(){ try{ localStorage.setItem(RV_KEY, JSON.stringify(RV_STORE)); }catch(e){} }
+
+const RV_ICON_STAR = `<svg viewBox="0 0 24 24"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg>`;
+const RV_ICON_HARD = `<svg viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`;
+const RV_ICON_PERFECT = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M7 12.4l3.2 3.2L17 8.8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const RV_ICON_TICK = `<svg class="rv-tick" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`;
+const RV_ICON_CLOCK = `<svg class="rv-mini-ln" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`;
+const RV_ICON_TROPHY = `<svg class="rv-mini-ln" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`;
+const RV_ICON_TARGET = `<svg class="rv-mini-ln" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`;
+const RV_ICON_CHART = `<svg class="rv-mini-ln" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>`;
+const RV_ICON_OK = `<svg class="rv-mini-i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#5F8A47"/><path d="M7 12.4l3.2 3.2L17 8.8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const RV_ICON_NO = `<svg class="rv-mini-i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#C0553B"/><path d="M8 8l8 8M16 8l-8 8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>`;
+const RV_ICON_BACK = `<svg class="rv-svg-i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+const RV_ICON_CLOSE = `<svg class="rv-svg-i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
+const RV_ICON_CHECK = `<svg class="rv-svg-i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16 9.5"/></svg>`;
+function rvNum(n){ return Number(n).toLocaleString('ar-EG'); }
+function rvLessons(courseId){ return REVIEW_DATA[courseId] || []; }
+function rvType(card){ return card && card.t === 'cloze' ? 'cloze' : 'flip'; }
+function rvCardKey(courseId, lessonId, i){ return courseId + '|' + lessonId + '|' + i; }
+function rvFindCard(key){
+  const p = String(key).split('|');
+  if(p.length !== 3) return null;
+  const ls = rvLessons(p[0]).find(l => String(l.id) === p[1]);
+  if(!ls) return null;
+  const card = ls.cards[+p[2]];
+  return card ? { key, courseId:p[0], lesson:ls, card } : null;
+}
+function rvModeLabel(m){ return m === 'flip' ? 'وجه وقفا' : m === 'cloze' ? 'إكمال الفراغ' : 'كل البطاقات'; }
+function rvLessonKeys(courseId, lesson, mode){
+  const out = [];
+  lesson.cards.forEach((c,i)=>{ if(mode === 'all' || rvType(c) === mode) out.push(rvCardKey(courseId, lesson.id, i)); });
+  return out;
+}
+
+/* ---- علامات «مهمة» / «صعبة» على البطاقات ---- */
+function rvFlag(key, kind){ const f = RV_STORE.flags[key]; return !!(f && f[kind]); }
+function rvOrderIdx(k){
+  const p = k.split('|');
+  const ci = REVIEW_COURSES.findIndex(c => c.id === p[0]);
+  const li = rvLessons(p[0]).findIndex(l => String(l.id) === p[1]);
+  return [ci < 0 ? 99 : ci, li < 0 ? 99 : li, +p[2] || 0];
+}
+function rvFlaggedKeys(kind){
+  return Object.keys(RV_STORE.flags)
+    .filter(k => RV_STORE.flags[k] && RV_STORE.flags[k][kind] && rvFindCard(k))
+    .sort((a,b)=>{ const x = rvOrderIdx(a), y = rvOrderIdx(b); return (x[0]-y[0]) || (x[1]-y[1]) || (x[2]-y[2]); });
+}
+function rvToggleFlag(key, kind){
+  const f = RV_STORE.flags[key] || {};
+  f[kind] = !f[kind];
+  if(!f.important && !f.hard) delete RV_STORE.flags[key]; else RV_STORE.flags[key] = f;
+  rvSave();
+  render();
+}
+function rvFlagButtons(key){
+  return `
+    <button class="rv-flag-btn important ${rvFlag(key,'important')?'on':''}" title="بطاقة مهمة أرجع إليها" onclick="event.stopPropagation(); rvToggleFlag('${key}','important')">${RV_ICON_STAR}</button>
+    <button class="rv-flag-btn hard ${rvFlag(key,'hard')?'on':''}" title="بطاقة صعبة" onclick="event.stopPropagation(); rvToggleFlag('${key}','hard')">${RV_ICON_HARD}</button>`;
+}
+function rvFlagBadges(key){
+  const a = rvFlag(key,'important'), b = rvFlag(key,'hard');
+  if(!a && !b) return '';
+  return `<span class="rv-badges">${a?`<span class="rv-badge important" title="مهمة">${RV_ICON_STAR}</span>`:''}${b?`<span class="rv-badge hard" title="صعبة">${RV_ICON_HARD}</span>`:''}</span>`;
+}
+
+/* ---- علامة «أُتمّ بلا خطأ» وأفضل نتيجة (خاصتان بكل مستخدم، محفوظتان في جهازه) ---- */
+function rvLessonMark(cid, lid){ return RV_STORE.lessons[cid + '|' + lid] || { rounds:0, perfect:false, best:null }; }
+function rvRoundDone(sk, rec){
+  const p = sk.split('|');
+  if(p[0] !== 'L') return;
+  const s = rvStats(rec);
+  const perfect = s.wrong === 0;
+  const pct = s.total ? Math.round(s.right / s.total * 100) : 0;
+  const m = rvLessonMark(p[1], p[2]);
+  m.rounds++; if(perfect) m.perfect = true;
+  m.best = Math.max(m.best || 0, pct);
+  RV_STORE.lessons[p[1] + '|' + p[2]] = m;
+  rvSendEvent(p[1], p[2], perfect);
+}
+
+/* ---- دقة الإجابات والوقت لكل مقرر + عدّاد الأيام للهدف الأسبوعي ---- */
+function rvAcc(cid){ if(!RV_STORE.acc[cid]) RV_STORE.acc[cid] = { right:0, wrong:0, sec:0 }; return RV_STORE.acc[cid]; }
+function rvDayKey(d){ return (d || new Date()).toLocaleDateString('en-CA'); }
+function rvRecord(key, ok, sec){
+  const it = rvFindCard(key); if(!it) return;
+  const A = rvAcc(it.courseId);
+  A[ok ? 'right' : 'wrong']++; A.sec += Math.round(sec || 0);
+  const dk = rvDayKey(); RV_STORE.days[dk] = (RV_STORE.days[dk] || 0) + 1;
+}
+function rvUnrecord(key, ok){
+  const it = rvFindCard(key); if(!it) return;
+  const A = rvAcc(it.courseId), f = ok ? 'right' : 'wrong';
+  A[f] = Math.max(0, A[f] - 1);
+  const dk = rvDayKey(); if(RV_STORE.days[dk]) RV_STORE.days[dk] = Math.max(0, RV_STORE.days[dk] - 1);
+}
+function rvFmtTime(sec){
+  if(!sec) return '٠ د';
+  if(sec < 60) return 'أقل من دقيقة';
+  const m = Math.round(sec / 60);
+  return m < 60 ? rvNum(m) + ' د' : rvNum(Math.floor(m / 60)) + ' س ' + rvNum(m % 60) + ' د';
+}
+/* الأسبوع يبدأ من السبت */
+function rvWeekCount(){
+  const d = new Date(), back = (d.getDay() + 1) % 7;
+  let n = 0;
+  for(let i = 0; i <= back; i++){ const x = new Date(d); x.setDate(d.getDate() - i); n += RV_STORE.days[rvDayKey(x)] || 0; }
+  return n;
+}
+function rvOpenGoal(){ state.modal = 'rv-goal'; render(); }
+function rvSaveGoal(){
+  const el = document.getElementById('rv-goal-input');
+  const v = el ? parseInt(el.value, 10) : 0;
+  RV_STORE.goal = (v > 0 && v <= 5000) ? v : 0;
+  rvSave(); closeModal();
+}
+function rvClearGoal(){ RV_STORE.goal = 0; rvSave(); closeModal(); }
+function renderGoalModal(){
+  return `
+    <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
+      <div class="modal-card">
+        <button class="btn-ghost btn-sm modal-close" onclick="closeModal()" style="border-radius:50%; width:32px; height:32px; padding:0;">${RV_ICON_CLOSE}</button>
+        <h3>هدف الأسبوع</h3>
+        <p class="sub-note">كم بطاقة تريد مراجعتها هذا الأسبوع؟ (يبدأ الأسبوع من السبت)</p>
+        ${rvGoalProgressHtml()}
+        <input id="rv-goal-input" class="rv-goal-input" type="number" inputmode="numeric" min="1" max="5000" value="${RV_STORE.goal || ''}" placeholder="عدد البطاقات">
+        <div class="rv-goal-chips">${[30,50,100,150].map(n=>`<button class="rv-chip" onclick="document.getElementById('rv-goal-input').value=${n}">${rvNum(n)}</button>`).join('')}</div>
+        <div class="modal-actions">
+          ${RV_STORE.goal ? `<button class="btn btn-ghost btn-sm" onclick="rvClearGoal()">إزالة الهدف</button>` : `<button class="btn btn-ghost btn-sm" onclick="closeModal()">إلغاء</button>`}
+          <button class="btn btn-primary btn-sm" onclick="rvSaveGoal()">حفظ</button>
+        </div>
+      </div>
+    </div>`;
+}
+function rvGoalState(){
+  const g = RV_STORE.goal || 0, n = rvWeekCount();
+  return { g, n, pct: g ? Math.min(100, Math.round(n / g * 100)) : 0, done: !!g && n >= g };
+}
+function rvGoalProgressHtml(){
+  const s = rvGoalState();
+  if(!s.g) return '';
+  return `
+    <div class="rv-goal-prog">
+      <div class="progress-bar"><div style="width:${s.pct}%"></div></div>
+      <div class="rv-goal-line ${s.done?'done':''}">${s.done ? RV_ICON_CHECK : ''}${rvNum(Math.min(s.n, s.g))} / ${rvNum(s.g)} بطاقة هذا الأسبوع</div>
+    </div>`;
+}
+function rvStripToolsHtml(){
+  const s = rvGoalState();
+  return `
+    <button class="rv-tool ${s.g ? 'ring' : ''}" style="--p:${s.pct}" title="هدف الأسبوع" onclick="rvOpenGoal()">${RV_ICON_TARGET}</button>
+    <button class="rv-tool" title="مقارنة المقررات" onclick="go('rvcompare')">${RV_ICON_CHART}</button>`;
+}
+
+/* ---- إحصائيات عامة لجميع المستخدمين (Supabase: جدول review_events) ----
+   كل جولة تُكمَل في درس تُسجَّل صفًّا واحدًا: الجهاز، المقرر، الدرس، هل كانت بلا خطأ. */
+function rvDeviceId(){
+  try{
+    let d = localStorage.getItem('bs_rv_device');
+    if(!d){ d = 'd' + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('bs_rv_device', d); }
+    return d;
+  }catch(e){ return 'anon'; }
+}
+let RV_GLOBAL = null;
+async function rvSendEvent(courseId, lessonId, perfect){
+  try{
+    if(typeof sb === 'undefined') return;
+    const { error } = await sb.from('review_events').insert({ device_id: rvDeviceId(), course_id: courseId, lesson_id: String(lessonId), perfect: !!perfect });
+    if(error) throw error;
+  }catch(e){ console.error('rvSendEvent', e); }
+}
+async function rvLoadGlobal(){
+  try{
+    if(typeof sb === 'undefined') return null;
+    const { data, error } = await sb.from('review_events').select('device_id,course_id,lesson_id,perfect').limit(5000);
+    if(error) throw error;
+    const rows = data || [];
+    const perfectSet = new Set(), perCourse = {}, devices = new Set();
+    rows.forEach(r=>{
+      perCourse[r.course_id] = (perCourse[r.course_id] || 0) + 1;
+      devices.add(r.device_id);
+      if(r.perfect) perfectSet.add(r.device_id + '|' + r.course_id + '|' + r.lesson_id);
+    });
+    let top = null;
+    REVIEW_COURSES.forEach(c=>{ const n = perCourse[c.id] || 0; if(n > 0 && (!top || n > top.n)) top = { name:c.name, n }; });
+    return { perfect: perfectSet.size, students: devices.size, top };
+  }catch(e){ console.error('rvLoadGlobal', e); return null; }
+}
+function rvStripHtml(g){
+  const num = v => (v === null || v === undefined) ? '…' : rvNum(v);
+  return `
+    <div class="rv-strip-item"><div class="num">${g ? num(g.perfect) : '…'}</div><div class="lbl">دروس أُتمّت بلا خطأ</div></div>
+    <div class="rv-strip-item"><div class="num rv-strip-name">${g ? (g.top ? escapeHtml(g.top.name) : '—') : '…'}</div><div class="lbl">المقرر الأكثر مراجعةً</div></div>
+    <div class="rv-strip-item"><div class="num">${g ? num(g.students) : '…'}</div><div class="lbl">طالبًا بدأ المراجعة</div></div>`;
+}
+async function hydrateReviewStrip(){
+  if(!document.getElementById('rv-strip')) return;
+  const g = await rvLoadGlobal();
+  if(g) RV_GLOBAL = g;
+  const el = document.getElementById('rv-strip');
+  if(el) el.innerHTML = rvStripHtml(RV_GLOBAL);
+}
+
+/* ---- جلسات المراجعة وحفظ التقدّم ----
+   مفتاح الجلسة:  L|رقم-المقرر|رقم-الدرس|النوع   أو   F|important  /  F|hard
+   سجل التقدّم:   { order:[مفاتيح البطاقات], pos:رقم, res:{ مفتاح:1(صحيح)|0(خطأ) } } */
+function rvSessionKeys(sk){
+  const p = sk.split('|');
+  if(p[0] === 'L'){
+    const ls = rvLessons(p[1]).find(l => String(l.id) === p[2]);
+    return ls ? rvLessonKeys(p[1], ls, p[3]) : [];
+  }
+  if(p[0] === 'F') return rvFlaggedKeys(p[1]);
+  return [];
+}
+function rvSessionTitle(sk){
+  const p = sk.split('|');
+  if(p[0] === 'F') return p[1] === 'hard' ? 'البطاقات الصعبة' : 'البطاقات المهمة';
+  const ls = rvLessons(p[1]).find(l => String(l.id) === p[2]);
+  return ls ? ls.title : '';
+}
+function rvSync(rec, fresh){
+  const order = rec.order.filter(k => fresh.includes(k)).concat(fresh.filter(k => !rec.order.includes(k)));
+  const res = {};
+  order.forEach(k => { if(rec.res[k] === 0 || rec.res[k] === 1) res[k] = rec.res[k]; });
+  return { order, pos: Math.min(rec.pos || 0, order.length), res };
+}
+function rvStats(rec){
+  let right = 0, wrong = 0;
+  rec.order.forEach(k => { if(rec.res[k] === 1) right++; else if(rec.res[k] === 0) wrong++; });
+  const total = rec.order.length;
+  return { total, done: right + wrong, left: total - right - wrong, right, wrong };
+}
+function rvPeek(sk){
+  const rec = RV_STORE.progress[sk];
+  if(!rec) return null;
+  return rvStats(rvSync(rec, rvSessionKeys(sk)));
+}
+function rvOpenSession(sk, restart, startKey){
+  const fresh = rvSessionKeys(sk);
+  if(!fresh.length){ showToast('لا توجد بطاقات هنا بعد'); return; }
+  let rec = restart ? null : RV_STORE.progress[sk];
+  rec = rec ? rvSync(rec, fresh) : { order: fresh.slice(), pos:0, res:{} };
+  if(startKey){ const at = rec.order.indexOf(startKey); if(at >= 0) rec.pos = at; }
+  RV_STORE.progress[sk] = rec;
+  rvSave();
+  const extra = { rv:{ sk, revealed:false, t0:Date.now() } };
+  if(sk.startsWith('L|')) extra.rvCourseId = sk.split('|')[1];
+  setView('rvstudy', extra);
+}
+function rvBack(){
+  const sk = state.rv ? state.rv.sk : '';
+  state = { ...state, rv:null };
+  if(sk.startsWith('F|')) setView('rvflagged', { rvFlagKind: sk.split('|')[1] });
+  else setView('rvcourse', { rvCourseId: sk.split('|')[1] });
+}
+function rvReveal(){ if(state.rv && !state.rv.revealed){ state.rv.revealed = true; render(); } }
+function rvGrade(ok){
+  const rec = state.rv && RV_STORE.progress[state.rv.sk];
+  if(!rec || rec.pos >= rec.order.length) return;
+  const gk = rec.order[rec.pos];
+  const sec = Math.min(120, (Date.now() - (state.rv.t0 || Date.now())) / 1000);   /* مدة البطاقة (بحدّ أقصى ٢ د لتفادي الخمول) */
+  rec.res[gk] = ok ? 1 : 0;
+  rvRecord(gk, ok, sec);
+  rec.pos++;
+  if(rec.pos >= rec.order.length) rvRoundDone(state.rv.sk, rec);
+  rvSave();
+  state.rv.revealed = false;
+  state.rv.t0 = Date.now();
+  render();
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+function rvPrev(){
+  const rec = state.rv && RV_STORE.progress[state.rv.sk];
+  if(!rec || rec.pos <= 0) return;
+  rec.pos--;
+  const pk = rec.order[rec.pos];
+  if(rec.res[pk] === 1 || rec.res[pk] === 0) rvUnrecord(pk, rec.res[pk] === 1);
+  delete rec.res[pk];
+  rvSave();
+  state.rv.revealed = false;
+  state.rv.t0 = Date.now();
+  render();
+}
+function rvAskReset(sk){ state.modal = 'confirm-reset-review'; state.rvResetKey = sk; render(); }
+function confirmResetReview(){
+  const sk = state.rvResetKey;
+  state.rvResetKey = null;
+  closeModal();
+  if(!sk) return;
+  delete RV_STORE.progress[sk];
+  rvSave();
+  if(state.view === 'rvstudy' && state.rv && state.rv.sk === sk) rvOpenSession(sk, true);
+  else render();
+}
+function renderResetReviewModal(){
+  return `
+    <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
+      <div class="modal-card">
+        <button class="btn-ghost btn-sm modal-close" onclick="closeModal()" style="border-radius:50%; width:32px; height:32px; padding:0;">${RV_ICON_CLOSE}</button>
+        <h3>إعادة التعيين</h3>
+        <p class="sub-note">سيتم حذف تقدمك الحالي في هذه المراجعة (ما أنجزتَه وعدد الصحيح والخطأ) والبدء من جديد. علامات «المهمة» و«الصعبة» على البطاقات تبقى كما هي. هل تريد المتابعة؟</p>
+        <div class="modal-actions">
+          <button class="btn btn-ghost btn-sm" onclick="closeModal()">إلغاء</button>
+          <button class="btn btn-primary btn-sm" onclick="confirmResetReview()">نعم، أعد التعيين</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ---- التبويبان: أسئلة / مراجعة ---- */
+function setHomeTab(t){ state.homeTab = t; render(); }
+function renderHomeTabs(){
+  const rv = state.homeTab === 'review';
+  return `
+  <div class="home-tabs" role="tablist">
+    <button class="home-tab ${!rv?'active':''}" role="tab" onclick="setHomeTab('questions')">أسئلة</button>
+    <button class="home-tab ${rv?'active':''}" role="tab" onclick="setHomeTab('review')">بطاقات</button>
+    ${rv ? `<div class="home-tools">${rvStripToolsHtml()}</div>` : ''}
+  </div>`;
+}
+
+/* ---- صفحة مقررات المراجعة ---- */
+function renderReviewHome(){
+  const nImp = rvFlaggedKeys('important').length;
+  const nHard = rvFlaggedKeys('hard').length;
+  return `
+  <div class="rv-strip" id="rv-strip">${rvStripHtml(RV_GLOBAL)}</div>
+  <div class="rv-flagbox">
+    <button class="rv-flagbox-half important" onclick="go('rvflagged',{rvFlagKind:'important'})">
+      <span class="rv-flagbox-ico">${RV_ICON_STAR}</span><b>البطاقات المهمة</b><span class="rv-count">${rvNum(nImp)}</span>
+    </button>
+    <span class="rv-flagbox-sep"></span>
+    <button class="rv-flagbox-half hard" onclick="go('rvflagged',{rvFlagKind:'hard'})">
+      <span class="rv-flagbox-ico">${RV_ICON_HARD}</span><b>البطاقات الصعبة</b><span class="rv-count">${rvNum(nHard)}</span>
+    </button>
+  </div>
+
+  <div class="section-title"><span class="hint">اختر مقررًا لمراجعة دروسه</span></div>
+  <div class="courses-grid">
+    ${rvCoursesOrdered().map(c=>{
+      const n = rvLessons(c.id).length, open = rvCardTotal(c.id) > 0;
+      return `
+      <div class="course-card ${open?'active':'locked'}" ${open ? `onclick="go('rvcourse',{rvCourseId:'${c.id}'})"` : ''}>
+        <div class="course-icon">${ICONS[c.icon] || ICONS.book}</div>
+        <h3>${escapeHtml(c.name)}</h3>
+        <span class="status-chip ${open?'':'locked'}">${open ? rvNum(n)+' '+(n===1?'درس':n<=10?'دروس':'درسًا') : 'قريبًا'}</span>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+/* المقرر الذي فيه بطاقات يكون مفتوحًا وفي الأعلى، وبقية المقررات مغلقة بعده */
+function rvCardTotal(cid){ return rvLessons(cid).reduce((n, l) => n + l.cards.length, 0); }
+function rvCoursesOrdered(){
+  return REVIEW_COURSES.filter(c => rvCardTotal(c.id) > 0).concat(REVIEW_COURSES.filter(c => rvCardTotal(c.id) === 0));
+}
+/* عنوان المجموعة بلا رقم الصفحة، مثل: «(ص٢)» أو «(ص٢–٣)» */
+function rvGroupTitle(g){ return String(g).replace(/\s*\(ص[^)]*\)\s*$/, ''); }
+
+/* ---- دروس المقرر ---- */
+function renderReviewCourse(){
+  const c = REVIEW_COURSES.find(c => c.id === state.rvCourseId);
+  if(!c) return `<p>لم يتم العثور على المقرر.</p>`;
+  const lessons = rvLessons(c.id);
+  return `
+  <button class="back-btn" onclick="setView('home',{homeTab:'review'})">${RV_ICON_BACK} رجوع</button>
+  <div class="panel">
+    <div class="course-head">
+      <div class="course-icon">${ICONS[c.icon] || ICONS.book}</div>
+      <div><h2>${escapeHtml(c.name)}</h2><p>${rvNum(lessons.length)} دروس${(RV_STORE.acc[c.id] && RV_STORE.acc[c.id].sec) ? ` · ${RV_ICON_CLOCK} ${rvFmtTime(RV_STORE.acc[c.id].sec)}` : ''}</p></div>
+    </div>
+    ${lessons.length ? `<div class="courses-grid rv-lessons">${lessons.map((ls,idx)=>{
+      const sk = `L|${c.id}|${ls.id}|all`;
+      const st = rvPeek(sk);
+      const pct = st && st.total ? Math.round(st.done / st.total * 100) : 0;
+      const perfect = rvLessonMark(c.id, ls.id).perfect;
+      return `
+      <div class="course-card active rv-lesson" onclick="rvOpenSession('${sk}')">
+        ${perfect ? `<span class="rv-perfect" title="أتممتَ هذا الدرس بلا خطأ">${RV_ICON_PERFECT}</span>` : ''}
+        <div class="course-icon rv-lesson-num">${rvNum(idx+1)}</div>
+        <h3>${escapeHtml(ls.title)}</h3>
+        <span class="status-chip">${rvNum(ls.cards.length)} بطاقة</span>
+        ${rvLessonMark(c.id, ls.id).best != null ? `<span class="rv-best" title="أفضل نتيجة">${RV_ICON_TROPHY}${rvNum(rvLessonMark(c.id, ls.id).best)}٪</span>` : ''}
+        <span class="rv-tiny"><span>${RV_ICON_OK}${rvNum(st ? st.right : 0)}</span><span>${RV_ICON_NO}${rvNum(st ? st.wrong : 0)}</span></span>
+        <span class="mini-progress-bg" style="width:80%"><span class="mini-progress-fg" style="display:block; width:${pct}%"></span></span>
+      </div>`;
+    }).join('')}</div>` : `<p class="rv-empty">لم تُضَف دروس لهذا المقرر بعد.</p>`}
+  </div>`;
+}
+
+/* ---- صفحة البطاقات المهمة / الصعبة: زر لمراجعة الكل + مربعات صغيرة مجمّعة حسب المقرر ---- */
+function renderReviewFlagged(){
+  const kind = state.rvFlagKind === 'hard' ? 'hard' : 'important';
+  const keys = rvFlaggedKeys(kind);
+  const sk = 'F|' + kind;
+  const st = rvPeek(sk);
+  const title = kind === 'hard' ? 'البطاقات الصعبة' : 'البطاقات المهمة';
+  const ico = kind === 'hard' ? RV_ICON_HARD : RV_ICON_STAR;
+  const groups = [];
+  keys.forEach(k=>{
+    const it = rvFindCard(k);
+    let g = groups.find(x => x.id === it.courseId);
+    if(!g){ g = { id: it.courseId, items: [] }; groups.push(g); }
+    g.items.push(it);
+  });
+  return `
+  <button class="back-btn" onclick="setView('home',{homeTab:'review'})">${RV_ICON_BACK} رجوع</button>
+  <div class="panel">
+    <div class="course-head">
+      <div class="course-icon rv-ico-${kind}">${ico}</div>
+      <div><h2>${title}</h2><p>${rvNum(keys.length)} بطاقة</p></div>
+    </div>
+    ${keys.length ? `
+    <div class="rv-all-row">
+      <button class="btn btn-primary rv-all-btn" onclick="rvOpenSession('${sk}')">${st && st.done ? 'تابع مراجعة الكل' : 'راجع الكل'}</button>
+      ${st ? `<button class="btn btn-ghost rv-all-reset" onclick="rvAskReset('${sk}')">إعادة تعيين</button>` : ''}
+    </div>
+    ${groups.map(g=>{
+      const c = REVIEW_COURSES.find(c => c.id === g.id);
+      return `
+      <div class="rv-group-title"><span>${escapeHtml(c ? c.name : '')}</span><span class="rv-count">${rvNum(g.items.length)}</span></div>
+      <div class="rv-sq-grid">
+        ${g.items.map(it=>{
+          const li = rvLessons(it.courseId).findIndex(l => String(l.id) === String(it.lesson.id));
+          const txt = String(it.card.f || '');
+          return `
+          <div class="rv-sqw">
+            <div class="rv-sq" onclick="rvOpenSession('${sk}', false, '${it.key}')">
+              ${rvFlagBadges(it.key)}
+              <div class="rv-sq-text">${escapeHtml(txt.length > 70 ? txt.slice(0,70) + '…' : txt)}</div>
+              <div class="rv-sq-foot">درس ${rvNum(li + 1)}</div>
+            </div>
+            <button class="rv-sq-del" title="إزالة من ${title}" onclick="event.stopPropagation(); rvToggleFlag('${it.key}','${kind}')">${ICONS.trash}</button>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('')}` : `
+    <p class="rv-empty">لا توجد بطاقات ${kind === 'hard' ? 'صعبة' : 'مهمة'} بعد.</p>`}
+  </div>`;
+}
+
+/* ---- مقارنة المقررات: ترتيب حسب نسبة الإجابات الصحيحة ---- */
+function renderReviewCompare(){
+  const rows = REVIEW_COURSES.map(c=>{
+    const A = RV_STORE.acc[c.id] || { right:0, wrong:0, sec:0 };
+    const n = A.right + A.wrong;
+    const lessons = rvLessons(c.id);
+    return { c, n, sec:A.sec, acc: n ? Math.round(A.right / n * 100) : null,
+             perfect: lessons.filter(l => rvLessonMark(c.id, l.id).perfect).length, total: lessons.length };
+  });
+  const ranked = rows.filter(r => r.acc !== null).sort((a,b) => (b.acc - a.acc) || (b.n - a.n));
+  const rest = rows.filter(r => r.acc === null);
+  const row = (r, i) => `
+    <div class="rv-cmp-row">
+      <div class="rv-cmp-rank">${rvNum(i + 1)}</div>
+      <div class="rv-cmp-main">
+        <div class="rv-cmp-top"><b>${escapeHtml(r.c.name)}</b>
+          ${i === 0 && ranked.length > 1 ? `<span class="rv-cmp-tag best">${RV_ICON_TROPHY} الأقوى</span>` : ''}
+          ${i === ranked.length - 1 && ranked.length > 1 ? `<span class="rv-cmp-tag weak">${RV_ICON_HARD} يحتاج مراجعة</span>` : ''}
+          <span class="rv-cmp-pct">${rvNum(r.acc)}٪</span></div>
+        <div class="progress-bar"><div style="width:${r.acc}%"></div></div>
+        <div class="rv-cmp-meta">
+          <span><span class="rv-perfect-i">${RV_ICON_PERFECT}</span>${rvNum(r.perfect)} / ${rvNum(r.total)}</span>
+          <span>${RV_ICON_CLOCK}${rvFmtTime(r.sec)}</span>
+          <span>${rvNum(r.n)} بطاقة</span>
+        </div>
+      </div>
+    </div>`;
+  return `
+  <button class="back-btn" onclick="setView('home',{homeTab:'review'})">${RV_ICON_BACK} رجوع</button>
+  <div class="panel">
+    <div class="course-head">
+      <div class="course-icon">${RV_ICON_CHART}</div>
+      <div><h2>مقارنة المقررات</h2><p>مرتّبة حسب نسبة الإجابات الصحيحة</p></div>
+    </div>
+    ${ranked.length ? ranked.map(row).join('') : `<p class="rv-empty">ابدأ مراجعة أي درس لتظهر المقارنة هنا.</p>`}
+    ${ranked.length && rest.length ? `<div class="rv-group-title"><span>لم تبدأ بعد</span></div><div class="rv-cmp-rest">${rest.map(r=>`<span class="rv-cmp-chip">${escapeHtml(r.c.name)}</span>`).join('')}</div>` : ''}
+  </div>`;
+}
+
+/* ---- شاشة المراجعة (البطاقة الواحدة) ---- */
+function rvClozeHtml(front, back, revealed){
+  const parts = String(front).split(/…{2,}|_{3,}/);
+  const answers = String(back).split('|').map(s => s.trim());
+  const blanks = parts.length - 1;
+  const matched = blanks > 0 && blanks === answers.length;
+  let html = '';
+  parts.forEach((p,i)=>{
+    html += escapeHtml(p);
+    if(i < blanks){
+      html += (revealed && matched)
+        ? `<mark class="rv-ans">${escapeHtml(answers[i])}</mark>`
+        : `<span class="rv-blank"></span>`;
+    }
+  });
+  if(revealed && !matched) html += `<div class="rv-ans-box">${escapeHtml(back)}</div>`;
+  return html;
+}
+function renderReviewStudy(){
+  const rv = state.rv;
+  const rec = rv && RV_STORE.progress[rv.sk];
+  if(!rec) return `<button class="back-btn" onclick="rvBack()">${RV_ICON_BACK} رجوع</button><p>لا توجد جلسة مراجعة.</p>`;
+  while(rec.pos < rec.order.length && !rvFindCard(rec.order[rec.pos])) rec.pos++;
+  const st = rvStats(rec);
+  const pct = st.total ? Math.round(st.done / st.total * 100) : 0;
+  const head = `
+  <button class="back-btn" onclick="rvBack()">${RV_ICON_BACK} رجوع</button>
+  <div class="panel">
+    <div class="rv-study-head">
+      <h2>${escapeHtml(rvSessionTitle(rv.sk))}</h2>
+      <button class="btn btn-ghost btn-sm" onclick="rvAskReset('${rv.sk}')">إعادة التعيين</button>
+    </div>
+    <div class="rv-stats">
+      <div class="rv-stat"><div class="num">${rvNum(st.total)}</div><div class="lbl">الكل</div></div>
+      <div class="rv-stat"><div class="num">${rvNum(st.done)}</div><div class="lbl">أنجزت</div></div>
+      <div class="rv-stat"><div class="num">${rvNum(st.left)}</div><div class="lbl">بقي</div></div>
+      <div class="rv-stat ok"><div class="num">${rvNum(st.right)}</div><div class="lbl">${RV_ICON_OK}</div></div>
+      <div class="rv-stat bad"><div class="num">${rvNum(st.wrong)}</div><div class="lbl">${RV_ICON_NO}</div></div>
+    </div>
+    <div class="progress-bar"><div style="width:${pct}%"></div></div>`;
+
+  if(rec.pos >= rec.order.length){
+    return head + `
+    <div class="rv-done">
+      <div class="rv-done-ico">${RV_ICON_CHECK}</div><div class="rv-done-title">أتممت هذه المراجعة</div>
+      <p class="rv-done-sum"><span>${RV_ICON_OK}${rvNum(st.right)}</span><span>${RV_ICON_NO}${rvNum(st.wrong)}</span></p>
+      <div class="rv-mode-actions" style="justify-content:center;">
+        <button class="btn btn-primary rv-ok-btn" aria-label="تم" title="تم" onclick="rvBack()">${RV_ICON_TICK}</button>
+        <button class="btn btn-ghost" onclick="rvAskReset('${rv.sk}')">إعادة تعيين</button>
+      </div>
+    </div></div>`;
+  }
+
+  const key = rec.order[rec.pos];
+  const it = rvFindCard(key);
+  const revealed = !!rv.revealed;
+  const isCloze = rvType(it.card) === 'cloze';
+  const title = it.card.g ? `<div class="rv-card-title">${escapeHtml(rvGroupTitle(it.card.g))}</div>` : '';
+  const hchip = it.card.h ? `<div class="rv-card-h">الباب: ${escapeHtml(it.card.h)}</div>` : '';
+  const tap = revealed ? '' : '<div class="rv-tap">اضغط لإظهار الجواب</div>';
+  const face = isCloze ? `
+    <div class="rv-cloze-card ${revealed?'revealed':''}" onclick="rvReveal()">
+      ${title}
+      <div class="rv-body">${hchip}<div class="rv-text">${rvClozeHtml(it.card.f, it.card.b, revealed)}</div></div>
+      ${tap}
+    </div>` : `
+    <div class="rv-stack" onclick="rvReveal()">
+      <div class="rv-face rv-front">
+        ${title}
+        <div class="rv-body">${hchip}<div class="rv-text">${escapeHtml(it.card.f)}</div></div>
+        ${tap}
+      </div>
+      ${revealed ? `<div class="rv-face rv-back"><div class="rv-text">${escapeHtml(it.card.b)}</div></div>` : ''}
+    </div>`;
+
+  return head + `
+    <div class="rv-card-bar">
+      <span class="rv-card-pos">البطاقة ${rvNum(rec.pos + 1)} من ${rvNum(st.total)}</span>
+      ${rvFlagBadges(key)}
+      <span class="rv-flag-tools">${rvFlagButtons(key)}</span>
+    </div>
+    ${face}
+    <div class="rv-actions">
+      ${revealed ? `
+        <button class="btn rv-btn-wrong" onclick="rvGrade(false)">لم أعرفها</button>
+        <button class="btn rv-btn-right" onclick="rvGrade(true)">عرفتها</button>`
+      : `<button class="btn btn-primary" onclick="rvReveal()">أظهر الجواب</button>`}
+    </div>
+    ${rec.pos > 0 ? `<button class="rv-prev" onclick="rvPrev()">${RV_ICON_BACK} البطاقة السابقة</button>` : ''}
+  </div>`;
 }
 
 /* ============================ المقررات والاختبارات (من Supabase) ============================ */
@@ -1431,7 +2476,11 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<
 
 /* ============================ RENDER ROOT ============================ */
 function render(){
-  document.querySelectorAll('.nav-link').forEach(b=>{ b.classList.toggle('active', b.dataset.view===state.view); });
+  const navView = String(state.view).startsWith('rv') ? 'home' : state.view;
+  document.querySelectorAll('.nav-link').forEach(b=>{ b.classList.toggle('active', b.dataset.view===navView); });
+  /* زر «أضف سؤالك» خاص بتبويب الأسئلة فقط */
+  const fabEl = document.querySelector('.fab');
+  if(fabEl) fabEl.style.display = (String(state.view).startsWith('rv') || (state.view==='home' && state.homeTab==='review')) ? 'none' : '';
   const app = document.getElementById('app');
   let html = '';
   if(state.view==='home') html = renderHome();
@@ -1447,6 +2496,10 @@ function render(){
   else if(state.view==='favorites') html = renderFavoritesShell();
   else if(state.view==='progress') html = renderProgressShell();
   else if(state.view==='references') html = renderReferences();
+  else if(state.view==='rvcourse') html = renderReviewCourse();
+  else if(state.view==='rvflagged') html = renderReviewFlagged();
+  else if(state.view==='rvstudy') html = renderReviewStudy();
+  else if(state.view==='rvcompare') html = renderReviewCompare();
 
   html += `<div class="footer-note">مبادرة مستقلة غير تابعة لإدارة البرنامج<br><span class="pill-note">ساعة علم وساعة عمل</span></div>`;
   app.innerHTML = html;
@@ -1464,7 +2517,7 @@ function render(){
 
   if(state.view==='progress') hydrateProgress();
   if(state.view==='course') hydrateCourseExams(state.courseId);
-  if(state.view==='home'){ hydrateHomeStats(); hydrateQuestionCounts(); hydrateHomeCoursesProgress(); }
+  if(state.view==='home'){ hydrateHomeStats(); hydrateQuestionCounts(); hydrateHomeCoursesProgress(); if(state.homeTab==='review') hydrateReviewStrip(); }
   hydrateOwnerNameRow();
   if(state.view==='quiz') hydrateQuizTimer();
   if(state.view==='imanarkan') hydrateImanArkanTimer();
@@ -1516,7 +2569,9 @@ function renderHome(){
   </div>
   <div id="home-reset-area"></div>
 
-  <div class="section-title"><h2>المقررات</h2><span class="hint">اختر مقررًا لبدء الاختبار</span></div>
+  ${renderHomeTabs()}
+  ${state.homeTab==='review' ? renderReviewHome() : `
+  <div class="section-title"><span class="hint">اختر مقررًا لبدء الاختبار</span></div>
   <div class="courses-grid">
     ${COURSES.map(c=>`
       <div class="course-card ${c.status}" ${c.status==='active'?`onclick="go('course',{courseId:'${c.id}'})"`:''}>
@@ -1535,6 +2590,7 @@ function renderHome(){
       </div>
     `).join('')}
   </div>
+  `}
   `;
 }
 async function hydrateQuestionCounts(){
@@ -4080,6 +5136,8 @@ function renderModal(){
   if(state.modal === 'admin-submitted'){ root.innerHTML = renderAdminSubmittedModal(); return; }
   if(state.modal === 'confirm-reset-timeline'){ root.innerHTML = renderResetTimelineModal(); return; }
   if(state.modal === 'confirm-reset-imanarkan'){ root.innerHTML = renderResetImanArkanModal(); return; }
+  if(state.modal === 'confirm-reset-review'){ root.innerHTML = renderResetReviewModal(); return; }
+  if(state.modal === 'rv-goal'){ root.innerHTML = renderGoalModal(); return; }
   if(state.modal === 'my-questions'){ root.innerHTML = renderMyQuestionsModal(); hydrateMyQuestionsModal(); return; }
   if(state.modal === 'ref-add-auth'){ root.innerHTML = renderRefAddAuthModal(); return; }
   if(state.modal === 'ref-delete-confirm'){ root.innerHTML = renderRefDeleteModal(); return; }
