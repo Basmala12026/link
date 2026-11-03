@@ -1088,6 +1088,9 @@ const ICONS = {
 };
 
 const EXAM_SECONDS = 300; // 5 minutes
+/* مدة الاختبار لكل مقرر (بالثواني)؛ ما لم يُذكر المقرر هنا فمدته الافتراضية EXAM_SECONDS */
+const EXAM_SECONDS_BY_COURSE = { ajurri: 600 };   // فرض طلب العلم: ١٠ دقائق
+function examSecondsFor(courseId){ return EXAM_SECONDS_BY_COURSE[courseId] || EXAM_SECONDS; }
 
 let COURSES = [];
 /* تُحمَّل المقررات والاختبارات والأسئلة من Supabase عند بدء تشغيل الصفحة
@@ -3541,7 +3544,7 @@ function buildShuffledQuiz(examData, courseId, examId){
     const optIdx = shuffle(q.options.map((o,i)=>i));
     return { id:`${courseId}__${examId}__${q.oi != null ? q.oi : origIdx}`, qid:q.qid, text:q.q, options: optIdx.map(i=>q.options[i]), correct: optIdx.indexOf(q.a), hint:q.hint||'' };
   });
-  return { questions: shuffle(qs), idx:0, answers:new Array(examData.questions.length).fill(null), remaining:EXAM_SECONDS, startedAt:Date.now() };
+  return { questions: shuffle(qs), idx:0, answers:new Array(examData.questions.length).fill(null), remaining:examSecondsFor(courseId), limit:examSecondsFor(courseId), startedAt:Date.now() };
 }
 function levelOf(pct){
   if(pct>=90) return {label:'ممتاز', cls:'lvl-excellent'};
@@ -4040,7 +4043,7 @@ async function startAddedQuestionsQuiz(courseId, batchIndex){
       hint: sub.name ? `سؤال مضاف من: ${sub.name}` : 'سؤال مضاف من أحد المستخدمين'
     };
   });
-  const quiz = { questions: shuffle(qs), idx:0, answers:new Array(qs.length).fill(null), remaining:EXAM_SECONDS, startedAt:Date.now() };
+  const quiz = { questions: shuffle(qs), idx:0, answers:new Array(qs.length).fill(null), remaining:examSecondsFor(courseId), limit:examSecondsFor(courseId), startedAt:Date.now() };
   const favs = await loadFavorites();
   state.favIds = new Set(favs.map(f=>f.id));
   state.flaggedIds = state.flaggedIds || new Set();
@@ -4653,7 +4656,7 @@ function finishQuiz(){
   const q = state.quiz;
   let score = 0;
   q.questions.forEach((qq,i)=>{ if(q.answers[i]===qq.correct) score++; });
-  const timeTaken = EXAM_SECONDS - q.remaining;
+  const timeTaken = (q.limit || EXAM_SECONDS) - q.remaining;
   state.lastResult = { score, total:q.questions.length, courseId:state.courseId, examId:state.examId, saved:false, timeTaken };
   const __c = COURSES.find(c=>c.id===state.courseId);
   const __examVersion = __c && __c.exams && __c.exams[state.examId] ? __c.exams[state.examId].createdAt : null;
@@ -6189,7 +6192,7 @@ function renderHowToModal(){
         <div class="steps">
           <div class="step"><span class="num"></span><div><h4>اختر مقررًا</h4><p>من الصفحة الرئيسية، اختر أحد المقررات المتاحة (المقررات المقفلة بانتظار رفع ملفاتها).</p></div></div>
           <div class="step"><span class="num"></span><div><h4>اختر اختبارًا</h4><p>لكل مقرر ٥ اختبارات (١٠ أسئلة لكل اختبار)، بالإضافة إلى اختبار إضافي لمن أراد مزيدًا من التدريب.</p></div></div>
-          <div class="step"><span class="num"></span><div><h4>انتبه للوقت</h4><p>لكل اختبار حد زمني ٥ دقائق يظهر أعلى الصفحة.</p></div></div>
+          <div class="step"><span class="num"></span><div><h4>انتبه للوقت</h4><p>لكل اختبار حد زمني ٥ دقائق (١٠ دقائق في مقرر فرض طلب العلم) يظهر أعلى الصفحة.</p></div></div>
           <div class="step"><span class="num"></span><div><h4>أجب وتعلّم فورًا</h4><p>عند اختيار إجابة تظهر النتيجة الصحيحة مباشرة؛ وإن أخطأت يظهر تلميح موجز يوضّح الصواب قبل الانتقال للسؤال التالي.</p></div></div>
           <div class="step"><span class="num"></span><div><h4>يُحفظ تقدّمك تلقائيًا</h4><p>تُحفظ كل نتيجة على جوالك فقط ضمن «تقدّمي» دون أي اسم أو مشاركة، وتدخل نتيجتك أيضًا ضمن إحصاء المنصة العام بلا أسماء لرصد المستوى العام فقط.</p></div></div>
           <div class="step"><span class="num"></span><div><h4>شارك بسؤال من عندك</h4><p>اضغط الزر العائم «+ أضف سؤالك» في أسفل الصفحة لإضافة سؤال جديد على أي مقرر مباشرة وبلا أي مراجعة، ودون حدّ لعدد الأسئلة التي يمكنك إضافتها.</p></div></div>
