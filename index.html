@@ -951,6 +951,12 @@
   /* علم الإبلاغ داخل البطاقة، أعلى اليمين */
   .rv-report{ position:absolute; top:8px; right:8px; width:28px; height:28px; z-index:2; }
   .rv-report svg{ width:14px; height:14px; }
+  .rv-adm{ position:absolute; top:8px; left:8px; display:flex; gap:4px; z-index:2; }
+  .rv-adm button{ width:24px; height:24px; padding:0; border:0; border-radius:50%; background:rgba(110,122,94,.12); color:var(--sage-deep); cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:.65; }
+  .rv-adm button:hover{ opacity:1; background:rgba(110,122,94,.22); }
+  .rv-adm button svg{ width:12px; height:12px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .rv-adm button.x:hover{ background:rgba(192,85,59,.18); color:#C0553B; }
+  .rv-edit-ta{ width:100%; min-height:130px; padding:10px 12px; border:1.5px solid rgba(110,122,94,.35); border-radius:12px; font:inherit; line-height:1.9; resize:vertical; background:#fff; color:inherit; box-sizing:border-box; }
   /* الفراغ القابل للنقر */
   .rv-blank.tap{ cursor:pointer; background:var(--sage-pale-2); border-radius:6px 6px 0 0; animation:rvBlink 1.7s ease-in-out infinite; }
   @keyframes rvBlink{ 0%,100%{ background:var(--sage-pale-2); } 50%{ background:var(--sage-pale); } }
@@ -2668,12 +2674,110 @@ function rvReport(key){
   render();
 }
 
+/* ---- تعديل القفا وحذف البطاقة (للمسؤول بالرمز السري) ----
+   التعديلات مشتركة بين الجميع: جدول Supabase باسم review_card_edits (card_key, course_id, back, deleted).
+   الأصل في الملف لا يتغير؛ تُطبَّق التعديلات فوقه عند فتح الموقع. */
+const RV_EDITS = {};
+function rvApplyEdits(){
+  Object.keys(RV_EDITS).forEach(key=>{
+    const e = RV_EDITS[key];
+    const p = key.split('|'); if(p.length !== 3) return;
+    const ls = rvLessons(p[0]).find(l => String(l.id) === p[1]); if(!ls) return;
+    const at = ls.cards.findIndex((c,i)=> String(rvCardId(c,i)) === p[2]); if(at < 0) return;
+    if(e.deleted) ls.cards.splice(at, 1);
+    else if(e.back != null && e.back !== '') ls.cards[at].b = e.back;
+  });
+}
+async function rvLoadEdits(){
+  try{
+    const { data, error } = await sb.from('review_card_edits').select('card_key,back,deleted');
+    if(error || !data) return;
+    data.forEach(r => { RV_EDITS[r.card_key] = { back:r.back, deleted:!!r.deleted }; });
+    rvApplyEdits();
+  }catch(e){}
+}
+const RV_ICON_EDIT = `<svg viewBox="0 0 24 24"><path d="M4 20l3.5-1 10-10-2.5-2.5-10 10L4 20z"/><path d="M14 7l2.5 2.5"/></svg>`;
+const RV_ICON_X = `<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
+function rvAdminBtns(it){
+  return `<div class="rv-adm">
+    <button title="تعديل القفا" onclick="event.stopPropagation(); rvAdminOpen('edit','${it.key}')">${RV_ICON_EDIT}</button>
+    <button class="x" title="حذف البطاقة" onclick="event.stopPropagation(); rvAdminOpen('del','${it.key}')">${RV_ICON_X}</button>
+  </div>`;
+}
+let RV_ADMIN_OK = false;
+function rvAdminOpen(mode, key){
+  state.rvAdmin = { mode, key };
+  state.modal = 'rv-admin';
+  render();
+  setTimeout(()=>{ const el = document.getElementById(RV_ADMIN_OK ? 'rv-edit-ta' : 'rv-admin-pass'); if(el) el.focus(); }, 30);
+}
+function renderRvAdminModal(){
+  const a = state.rvAdmin || {}, it = rvFindCard(a.key);
+  if(!it) return '';
+  const isEdit = a.mode === 'edit';
+  const passField = RV_ADMIN_OK ? '' : `<div class="field"><label>الرمز السري</label><input type="password" id="rv-admin-pass" placeholder="الرمز السري" onkeydown="if(event.key==='Enter' && ${!isEdit}) rvAdminSubmit()"></div>`;
+  const cloze = rvType(it.card) === 'cloze';
+  return `
+  <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
+    <div class="modal-card">
+      <button class="btn-ghost btn-sm modal-close" onclick="closeModal()" style="border-radius:50%; width:32px; height:32px; padding:0;">✕</button>
+      <h3>${isEdit ? 'تعديل القفا' : 'حذف البطاقة'}</h3>
+      <p class="sub-note">${escapeHtml(String(it.card.f))}</p>
+      ${isEdit ? `<div class="field"><label>القفا${cloze ? ' (الإجابات مفصولة بالرمز | بنفس ترتيب الفراغات)' : ''}</label><textarea id="rv-edit-ta" class="rv-edit-ta">${escapeHtml(String(a.draft != null ? a.draft : it.card.b))}</textarea></div>`
+               : `<p class="sub-note">ستُحذف هذه البطاقة من المنصة لجميع الطلاب.</p>`}
+      ${passField}
+      <div class="modal-actions">
+        <button class="btn btn-ghost btn-sm" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary btn-sm" onclick="rvAdminSubmit()">${isEdit ? 'حفظ' : 'حذف'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+async function rvAdminSubmit(){
+  const a = state.rvAdmin; if(!a) return;
+  const ta0 = document.getElementById('rv-edit-ta'); if(ta0) a.draft = ta0.value;
+  if(!RV_ADMIN_OK){
+    const el = document.getElementById('rv-admin-pass');
+    if((el ? el.value : '') !== REF_ADMIN_PASS){ showToast('رمز غير صحيح'); return; }
+    RV_ADMIN_OK = true;
+  }
+  const it = rvFindCard(a.key); if(!it){ closeModal(); return; }
+  let row;
+  if(a.mode === 'edit'){
+    const ta = document.getElementById('rv-edit-ta');
+    const val = ta ? ta.value.trim() : '';
+    if(!val){ showToast('القفا فارغ'); return; }
+    if(rvType(it.card) === 'cloze'){
+      const blanks = String(it.card.f).split(/…{2,}|_{3,}/).length - 1;
+      if(val.split('|').length !== blanks){ showToast('عدد الإجابات لا يطابق عدد الفراغات (' + blanks + ')'); return; }
+    }
+    row = { card_key:a.key, course_id:it.courseId, back:val, deleted:false };
+  } else {
+    row = { card_key:a.key, course_id:it.courseId, back:null, deleted:true };
+  }
+  let saved = true;
+  try{
+    const { error } = await sb.from('review_card_edits').upsert(Object.assign({ updated_at:new Date().toISOString() }, row), { onConflict:'card_key' });
+    if(error) saved = false;
+  }catch(e){ saved = false; }
+  RV_EDITS[a.key] = { back:row.back, deleted:row.deleted };
+  if(a.mode === 'edit') it.card.b = row.back;
+  else {
+    const at = it.lesson.cards.indexOf(it.card);
+    if(at >= 0) it.lesson.cards.splice(at, 1);
+    if(state.rv){ state.rv.view = null; }
+  }
+  state.modal = null; state.rvAdmin = null;
+  render();
+  showToast(saved ? (a.mode === 'edit' ? 'تم حفظ القفا' : 'تم حذف البطاقة') : 'حُفظ على هذا الجهاز فقط (جدول التعديلات غير جاهز في Supabase)');
+}
+
 /* ---- بطاقة واحدة: o = { revealed, blanks, interactive } ---- */
 function rvCardHtml(it, o){
   const isCloze = rvType(it.card) === 'cloze';
   const title = it.card.g ? `<div class="rv-card-title">${escapeHtml(rvGroupTitle(it.card.g))}</div>` : '';
   const hchip = it.card.h ? `<div class="rv-card-h">الباب: ${escapeHtml(it.card.h)}</div>` : '';
-  const report = rvReportBtn(it);
+  const report = rvReportBtn(it) + rvAdminBtns(it);
   const matn = (it.card.m && !it.card.nm) ? `<div class="rv-matn"><span class="rv-matn-lbl">المتن</span>${escapeHtml(it.card.m)}</div>` : '';
   let hint = '';
   if(o.interactive && !o.revealed){
@@ -2862,6 +2966,7 @@ function setupRealtimeSync(){
       .on('postgres_changes', {event:'*', schema:'public', table:'attempts'}, ()=>{
         if(state.view==='home') hydrateHomeStats();
       })
+      .on('postgres_changes', {event:'*', schema:'public', table:'review_card_edits'}, async ()=>{ await rvLoadEdits(); render(); })
       .on('postgres_changes', {event:'*', schema:'public', table:'references_files'}, ()=>{
         if(state.view==='references') hydrateReferences();
       })
@@ -5837,6 +5942,7 @@ function renderModal(){
   if(state.modal === 'rv-goal'){ root.innerHTML = renderGoalModal(); return; }
   if(state.modal === 'rv-help'){ root.innerHTML = renderHelpModal(); return; }
   if(state.modal === 'my-questions'){ root.innerHTML = renderMyQuestionsModal(); hydrateMyQuestionsModal(); return; }
+  if(state.modal === 'rv-admin'){ root.innerHTML = renderRvAdminModal(); return; }
   if(state.modal === 'ref-add-auth'){ root.innerHTML = renderRefAddAuthModal(); return; }
   if(state.modal === 'ref-delete-confirm'){ root.innerHTML = renderRefDeleteModal(); return; }
   if(state.modal === 'set-name'){ root.innerHTML = renderSetNameModal(); return; }
@@ -6226,6 +6332,7 @@ function manualPlaySplash(){
 renderSplash();
 (async function initApp(){
   await loadCoursesFromSupabase();
+  await rvLoadEdits();
   render();
   loadDeviceName().then(n=>{ state.deviceName = n; hydrateOwnerNameRow(); });
   setupRealtimeSync();
