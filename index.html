@@ -3589,7 +3589,7 @@ function renderHome(){
         <div class="course-icon">${ICONS[c.icon]}</div>
         <h3>${c.name}</h3>
         <p class="sub">${c.sub}</p>
-        <span class="status-chip ${c.status==='locked'?'locked':''}">${c.status==='active'?'١٠ أسئلة/اختبار':'قريبًا'}</span>
+        <span class="status-chip ${c.status==='locked'?'locked':''}">${c.status==='active'?courseExamsLabel(c):'قريبًا'}</span>
         ${c.status==='active'?`
         <div class="mini-progress-wrap" id="mini-progress-${c.id}" style="display:none;">
           <div class="mini-progress-bg"><div class="mini-progress-fg" id="mini-progress-bar-${c.id}" style="width:0%"></div></div>
@@ -3600,6 +3600,24 @@ function renderHome(){
   </div>
   `}
   `;
+}
+/* عدد اختبارات المقرر لغلاف المقرر (بنفس حساب «أكملت X من N اختبارات» في صفحة المقرر) */
+function courseExamsCount(c){
+  const SPECIAL_EXAM_IDS = { zubda:['3','4'], ajrumiyyah:['2','4'] };
+  const specialIds = SPECIAL_EXAM_IDS[c.id] || [];
+  let n = specialIds.length;
+  Object.keys(c.exams||{}).forEach(s=>{
+    if(specialIds.includes(s) || !c.exams[s] || s==='extra') return;
+    n++;
+  });
+  return n;
+}
+function courseExamsLabel(c){
+  const n = courseExamsCount(c);
+  if(n <= 0) return 'لا اختبارات بعد';
+  if(n === 1) return 'اختبار واحد';
+  if(n === 2) return 'اختباران';
+  return n <= 10 ? `${toArabicDigits(n)} اختبارات` : `${toArabicDigits(n)} اختبارًا`;
 }
 async function hydrateQuestionCounts(){
   const list = await loadSubmittedQuestions();
