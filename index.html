@@ -3121,9 +3121,10 @@ async function loadCoursesFromSupabase(){
       examRows.filter(e=>e.course_id===c.id).forEach(e=>{
         const qs = qRows
           .filter(q=>q.course_id===c.id && q.exam_id===e.id)
-          .filter(q=>!(QEDITS[q.id] && QEDITS[q.id].deleted))
-          .map(q=>{
-            const o = { qid:q.id, q:q.question, options:q.options, a:q.correct_index, hint:q.hint||'' };
+          .map((q,pos)=>({ q, pos }))      /* pos = الترتيب الأصلي قبل الحذف: يثبّت معرّف السؤال (المفضلة/البلاغات) حتى بعد حذف ما قبله */
+          .filter(x=>!(QEDITS[x.q.id] && QEDITS[x.q.id].deleted))
+          .map(({ q, pos })=>{
+            const o = { qid:q.id, oi:pos, q:q.question, options:q.options, a:q.correct_index, hint:q.hint||'' };
             const ed = QEDITS[q.id];
             if(ed){
               if(ed.question) o.q = ed.question;
@@ -3441,7 +3442,7 @@ function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ con
 function buildShuffledQuiz(examData, courseId, examId){
   const qs = examData.questions.map((q,origIdx)=>{
     const optIdx = shuffle(q.options.map((o,i)=>i));
-    return { id:`${courseId}__${examId}__${origIdx}`, qid:q.qid, text:q.q, options: optIdx.map(i=>q.options[i]), correct: optIdx.indexOf(q.a), hint:q.hint||'' };
+    return { id:`${courseId}__${examId}__${q.oi != null ? q.oi : origIdx}`, qid:q.qid, text:q.q, options: optIdx.map(i=>q.options[i]), correct: optIdx.indexOf(q.a), hint:q.hint||'' };
   });
   return { questions: shuffle(qs), idx:0, answers:new Array(examData.questions.length).fill(null), remaining:EXAM_SECONDS, startedAt:Date.now() };
 }
