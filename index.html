@@ -956,6 +956,14 @@
   .rv-adm button:hover{ opacity:1; background:rgba(110,122,94,.22); }
   .rv-adm button svg{ width:12px; height:12px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
   .rv-adm button.x:hover{ background:rgba(192,85,59,.18); color:#C0553B; }
+  .q-adm{ display:flex; gap:4px; margin-inline-end:2px; }
+  .q-adm button{ width:26px; height:26px; padding:0; border:0; border-radius:50%; background:rgba(110,122,94,.12); color:var(--sage-deep); cursor:pointer; display:flex; align-items:center; justify-content:center; opacity:.6; }
+  .q-adm button:hover{ opacity:1; background:rgba(110,122,94,.22); }
+  .q-adm button svg{ width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+  .q-adm button.x:hover{ background:rgba(192,85,59,.18); color:#C0553B; }
+  .q-edit-opt{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .q-edit-opt input[type=text]{ flex:1; min-width:0; padding:9px 11px; border:1.5px solid rgba(110,122,94,.35); border-radius:10px; font:inherit; background:#fff; color:inherit; }
+  .q-edit-opt input[type=radio]{ accent-color:var(--sage-deep); width:18px; height:18px; flex:none; }
   .rv-edit-ta{ width:100%; min-height:130px; padding:10px 12px; border:1.5px solid rgba(110,122,94,.35); border-radius:12px; font:inherit; line-height:1.9; resize:vertical; background:#fff; color:inherit; box-sizing:border-box; }
   /* الفراغ القابل للنقر */
   .rv-blank.tap{ cursor:pointer; background:var(--sage-pale-2); border-radius:6px 6px 0 0; animation:rvBlink 1.7s ease-in-out infinite; }
@@ -2740,12 +2748,39 @@ async function rvLoadEdits(){
 const RV_ICON_EDIT = `<svg viewBox="0 0 24 24"><path d="M4 20l3.5-1 10-10-2.5-2.5-10 10L4 20z"/><path d="M14 7l2.5 2.5"/></svg>`;
 const RV_ICON_X = `<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
 function rvAdminBtns(it){
+  if(!ADMIN_MODE) return '';
   return `<div class="rv-adm">
     <button title="تعديل الوجه والقفا" onclick="event.stopPropagation(); rvAdminOpen('edit','${it.key}')">${RV_ICON_EDIT}</button>
     <button class="x" title="حذف البطاقة" onclick="event.stopPropagation(); rvAdminOpen('del','${it.key}')">${RV_ICON_X}</button>
   </div>`;
 }
 let RV_ADMIN_OK = false;
+/* وضع التعديل المخفي: أزرار التعديل/الحذف (البطاقات والأسئلة) لا تظهر إلا عند تفعيله على هذا الجهاز.
+   التفعيل/الإيقاف: ٧ نقرات متتالية على عبارة «مبادرة مستقلة…» أسفل الصفحة، ثم الرمز السري عند التفعيل. */
+let ADMIN_MODE = false;
+try{ ADMIN_MODE = localStorage.getItem('bs_admin_mode') === '1'; }catch(e){}
+if(ADMIN_MODE) RV_ADMIN_OK = true;
+let adminModeTaps = 0, adminModeTimer = null;
+function handleAdminModeTap(e){
+  if(e) e.stopPropagation();
+  adminModeTaps++;
+  if(adminModeTimer) clearTimeout(adminModeTimer);
+  adminModeTimer = setTimeout(()=>{ adminModeTaps = 0; }, 2500);
+  if(adminModeTaps < 7) return;
+  adminModeTaps = 0;
+  if(ADMIN_MODE){
+    ADMIN_MODE = false; RV_ADMIN_OK = false;
+    try{ localStorage.removeItem('bs_admin_mode'); }catch(err){}
+    render(); showToast('أُوقف وضع التعديل');
+    return;
+  }
+  const pass = prompt('أدخل الرمز السري لتفعيل وضع التعديل:');
+  if(pass === null) return;
+  if(pass !== REF_ADMIN_PASS){ showToast('رمز غير صحيح'); return; }
+  ADMIN_MODE = true; RV_ADMIN_OK = true;
+  try{ localStorage.setItem('bs_admin_mode', '1'); }catch(err){}
+  render(); showToast('فُعّل وضع التعديل');
+}
 function rvAdminOpen(mode, key){
   state.rvAdmin = { mode, key };
   state.modal = 'rv-admin';
@@ -2818,6 +2853,105 @@ async function rvAdminSubmit(){
   state.modal = null; state.rvAdmin = null;
   render();
   showToast(saved ? (a.mode === 'edit' ? 'تم حفظ التعديل' : 'تم حذف البطاقة') : 'حُفظ على هذا الجهاز فقط (جدول التعديلات غير جاهز في Supabase)');
+}
+
+/* ---- تعديل السؤال وحذفه في شاشة الاختبار (بالرمز السري، مثل البطاقات) ----
+   التعديلات مشتركة: جدول question_edits (q_id, question, options, correct_index, hint, deleted). الأصل في quiz_questions لا يتغير. */
+function qFindSource(qid){
+  for(const c of COURSES){ for(const eid of Object.keys(c.exams||{})){
+    const ex = c.exams[eid]; const i = ex.questions.findIndex(x=>x.qid === qid);
+    if(i >= 0) return { course:c, exam:ex, examId:eid, idx:i, q:ex.questions[i] };
+  } }
+  return null;
+}
+function qAdminOpen(mode){
+  const cur = state.quiz && state.quiz.questions[state.quiz.idx]; if(!cur || cur.qid == null) return;
+  const src = qFindSource(cur.qid);
+  state.qAdmin = { mode, qid:cur.qid, courseId:state.courseId, draft: src ? { q:src.q.q, options:src.q.options.slice(), a:src.q.a, hint:src.q.hint||'' } : null };
+  state.modal = 'q-admin';
+  render();
+  setTimeout(()=>{ const el = document.getElementById(QADM_OK() ? 'q-edit-q' : 'q-admin-pass'); if(el) el.focus(); }, 30);
+}
+function QADM_OK(){ return RV_ADMIN_OK; }
+function qAdminCollect(){
+  const a = state.qAdmin; if(!a || a.mode !== 'edit') return;
+  const g = id => document.getElementById(id);
+  if(!g('q-edit-q')) return;
+  const n = a.draft.options.length;
+  a.draft.q = g('q-edit-q').value;
+  a.draft.options = Array.from({length:n}, (_,i)=> g('q-edit-o'+i) ? g('q-edit-o'+i).value : a.draft.options[i]);
+  const r = document.querySelector('input[name="q-edit-correct"]:checked'); if(r) a.draft.a = +r.value;
+  a.draft.hint = g('q-edit-h') ? g('q-edit-h').value : a.draft.hint;
+}
+function renderQAdminModal(){
+  const a = state.qAdmin; if(!a || !a.draft) return '';
+  const isEdit = a.mode === 'edit', d = a.draft;
+  const passField = RV_ADMIN_OK ? '' : `<div class="field"><label>الرمز السري</label><input type="password" id="q-admin-pass" placeholder="الرمز السري" onkeydown="if(event.key==='Enter' && ${!isEdit}) qAdminSubmit()"></div>`;
+  return `
+  <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
+    <div class="modal-card">
+      <button class="btn-ghost btn-sm modal-close" onclick="closeModal()" style="border-radius:50%; width:32px; height:32px; padding:0;">✕</button>
+      <h3>${isEdit ? 'تعديل السؤال' : 'حذف السؤال'}</h3>
+      ${isEdit ? `
+        <div class="field"><label>السؤال</label><textarea id="q-edit-q" class="rv-edit-ta" style="min-height:80px">${escapeHtml(d.q)}</textarea></div>
+        <div class="field"><label>الخيارات (حدّد الإجابة الصحيحة)</label>
+          ${d.options.map((o,i)=>`<div class="q-edit-opt"><input type="radio" name="q-edit-correct" value="${i}" ${i===d.a?'checked':''}><input type="text" id="q-edit-o${i}" value="${escapeHtml(o)}"></div>`).join('')}
+        </div>
+        <div class="field"><label>التلميح (يظهر بعد الإجابة الخاطئة، ويُترك فارغًا إن لم يلزم)</label><textarea id="q-edit-h" class="rv-edit-ta" style="min-height:60px">${escapeHtml(d.hint)}</textarea></div>`
+      : `<p class="sub-note">${escapeHtml(d.q)}</p><p class="sub-note">سيُحذف هذا السؤال من المنصة لجميع الطلاب.</p>`}
+      ${passField}
+      <div class="modal-actions">
+        <button class="btn btn-ghost btn-sm" onclick="closeModal()">إلغاء</button>
+        <button class="btn btn-primary btn-sm" onclick="qAdminSubmit()">${isEdit ? 'حفظ' : 'حذف'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+async function qAdminSubmit(){
+  const a = state.qAdmin; if(!a) return;
+  qAdminCollect();
+  if(!RV_ADMIN_OK){
+    const el = document.getElementById('q-admin-pass');
+    if((el ? el.value : '') !== REF_ADMIN_PASS){ showToast('رمز غير صحيح'); return; }
+    RV_ADMIN_OK = true;
+  }
+  const src = qFindSource(a.qid);
+  let row;
+  if(a.mode === 'edit'){
+    const d = a.draft;
+    const qq = d.q.trim(), opts = d.options.map(o=>o.trim());
+    if(!qq){ showToast('نص السؤال فارغ'); return; }
+    if(opts.some(o=>!o)){ showToast('يوجد خيار فارغ'); return; }
+    if(new Set(opts).size !== opts.length){ showToast('يوجد خياران متطابقان'); return; }
+    row = { q_id:a.qid, course_id:a.courseId, question:qq, options:opts, correct_index:d.a, hint:(d.hint||'').trim(), deleted:false };
+  } else {
+    row = { q_id:a.qid, course_id:a.courseId, question:null, options:null, correct_index:null, hint:null, deleted:true };
+  }
+  let saved = true;
+  try{
+    const { error } = await sb.from('question_edits').upsert(Object.assign({ updated_at:new Date().toISOString() }, row), { onConflict:'q_id' });
+    if(error){ saved = false; console.error(error); }
+  }catch(e){ saved = false; }
+  QEDITS[a.qid] = row;
+  const quiz = state.quiz;
+  if(a.mode === 'edit'){
+    if(src){ src.q.q = row.question; src.q.options = row.options; src.q.a = row.correct_index; src.q.hint = row.hint; }
+    const cur = quiz.questions[quiz.idx];
+    if(cur && cur.qid === a.qid){
+      cur.text = row.question; cur.options = row.options; cur.correct = row.correct_index; cur.hint = row.hint;
+      quiz.answers[quiz.idx] = null;   // الخيارات تغيّرت: يُعاد الجواب على السؤال
+    }
+    state.modal = null; state.qAdmin = null; render();
+  } else {
+    if(src){ src.exam.questions.splice(src.idx, 1); }
+    const at = quiz.questions.findIndex(x=>x.qid === a.qid);
+    state.modal = null; state.qAdmin = null;
+    if(at >= 0){ quiz.questions.splice(at, 1); quiz.answers.splice(at, 1); }
+    if(!quiz.questions.length){ if(quizTimerHandle) clearInterval(quizTimerHandle); go('course', { courseId:a.courseId }); }
+    else if(quiz.idx >= quiz.questions.length){ finishQuiz(); }
+    else render();
+  }
+  showToast(saved ? (a.mode === 'edit' ? 'تم حفظ التعديل' : 'تم حذف السؤال') : 'حُفظ على هذا الجهاز فقط (تعذّر الحفظ في Supabase)');
 }
 
 /* ---- بطاقة واحدة: o = { revealed, blanks, interactive } ---- */
@@ -2958,12 +3092,23 @@ function renderReviewStudy(){
    الشكل الذي كانت عليه مصفوفة COURDES الثابتة سابقًا، حتى تستمر كل دوال
    العرض بالعمل دون أي تعديل. لإضافة مقرر أو اختبار أو سؤال جديد: يكفي
    إضافة صف في جداول Supabase مباشرة من لوحة التحكم — يظهر فورًا للجميع. */
+/* تعديلات الأسئلة (جدول question_edits): تُطبَّق فوق quiz_questions دون تغيير الأصل؛ الحذف «ناعم» (deleted) */
+const QEDITS = {};
+async function loadQuestionEdits(){
+  try{
+    const { data, error } = await sb.from('question_edits').select('*');
+    if(error || !data) return;
+    Object.keys(QEDITS).forEach(k=>delete QEDITS[k]);
+    data.forEach(r => { QEDITS[r.q_id] = r; });
+  }catch(e){}
+}
 async function loadCoursesFromSupabase(){
   try{
     const [coursesRes, examsRes, qRes] = await Promise.all([
       sb.from('courses').select('*').order('sort_order'),
       sb.from('exams').select('*').order('sort_order'),
       sb.from('quiz_questions').select('*').order('sort_order'),
+      loadQuestionEdits(),
     ]);
     if(coursesRes.error) throw coursesRes.error;
     if(examsRes.error) throw examsRes.error;
@@ -2976,7 +3121,18 @@ async function loadCoursesFromSupabase(){
       examRows.filter(e=>e.course_id===c.id).forEach(e=>{
         const qs = qRows
           .filter(q=>q.course_id===c.id && q.exam_id===e.id)
-          .map(q=>({ q:q.question, options:q.options, a:q.correct_index, hint:q.hint||'' }));
+          .filter(q=>!(QEDITS[q.id] && QEDITS[q.id].deleted))
+          .map(q=>{
+            const o = { qid:q.id, q:q.question, options:q.options, a:q.correct_index, hint:q.hint||'' };
+            const ed = QEDITS[q.id];
+            if(ed){
+              if(ed.question) o.q = ed.question;
+              if(Array.isArray(ed.options) && ed.options.length >= 2) o.options = ed.options;
+              if(ed.correct_index != null) o.a = ed.correct_index;
+              if(ed.hint != null) o.hint = ed.hint;
+            }
+            return o;
+          });
         examsObj[e.id] = { title:e.title, questions: qs, createdAt: e.created_at };
       });
       return { id:c.id, name:c.name, sub:c.sub, icon:c.icon, status:c.status, exams: examsObj };
@@ -3007,6 +3163,7 @@ function setupRealtimeSync(){
       .on('postgres_changes', {event:'*', schema:'public', table:'courses'}, __scheduleContentRefresh)
       .on('postgres_changes', {event:'*', schema:'public', table:'exams'}, __scheduleContentRefresh)
       .on('postgres_changes', {event:'*', schema:'public', table:'quiz_questions'}, __scheduleContentRefresh)
+      .on('postgres_changes', {event:'*', schema:'public', table:'question_edits'}, __scheduleContentRefresh)
       .on('postgres_changes', {event:'*', schema:'public', table:'submitted_questions'}, ()=>{
         if(state.view==='home') hydrateQuestionCounts();
         if(state.view==='course') hydrateAddedQuestionsCard(state.courseId);
@@ -3284,7 +3441,7 @@ function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ con
 function buildShuffledQuiz(examData, courseId, examId){
   const qs = examData.questions.map((q,origIdx)=>{
     const optIdx = shuffle(q.options.map((o,i)=>i));
-    return { id:`${courseId}__${examId}__${origIdx}`, text:q.q, options: optIdx.map(i=>q.options[i]), correct: optIdx.indexOf(q.a), hint:q.hint||'' };
+    return { id:`${courseId}__${examId}__${origIdx}`, qid:q.qid, text:q.q, options: optIdx.map(i=>q.options[i]), correct: optIdx.indexOf(q.a), hint:q.hint||'' };
   });
   return { questions: shuffle(qs), idx:0, answers:new Array(examData.questions.length).fill(null), remaining:EXAM_SECONDS, startedAt:Date.now() };
 }
@@ -3351,7 +3508,7 @@ function render(){
   else if(state.view==='rvstudy') html = renderReviewStudy();
   else if(state.view==='rvcompare') html = renderReviewCompare();
 
-  html += `<div class="footer-note">مبادرة مستقلة غير تابعة لإدارة البرنامج<br><span class="pill-note">ساعة علم وساعة عمل</span></div>`;
+  html += `<div class="footer-note"><span onclick="handleAdminModeTap(event)" style="-webkit-tap-highlight-color:transparent; user-select:none;">مبادرة مستقلة غير تابعة لإدارة البرنامج</span><br><span class="pill-note">ساعة علم وساعة عمل</span></div>`;
   app.innerHTML = html;
 
   const toastRoot = document.getElementById('toast-root');
@@ -4330,6 +4487,7 @@ function renderQuiz(){
     <div class="quiz-top">
       <div class="q-index">سؤال ${q.idx+1} من ${total} — ${courseName(state.courseId)} ${streak>=2?`<span class="streak-chip">🔥 ${streak} متتالية</span>`:''}</div>
       <div class="quiz-top-right">
+        ${(ADMIN_MODE && cur.qid != null) ? `<div class="q-adm"><button title="تعديل السؤال" onclick="qAdminOpen('edit')">${RV_ICON_EDIT}</button><button class="x" title="حذف السؤال" onclick="qAdminOpen('del')">${RV_ICON_X}</button></div>` : ''}
         <button class="icon-btn heart-btn ${isFav?'active':''}" onclick="toggleFavorite()" title="${isFav?'إزالة من المفضلة':'أضف إلى المفضلة'}">${ICONS.heart}</button>
         <button class="icon-btn flag-btn ${isFlagged?'flagged':''}" onclick="openReportQuestion()" title="${isFlagged?'تم إرسال بلاغك عن هذا السؤال':'الإبلاغ عن مشكلة في السؤال'}">${ICONS.flag}</button>
         <div class="timer-chip ${q.remaining<=30?'low':''}" id="timer-chip">⏱ ${fmtTime(q.remaining)}</div>
@@ -5991,6 +6149,7 @@ function renderModal(){
   if(state.modal === 'rv-help'){ root.innerHTML = renderHelpModal(); return; }
   if(state.modal === 'my-questions'){ root.innerHTML = renderMyQuestionsModal(); hydrateMyQuestionsModal(); return; }
   if(state.modal === 'rv-admin'){ root.innerHTML = renderRvAdminModal(); return; }
+  if(state.modal === 'q-admin'){ root.innerHTML = renderQAdminModal(); return; }
   if(state.modal === 'ref-add-auth'){ root.innerHTML = renderRefAddAuthModal(); return; }
   if(state.modal === 'ref-delete-confirm'){ root.innerHTML = renderRefDeleteModal(); return; }
   if(state.modal === 'set-name'){ root.innerHTML = renderSetNameModal(); return; }
