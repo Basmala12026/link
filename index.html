@@ -2712,7 +2712,7 @@ function rvReport(key){
 }
 
 /* ---- تعديل القفا وحذف البطاقة (للمسؤول بالرمز السري) ----
-   التعديلات مشتركة بين الجميع: جدول Supabase باسم review_card_edits (card_key, course_id, back, deleted).
+   التعديلات مشتركة بين الجميع: جدول Supabase باسم review_card_edits (card_key, course_id, front, back, deleted).
    الأصل في الملف لا يتغير؛ تُطبَّق التعديلات فوقه عند فتح الموقع. */
 const RV_EDITS = {};
 function rvApplyEdits(){
@@ -2722,14 +2722,18 @@ function rvApplyEdits(){
     const ls = rvLessons(p[0]).find(l => String(l.id) === p[1]); if(!ls) return;
     const at = ls.cards.findIndex((c,i)=> String(rvCardId(c,i)) === p[2]); if(at < 0) return;
     if(e.deleted) ls.cards.splice(at, 1);
-    else if(e.back != null && e.back !== '') ls.cards[at].b = e.back;
+    else {
+      if(e.back != null && e.back !== '') ls.cards[at].b = e.back;
+      if(e.front != null && e.front !== '') ls.cards[at].f = e.front;
+    }
   });
 }
 async function rvLoadEdits(){
   try{
-    const { data, error } = await sb.from('review_card_edits').select('card_key,back,deleted');
+    let { data, error } = await sb.from('review_card_edits').select('card_key,front,back,deleted');
+    if(error) ({ data, error } = await sb.from('review_card_edits').select('card_key,back,deleted'));   // عمود front غير موجود بعد
     if(error || !data) return;
-    data.forEach(r => { RV_EDITS[r.card_key] = { back:r.back, deleted:!!r.deleted }; });
+    data.forEach(r => { RV_EDITS[r.card_key] = { front:r.front || null, back:r.back, deleted:!!r.deleted }; });
     rvApplyEdits();
   }catch(e){}
 }
@@ -2737,7 +2741,7 @@ const RV_ICON_EDIT = `<svg viewBox="0 0 24 24"><path d="M4 20l3.5-1 10-10-2.5-2.
 const RV_ICON_X = `<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
 function rvAdminBtns(it){
   return `<div class="rv-adm">
-    <button title="تعديل القفا" onclick="event.stopPropagation(); rvAdminOpen('edit','${it.key}')">${RV_ICON_EDIT}</button>
+    <button title="تعديل الوجه والقفا" onclick="event.stopPropagation(); rvAdminOpen('edit','${it.key}')">${RV_ICON_EDIT}</button>
     <button class="x" title="حذف البطاقة" onclick="event.stopPropagation(); rvAdminOpen('del','${it.key}')">${RV_ICON_X}</button>
   </div>`;
 }
@@ -2758,9 +2762,9 @@ function renderRvAdminModal(){
   <div class="modal-backdrop" onclick="if(event.target===this) closeModal()">
     <div class="modal-card">
       <button class="btn-ghost btn-sm modal-close" onclick="closeModal()" style="border-radius:50%; width:32px; height:32px; padding:0;">✕</button>
-      <h3>${isEdit ? 'تعديل القفا' : 'حذف البطاقة'}</h3>
-      <p class="sub-note">${escapeHtml(String(it.card.f))}</p>
-      ${isEdit ? `<div class="field"><label>القفا${cloze ? ' (الإجابات مفصولة بالرمز | بنفس ترتيب الفراغات)' : ''}</label><textarea id="rv-edit-ta" class="rv-edit-ta">${escapeHtml(String(a.draft != null ? a.draft : it.card.b))}</textarea></div>`
+      <h3>${isEdit ? 'تعديل البطاقة' : 'حذف البطاقة'}</h3>
+      ${isEdit ? '' : `<p class="sub-note">${escapeHtml(String(it.card.f))}</p>`}
+      ${isEdit ? `<div class="field"><label>الوجه${cloze ? ' (مكان كل فراغ ……)' : ''}</label><textarea id="rv-edit-fa" class="rv-edit-ta">${escapeHtml(String(a.draftF != null ? a.draftF : it.card.f))}</textarea></div><div class="field"><label>القفا${cloze ? ' (الإجابات مفصولة بالرمز | بنفس ترتيب الفراغات)' : ''}</label><textarea id="rv-edit-ta" class="rv-edit-ta">${escapeHtml(String(a.draft != null ? a.draft : it.card.b))}</textarea></div>`
                : `<p class="sub-note">ستُحذف هذه البطاقة من المنصة لجميع الطلاب.</p>`}
       ${passField}
       <div class="modal-actions">
@@ -2773,6 +2777,7 @@ function renderRvAdminModal(){
 async function rvAdminSubmit(){
   const a = state.rvAdmin; if(!a) return;
   const ta0 = document.getElementById('rv-edit-ta'); if(ta0) a.draft = ta0.value;
+  const fa0 = document.getElementById('rv-edit-fa'); if(fa0) a.draftF = fa0.value;
   if(!RV_ADMIN_OK){
     const el = document.getElementById('rv-admin-pass');
     if((el ? el.value : '') !== REF_ADMIN_PASS){ showToast('رمز غير صحيح'); return; }
@@ -2783,12 +2788,18 @@ async function rvAdminSubmit(){
   if(a.mode === 'edit'){
     const ta = document.getElementById('rv-edit-ta');
     const val = ta ? ta.value.trim() : '';
+    const fa = document.getElementById('rv-edit-fa');
+    const fval = fa ? fa.value.trim() : String(it.card.f);
+    if(!fval){ showToast('الوجه فارغ'); return; }
     if(!val){ showToast('القفا فارغ'); return; }
     if(rvType(it.card) === 'cloze'){
-      const blanks = String(it.card.f).split(/…{2,}|_{3,}/).length - 1;
+      const blanks = fval.split(/…{2,}|_{3,}/).length - 1;
       if(val.split('|').length !== blanks){ showToast('عدد الإجابات لا يطابق عدد الفراغات (' + blanks + ')'); return; }
     }
     row = { card_key:a.key, course_id:it.courseId, back:val, deleted:false };
+    // الوجه يُحفظ فقط إذا تغيّر (أو كان معدَّلًا سابقًا)
+    const prevF = RV_EDITS[a.key] && RV_EDITS[a.key].front;
+    if(fval !== String(it.card.f)) row.front = fval; else if(prevF) row.front = prevF;
   } else {
     row = { card_key:a.key, course_id:it.courseId, back:null, deleted:true };
   }
@@ -2797,8 +2808,8 @@ async function rvAdminSubmit(){
     const { error } = await sb.from('review_card_edits').upsert(Object.assign({ updated_at:new Date().toISOString() }, row), { onConflict:'card_key' });
     if(error) saved = false;
   }catch(e){ saved = false; }
-  RV_EDITS[a.key] = { back:row.back, deleted:row.deleted };
-  if(a.mode === 'edit') it.card.b = row.back;
+  RV_EDITS[a.key] = { front:row.front || null, back:row.back, deleted:row.deleted };
+  if(a.mode === 'edit'){ it.card.b = row.back; if(row.front) it.card.f = row.front; }
   else {
     const at = it.lesson.cards.indexOf(it.card);
     if(at >= 0) it.lesson.cards.splice(at, 1);
@@ -2806,7 +2817,7 @@ async function rvAdminSubmit(){
   }
   state.modal = null; state.rvAdmin = null;
   render();
-  showToast(saved ? (a.mode === 'edit' ? 'تم حفظ القفا' : 'تم حذف البطاقة') : 'حُفظ على هذا الجهاز فقط (جدول التعديلات غير جاهز في Supabase)');
+  showToast(saved ? (a.mode === 'edit' ? 'تم حفظ التعديل' : 'تم حذف البطاقة') : 'حُفظ على هذا الجهاز فقط (جدول التعديلات غير جاهز في Supabase)');
 }
 
 /* ---- بطاقة واحدة: o = { revealed, blanks, interactive } ---- */
