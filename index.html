@@ -3342,7 +3342,7 @@ async function loadCompletedExams(){
 /* مقررات يُعاد فيها التحقق القسري من صحة أي علامة "اكتمال" قديمة بلا بصمة
    (بمعنى: تُعامَل معاملة "غير مكتمل" من جديد للجميع، مرة واحدة) — يُستخدم بعد
    إعادة بناء محتوى مقرر بالكامل والتأكد أن لا أحد اختبر المحتوى الجديد بعد. */
-const FORCE_REVALIDATE_COURSES = ['zubda'];
+const FORCE_REVALIDATE_COURSES = ['zubda','ajurri'];
 function isExamMarkedDone(completedMap, key, currentVersion){
   if(!(key in completedMap)) return false;
   const storedVersion = completedMap[key];
