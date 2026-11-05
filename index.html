@@ -3540,7 +3540,7 @@ async function loadCoursesFromSupabase(){
           .map((q,pos)=>({ q, pos }))      /* pos = الترتيب الأصلي قبل الحذف: يثبّت معرّف السؤال (المفضلة/البلاغات) حتى بعد حذف ما قبله */
           .filter(x=>!(QEDITS[x.q.id] && QEDITS[x.q.id].deleted))
           .map(({ q, pos })=>{
-            const o = { qid:q.id, oi:pos, q:q.question, options:q.options, a:q.correct_index, hint:q.hint||'' };
+            const o = { qid:q.id, oi:pos, q:q.question, options:q.options, a:q.correct_index, hint:q.hint||'', chain:!!q.chain_prev };
             const ed = QEDITS[q.id];
             if(ed){
               if(ed.question) o.q = ed.question;
@@ -3871,9 +3871,13 @@ function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ con
 function buildShuffledQuiz(examData, courseId, examId){
   const qs = examData.questions.map((q,origIdx)=>{
     const optIdx = shuffle(q.options.map((o,i)=>i));
-    return { id:`${courseId}__${examId}__${q.oi != null ? q.oi : origIdx}`, qid:q.qid, text:q.q, options: optIdx.map(i=>q.options[i]), correct: optIdx.indexOf(q.a), hint:q.hint||'' };
+    return { id:`${courseId}__${examId}__${q.oi != null ? q.oi : origIdx}`, qid:q.qid, text:q.q, options: optIdx.map(i=>q.options[i]), correct: optIdx.indexOf(q.a), hint:q.hint||'', chain:!!q.chain };
   });
-  return { questions: shuffle(qs), idx:0, answers:new Array(examData.questions.length).fill(null), remaining:examSecondsFor(courseId), limit:examSecondsFor(courseId), startedAt:Date.now() };
+  /* الأسئلة المرتبطة (chain) تأتي دائمًا متتابعة بترتيبها، والمجموعات تُخلط فيما بينها */
+  const groups = [];
+  qs.forEach(x=>{ if(x.chain && groups.length) groups[groups.length-1].push(x); else groups.push([x]); });
+  const ordered = shuffle(groups).reduce((a,g)=>a.concat(g), []);
+  return { questions: ordered, idx:0, answers:new Array(examData.questions.length).fill(null), remaining:examSecondsFor(courseId), limit:examSecondsFor(courseId), startedAt:Date.now() };
 }
 function levelOf(pct){
   if(pct>=90) return {label:'ممتاز', cls:'lvl-excellent'};
@@ -4978,8 +4982,9 @@ function hydrateQuizTimer(){
 /* سؤال إكمال بفراغين فأكثر («........»): تُكشف فراغاته بالنقر كبطاقات الإكمال، وإجاباتها من الخيار الصحيح مفصولًا بالفاصلة */
 function quizClozeInfo(cur){
   const blanks = (String(cur.text).match(/\.{8}/g) || []).length;
-  if(blanks < 2) return null;
-  const ans = String(cur.options[cur.correct]).split('،').map((x,i)=>x.trim().replace(/^و(?=\S)/,'')).filter(Boolean);
+  if(blanks < 1) return null;
+  const ans = blanks === 1 ? [String(cur.options[cur.correct]).trim()]
+    : String(cur.options[cur.correct]).split('،').map((x,i)=>x.trim().replace(/^و(?=\S)/,'')).filter(Boolean);
   if(ans.length !== blanks) return null;
   return { front:String(cur.text).replace(/\.{8}/g,'……'), back:ans.join('|'), blanks };
 }
@@ -4988,13 +4993,19 @@ function quizRevealBlank(){
   if(!info) return;
   q.rev = q.rev || {};
   const list = q.rev[q.idx] = q.rev[q.idx] || [];
-  if(list.length < info.blanks){ list.push(list.length); render(); }
+  if(list.length < info.blanks){
+    list.push(list.length);
+    if(list.length === info.blanks){ q.answers[q.idx] = cur.correct; quizProgressSave(); }   /* كشف آخر فراغ = أنهى السؤال */
+    render();
+  }
 }
 function renderQuiz(){
   const q = state.quiz;
   const cur = q.questions[q.idx];
   const __cz = quizClozeInfo(cur);
-  const __czShown = (q.rev && q.rev[q.idx]) || [];
+  const __czShown = (__cz && q.answers[q.idx] != null) ? true : ((q.rev && q.rev[q.idx]) || []);
+  const __czDone = __cz && __czShown === true;
+  const __czCount = __czShown === true ? (__cz ? __cz.blanks : 0) : __czShown.length;
   const total = q.questions.length;
   const pct = Math.round((q.idx)/total*100);
   const answered = q.answers[q.idx];
@@ -5019,9 +5030,9 @@ function renderQuiz(){
       </div>
     </div>
     <div class="progress-bar"><div style="width:${pct}%"></div></div>
-    ${__cz ? `<div class="q-text q-cloze" ${__czShown.length<__cz.blanks?'onclick="quizRevealBlank()"':''}>${rvClozeHtml(__cz.front, __cz.back, __czShown, true)}</div>
-      ${__czShown.length<__cz.blanks ? `<div class="q-cloze-tip">اضغط على السؤال لكشف الفراغات واحدًا واحدًا</div>` : ''}` : `<div class="q-text">${cur.text}</div>`}
-    <div class="options">
+    ${__cz ? `<div class="q-text q-cloze" ${!__czDone?'onclick="quizRevealBlank()"':''}>${rvClozeHtml(__cz.front, __cz.back, __czShown, true)}</div>
+      ${!__czDone ? `<div class="q-cloze-tip">اضغط على الفراغ لكشفه${__cz.blanks>1?'، واحدًا بعد واحد':''}</div>` : ''}` : `<div class="q-text">${cur.text}</div>`}
+    ${__cz ? '' : `<div class="options">
       ${cur.options.map((opt,i)=>{
         let cls = '';
         if(revealed){
@@ -5034,8 +5045,8 @@ function renderQuiz(){
           <span class="dot">${revealed && i===cur.correct ? '✓' : (revealed && i===answered ? '✕' : '')}</span><span>${opt}</span>
         </div>`;
       }).join('')}
-    </div>
-    ${revealed ? `
+    </div>`}
+    ${(revealed && !__cz) ? `
       <div class="feedback-banner ${isCorrect?'correct':'wrong'}">${isCorrect? '✓ إجابة صحيحة! أحسنت' : '✕ إجابة غير صحيحة'}</div>
       ${!isCorrect && cur.hint ? `<div class="hint-box">💡 <span>${cur.hint}</span></div>` : ''}
     ` : ''}
