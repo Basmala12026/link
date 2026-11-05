@@ -4997,19 +4997,23 @@ function quizRevealBlank(){
   const list = q.rev[q.idx] = q.rev[q.idx] || [];
   if(list.length < info.blanks){
     list.push(list.length);
-    if(list.length === info.blanks){ q.answers[q.idx] = cur.correct; quizProgressSave(); }   /* كشف آخر فراغ = أنهى السؤال */
+    if(list.length === info.blanks){ const sk = q.czSkip && q.czSkip[q.idx]; q.answers[q.idx] = sk ? Math.max(0, cur.options.findIndex((_,i)=>i!==cur.correct)) : cur.correct; quizProgressSave(); }   /* كشف آخر فراغ = أنهى السؤال */
     render();
   }
 }
-/* «لا أعرف»: يُكشف الجواب كاملًا ويُحسب السؤال خطأً واحدًا */
+/* «لا أعرف»: يُكشف فراغ واحد في كل ضغطة، ويُحسب السؤال خطأً واحدًا عند اكتمال الكشف */
 function quizClozeSkip(){
   const q = state.quiz, cur = q.questions[q.idx], info = quizClozeInfo(cur);
   if(!info || q.answers[q.idx] != null) return;
-  q.rev = q.rev || {};
-  q.rev[q.idx] = Array.from({length:info.blanks}, (_,i)=>i);
-  const wrong = cur.options.findIndex((_,i)=>i!==cur.correct);
-  q.answers[q.idx] = wrong >= 0 ? wrong : -1;
-  quizProgressSave();
+  q.rev = q.rev || {}; q.czSkip = q.czSkip || {};
+  q.czSkip[q.idx] = true;
+  const list = q.rev[q.idx] = q.rev[q.idx] || [];
+  if(list.length < info.blanks) list.push(list.length);
+  if(list.length === info.blanks){
+    const wrong = cur.options.findIndex((_,i)=>i!==cur.correct);
+    q.answers[q.idx] = wrong >= 0 ? wrong : -1;
+    quizProgressSave();
+  }
   render();
 }
 function renderQuiz(){
