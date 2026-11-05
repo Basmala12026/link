@@ -404,6 +404,14 @@
 
   /* ---------- result ---------- */
   .result-hero{ text-align:center; padding:8px 0 18px; }
+  .res-wrong-list{ display:flex; flex-direction:column; gap:10px; margin-top:8px; }
+  .res-wrong-item{ border:1px solid var(--sage-pale); border-radius:14px; padding:12px 14px; background:var(--cream); }
+  .res-wrong-q{ font-weight:800; font-size:14px; line-height:1.9; color:var(--ink); margin-bottom:6px; }
+  .res-wrong-n{ display:inline-flex; width:22px; height:22px; border-radius:50%; background:var(--sage-pale-2); color:var(--sage-deep); font-size:12px; align-items:center; justify-content:center; margin-left:8px; vertical-align:middle; }
+  .res-wrong-row{ font-size:13px; line-height:1.8; border-radius:10px; padding:6px 10px; margin-top:4px; }
+  .res-wrong-row.bad{ background:var(--danger-bg); color:var(--danger); }
+  .res-wrong-row.ok{ background:var(--good-bg); color:var(--good); }
+  .quiz-save-note{ margin-top:12px; padding:9px 12px; border-radius:12px; background:var(--sage-pale-2); color:var(--sage-deep); font-size:12.5px; line-height:1.8; text-align:center; }
   .result-score{ font-size:48px; font-weight:900; color:var(--sage-deep); font-variant-numeric:tabular-nums; }
   .result-total{ font-size:15px; color:var(--ink-soft); font-weight:700; }
   .level-chip{ display:inline-block; margin-top:8px; padding:6px 16px; border-radius:999px; font-weight:800; font-size:12.5px; }
@@ -5010,6 +5018,7 @@ function renderQuiz(){
         ${q.idx===total-1? 'إنهاء الاختبار' : 'التالي'}
       </button>
     </div>
+    ${(QUIZ_RESUME_COURSES.includes(state.courseId) && !String(state.examId).startsWith('added')) ? `<div class="quiz-save-note">💾 تستطيع الخروج في أي وقت بزر «حفظ ومغادرة»؛ يُحفظ ما أنجزته والوقت المتبقي، وتكمل من حيث توقفت.</div>` : ''}
   </div>
   `;
 }
@@ -5038,7 +5047,10 @@ function finishQuiz(){
   q.questions.forEach((qq,i)=>{ if(q.answers[i]===qq.correct) score++; });
   quizProgressClear(state.courseId, state.examId);   /* انتهى الاختبار: لا تقدّم محفوظًا */
   const timeTaken = (q.limit || EXAM_SECONDS) - q.remaining;
-  state.lastResult = { score, total:q.questions.length, courseId:state.courseId, examId:state.examId, saved:false, timeTaken };
+  /* أخطاء هذه المحاولة (تشمل ما لم يُجَب عنه عند انتهاء الوقت) لتُعرض في شاشة النتيجة */
+  const review = [];
+  q.questions.forEach((qq,i)=>{ if(q.answers[i]!==qq.correct) review.push({ text:qq.text, options:qq.options, picked:q.answers[i], correct:qq.correct, hint:qq.hint||'' }); });
+  state.lastResult = { score, total:q.questions.length, courseId:state.courseId, examId:state.examId, saved:false, timeTaken, review };
   const __c = COURSES.find(c=>c.id===state.courseId);
   const __examVersion = __c && __c.exams && __c.exams[state.examId] ? __c.exams[state.examId].createdAt : null;
   markExamCompleted(state.courseId, state.examId, __examVersion);
@@ -5130,6 +5142,22 @@ async function submitReport(){
 }
 
 /* ============================ RESULT ============================ */
+/* أخطاء المحاولة: السؤال، وإجابتك، والإجابة الصحيحة، والتلميح إن وُجد */
+function renderResultMistakes(r){
+  const list = r && r.review;
+  if(!list || !list.length) return '';
+  return `
+    <div class="section-title" style="margin-top:18px;"><h2 style="font-size:16px;">أخطاؤك (${toArabicDigits(list.length)})</h2><span class="hint">راجعها قبل أن تعيد المحاولة</span></div>
+    <div class="res-wrong-list">
+      ${list.map((it,i)=>`
+        <div class="res-wrong-item">
+          <div class="res-wrong-q"><span class="res-wrong-n">${toArabicDigits(i+1)}</span>${it.text}</div>
+          <div class="res-wrong-row bad">${it.picked==null ? 'لم تُجب عن هذا السؤال' : '✕ إجابتك: ' + it.options[it.picked]}</div>
+          <div class="res-wrong-row ok">✓ الإجابة الصحيحة: ${it.options[it.correct]}</div>
+          ${it.hint ? `<div class="hint-box" style="margin:8px 0 0;">💡 <span>${it.hint}</span></div>` : ''}
+        </div>`).join('')}
+    </div>`;
+}
 function renderResult(){
   const r = state.lastResult;
   const pct = Math.round(r.score/r.total*100);
@@ -5146,6 +5174,7 @@ function renderResult(){
     </div>
 
     <p style="text-align:center; color:var(--sage-deep); font-weight:800; font-size:13px;">${r.saved? 'تم حفظ نتيجتك ضمن «تقدّمي» ✓' : 'جارٍ حفظ نتيجتك…'}</p>
+    ${renderResultMistakes(r)}
 
     <div class="quiz-actions" style="margin-top:20px;">
       <button class="btn btn-ghost btn-sm" onclick="go('course',{courseId:'${r.courseId}'})">مقررات أخرى</button>
