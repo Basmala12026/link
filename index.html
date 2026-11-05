@@ -2816,6 +2816,8 @@ function setHomeTab(t){
   render();
 }
 function renderHomeTabs(){
+  /* تبويب «بطاقات» لا يظهر إلا في وضع التعديل (المشرف)؛ العامة ترى الأسئلة فقط ولا يظهر لهم شريط التبويبات */
+  if(!ADMIN_MODE) return '';
   const rv = state.homeTab === 'review';
   return `
   <div class="home-tabs" role="tablist">
@@ -3316,11 +3318,13 @@ async function qAdminSubmit(){
     row = { q_id:a.qid, course_id:a.courseId, question:null, options:null, correct_index:null, hint:null, deleted:true };
   }
   let saved = true;
+  const __editTs = new Date().toISOString();
   try{
-    const { error } = await sb.from('question_edits').upsert(Object.assign({ updated_at:new Date().toISOString() }, row), { onConflict:'q_id' });
+    const { error } = await sb.from('question_edits').upsert(Object.assign({ updated_at:__editTs }, row), { onConflict:'q_id' });
     if(error){ saved = false; console.error(error); }
   }catch(e){ saved = false; }
-  QEDITS[a.qid] = row;
+  QEDITS[a.qid] = Object.assign({ updated_at:__editTs }, row);
+  loadCoursesFromSupabase().then(ok=>{ if(ok && state.view!=='quiz') render(); });   /* تحديث بصمة الاختبار فورًا */
   const quiz = state.quiz;
   if(a.mode === 'edit'){
     if(src){ src.q.q = row.question; src.q.options = row.options; src.q.a = row.correct_index; src.q.hint = row.hint; }
@@ -3482,6 +3486,7 @@ function renderReviewStudy(){
    إضافة صف في جداول Supabase مباشرة من لوحة التحكم — يظهر فورًا للجميع. */
 /* تعديلات الأسئلة (جدول question_edits): تُطبَّق فوق quiz_questions دون تغيير الأصل؛ الحذف «ناعم» (deleted) */
 const QEDITS = {};
+const QEDIT_VERSION_FROM = Date.parse('2026-11-05T12:45:00Z');   /* تعديلات الأسئلة السابقة لهذا التاريخ لا تُلغي «منتهي» */
 async function loadQuestionEdits(){
   try{
     const { data, error } = await sb.from('question_edits').select('*');
@@ -3524,7 +3529,14 @@ async function loadCoursesFromSupabase(){
             }
             return o;
           });
-        examsObj[e.id] = { title:e.title, questions: qs, createdAt: e.created_at, bookId: e.book_id || null };
+        /* بصمة الاختبار: تتغير عند تعديل/حذف أي سؤال فيه من لوحة التعديل (بعد QEDIT_VERSION_FROM)، فيُلغى «منتهي» عند من أنهاه */
+        let __lastEdit = 0;
+        qRows.filter(q=>q.course_id===c.id && q.exam_id===e.id).forEach(q=>{
+          const ed = QEDITS[q.id]; if(!ed || !ed.updated_at) return;
+          const t = Date.parse(ed.updated_at);
+          if(t > QEDIT_VERSION_FROM && t > __lastEdit) __lastEdit = t;
+        });
+        examsObj[e.id] = { title:e.title, questions: qs, createdAt: __lastEdit ? `${e.created_at}|${__lastEdit}` : e.created_at, bookId: e.book_id || null };
       });
       /* الكتب: كل كتاب يضم فصوله (اختباراته) بترتيب sort_order */
       const books = bookRows.filter(b=>b.course_id===c.id).map(b=>({
@@ -3880,6 +3892,8 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<
 
 /* ============================ RENDER ROOT ============================ */
 function render(){
+  /* حماية: خارج وضع التعديل لا تُعرض شاشات البطاقات مهما كانت الحالة */
+  if(!ADMIN_MODE){ if(state.homeTab==='review') state.homeTab='questions'; if(String(state.view).startsWith('rv')) state.view='home'; }
   const navView = String(state.view).startsWith('rv') ? 'home' : state.view;
   document.querySelectorAll('.nav-link').forEach(b=>{ b.classList.toggle('active', b.dataset.view===navView); });
   /* زر «أضف سؤالك» خاص بتبويب الأسئلة فقط */
@@ -3974,25 +3988,27 @@ function renderHome(){
   <div id="home-reset-area"></div>
 
   ${renderHomeTabs()}
-  ${state.homeTab==='review' ? renderReviewHome() : `
+  ${(ADMIN_MODE && state.homeTab==='review') ? renderReviewHome() : `
   <div class="section-title"><span class="hint">اختر مقررًا لبدء الاختبار</span></div>
   <div class="courses-grid">
-    ${COURSES.map(c=>`
-      <div class="course-card ${c.status}" ${c.status==='active'?`onclick="go('course',{courseId:'${c.id}',bookId:null})"`:''}>
+    ${COURSES.map(c=>{ const peek = c.status!=='active' && ADMIN_MODE && Object.keys(c.exams||{}).length>0;   /* مقرر مقفل: يفتحه المشرف وحده للمعاينة */
+      const eff = (c.status==='active' || peek) ? 'active' : c.status;
+      return `
+      <div class="course-card ${eff}" ${eff==='active'?`onclick="go('course',{courseId:'${c.id}',bookId:null})"`:''}>
         <div class="q-added-badge" id="q-added-${c.id}" title="توجد أسئلة مضافة من المستخدمين لهذا المقرر" style="display:none;">
           <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         </div>
         <div class="course-icon">${ICONS[c.icon]}</div>
         <h3>${c.name}</h3>
         <p class="sub">${c.sub}</p>
-        <span class="status-chip ${c.status==='locked'?'locked':''}">${c.status==='active'?courseExamsLabel(c):'قريبًا'}</span>
+        <span class="status-chip ${eff==='locked'?'locked':''}">${peek ? courseExamsLabel(c)+' · للمشرف فقط' : (c.status==='active'?courseExamsLabel(c):'قريبًا')}</span>
         ${c.status==='active'?`
         <div class="mini-progress-wrap" id="mini-progress-${c.id}" style="display:none;">
           <div class="mini-progress-bg"><div class="mini-progress-fg" id="mini-progress-bar-${c.id}" style="width:0%"></div></div>
           <div class="mini-progress-lbl" id="mini-progress-lbl-${c.id}"></div>
         </div>`:''}
       </div>
-    `).join('')}
+    `; }).join('')}
   </div>
   `}
   `;
