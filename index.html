@@ -230,20 +230,9 @@
   .exam-card .t{ font-size:11.5px; color:var(--ink-soft); margin:2px 0 9px; }
   .exam-card.extra{ border-style:dashed; background:transparent; }
   /* كتب المقرر وفصولها (مقرر بداية العابد) */
-  .book-block{ grid-column:1/-1; border:1.5px solid var(--sage-pale); border-radius:16px; background:#fff; overflow:hidden; }
-  .book-head{ width:100%; display:flex; align-items:center; gap:10px; padding:13px 14px; background:var(--sage-pale-2); border:0; cursor:pointer; font-family:inherit; text-align:right; color:var(--sage-deep); }
-  .book-head .book-n{ min-width:28px; height:28px; border-radius:50%; background:var(--sage-deep); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; }
-  .book-head .book-name{ flex:1; font-size:15.5px; font-weight:900; }
-  .book-head .book-count{ font-size:11.5px; color:var(--ink-soft); font-weight:700; }
-  .book-head .book-arrow{ transition:transform .2s; font-size:12px; }
-  .book-block.open .book-arrow{ transform:rotate(180deg); }
-  .book-body{ display:none; padding:12px; }
-  .book-block.open .book-body{ display:block; }
-  .book-chapters{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
-  @media (max-width:640px){ .book-chapters{ grid-template-columns:1fr; } }
-  .book-chapters .exam-card .t.chap{ font-size:13px; font-weight:800; color:var(--ink); margin:4px 0 2px; }
-  .book-chapters .exam-card .t.chap-sub{ font-size:11.5px; margin:0 0 9px; }
-  .book-empty{ text-align:center; color:var(--ink-soft); font-size:12.5px; padding:6px 0; }
+  .exam-card .t.chap{ font-size:13px; font-weight:800; color:var(--ink); margin:4px 0 2px; }
+  .exam-card .t.chap-sub{ font-size:11.5px; margin:0 0 9px; }
+  .book-empty{ grid-column:1/-1; text-align:center; color:var(--ink-soft); font-size:12.5px; padding:6px 0; }
   .exam-card.locked{ opacity:.55; }
   .exam-card.completed{ border-color:var(--good); background:var(--good-bg); }
   .exam-done-badge{ position:absolute; top:-9px; inset-inline-end:8px; display:flex; align-items:center; gap:3px; background:var(--good); color:#fff; font-size:10.5px; font-weight:800; padding:3px 9px; border-radius:999px; box-shadow:0 2px 6px rgba(76,122,69,0.3); }
@@ -3989,7 +3978,7 @@ function renderHome(){
   <div class="section-title"><span class="hint">اختر مقررًا لبدء الاختبار</span></div>
   <div class="courses-grid">
     ${COURSES.map(c=>`
-      <div class="course-card ${c.status}" ${c.status==='active'?`onclick="go('course',{courseId:'${c.id}'})"`:''}>
+      <div class="course-card ${c.status}" ${c.status==='active'?`onclick="go('course',{courseId:'${c.id}',bookId:null})"`:''}>
         <div class="q-added-badge" id="q-added-${c.id}" title="توجد أسئلة مضافة من المستخدمين لهذا المقرر" style="display:none;">
           <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         </div>
@@ -4111,23 +4100,16 @@ async function hydrateHomeStats(){
 }
 
 /* ============================ COURSE DETAIL ============================ */
-/* ---- مقرر مقسّم إلى كتب: كل كتاب (قابل للطي) يضم فصوله، وكل فصل اختبار ---- */
-const OPEN_BOOKS = {};   /* courseId -> { bookId: true|false } (يُحفظ ما دامت الصفحة مفتوحة) */
-function isBookOpen(c, b, idx){
-  const m = OPEN_BOOKS[c.id];
-  if(m && b.id in m) return !!m[b.id];
-  if(m) return false;
-  /* الافتراضي: يُفتح أول كتاب فيه فصول */
-  const first = c.books.findIndex(x=>x.examIds.length);
-  return idx === first;
-}
-function toggleBook(courseId, bookId){
-  const c = COURSES.find(c=>c.id===courseId); if(!c) return;
-  const cur = {};
-  c.books.forEach((b,i)=>{ cur[b.id] = isBookOpen(c,b,i); });
-  cur[bookId] = !cur[bookId];
-  OPEN_BOOKS[courseId] = cur;
+/* ---- مقرر مقسّم إلى كتب: صفحة المقرر تعرض الكتب مربعات (state.bookId فارغ)، وبفتح كتاب تظهر فصوله مربعات ---- */
+function openBook(courseId, bookId){
+  state.bookId = bookId;
   render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function closeBook(){
+  state.bookId = null;
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 function renderCourseBooks(c){
   const chapterCard = (s, n)=>{
@@ -4147,27 +4129,30 @@ function renderCourseBooks(c){
       </div>
     </div>`;
   };
-  const blocks = c.books.map((b,i)=>{
-    const ids = b.examIds.filter(id=>c.exams[id]);
-    const open = isBookOpen(c,b,i);
-    const body = ids.length
-      ? `<div class="book-chapters">${ids.map((id,k)=>chapterCard(id,k+1)).join('')}</div>`
-      : `<div class="book-empty">قيد الإعداد</div>`;
-    return `<div class="book-block ${open?'open':''}">
-      <button class="book-head" onclick="toggleBook('${c.id}','${b.id}')">
-        <span class="book-n">${toArabicDigits(i+1)}</span>
-        <span class="book-name">${escapeHtml(b.name)}</span>
-        <span class="book-count">${ids.length ? (ids.length===1 ? 'فصل واحد' : ids.length===2 ? 'فصلان' : toArabicDigits(ids.length)+' فصول') : 'قريبًا'}</span>
-        <span class="book-arrow">▼</span>
-      </button>
-      <div class="book-body">${body}</div>
+  const chaptersOf = b => b.examIds.filter(id=>c.exams[id]);
+  const book = state.bookId ? c.books.find(b=>b.id===state.bookId) : null;
+  /* داخل كتاب: فصوله مربعات */
+  if(book){
+    const ids = chaptersOf(book);
+    return `<div class="exam-section-divider"><span>${escapeHtml(book.name)}</span></div>`
+      + (ids.length ? ids.map((id,k)=>chapterCard(id,k+1)).join('') : `<div class="book-empty">قيد الإعداد</div>`);
+  }
+  /* صفحة المقرر: الكتب مربعات كبطاقات المقررات */
+  const cards = c.books.map(b=>{
+    const ids = chaptersOf(b);
+    const has = ids.length > 0;
+    const label = has ? (ids.length===1 ? 'فصل واحد' : ids.length===2 ? 'فصلان' : toArabicDigits(ids.length)+' فصول') : 'قريبًا';
+    return `<div class="course-card ${has?'active':'locked'}" ${has?`onclick="openBook('${c.id}','${b.id}')"`:''}>
+      <div class="course-icon">${ICONS[c.icon] || ICONS.book || ''}</div>
+      <h3>${escapeHtml(b.name)}</h3>
+      <span class="status-chip ${has?'':'locked'}">${label}</span>
     </div>`;
   }).join('');
   /* اختبارات غير مصنّفة في كتاب (إن وُجدت) لا تضيع */
   const assigned = new Set(c.books.flatMap(b=>b.examIds));
   const loose = Object.keys(c.exams).filter(id=>c.exams[id] && !assigned.has(id));
-  const looseHtml = loose.length ? `<div class="book-block open"><div class="book-head" style="cursor:default"><span class="book-name">اختبارات أخرى</span></div><div class="book-body"><div class="book-chapters">${loose.map((id,k)=>chapterCard(id,k+1)).join('')}</div></div></div>` : '';
-  return blocks + looseHtml;
+  const looseHtml = loose.length ? `<div class="exam-section-divider"><span>اختبارات أخرى</span></div>${loose.map((id,k)=>chapterCard(id,k+1)).join('')}` : '';
+  return `<div class="courses-grid" style="grid-column:1/-1">${cards}</div>${looseHtml}`;
 }
 function renderCourse(){
   const c = COURSES.find(c=>c.id===state.courseId);
@@ -4176,7 +4161,7 @@ function renderCourse(){
   const slots = isTimelineCourse ? [1,2,3,4,5,6,'extra'] : [1,2,3,4,5,'extra'];
   const booksMode = !!(c.books && c.books.length);   /* مقرر مقسّم إلى كتب ثم فصول (بداية العابد) */
   return `
-  <button class="back-btn" onclick="go('home')">→ رجوع</button>
+  <button class="back-btn" onclick="${booksMode && state.bookId ? 'closeBook()' : "go('home')"}">→ رجوع</button>
   <div class="panel">
     <div class="course-head">
       <div class="course-icon">${ICONS[c.icon]}</div>
