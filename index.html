@@ -229,6 +229,21 @@
   .exam-card .n{ font-size:20px; font-weight:900; color:var(--sage-deep); }
   .exam-card .t{ font-size:11.5px; color:var(--ink-soft); margin:2px 0 9px; }
   .exam-card.extra{ border-style:dashed; background:transparent; }
+  /* كتب المقرر وفصولها (مقرر بداية العابد) */
+  .book-block{ grid-column:1/-1; border:1.5px solid var(--sage-pale); border-radius:16px; background:#fff; overflow:hidden; }
+  .book-head{ width:100%; display:flex; align-items:center; gap:10px; padding:13px 14px; background:var(--sage-pale-2); border:0; cursor:pointer; font-family:inherit; text-align:right; color:var(--sage-deep); }
+  .book-head .book-n{ min-width:28px; height:28px; border-radius:50%; background:var(--sage-deep); color:#fff; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; }
+  .book-head .book-name{ flex:1; font-size:15.5px; font-weight:900; }
+  .book-head .book-count{ font-size:11.5px; color:var(--ink-soft); font-weight:700; }
+  .book-head .book-arrow{ transition:transform .2s; font-size:12px; }
+  .book-block.open .book-arrow{ transform:rotate(180deg); }
+  .book-body{ display:none; padding:12px; }
+  .book-block.open .book-body{ display:block; }
+  .book-chapters{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  @media (max-width:640px){ .book-chapters{ grid-template-columns:1fr; } }
+  .book-chapters .exam-card .t.chap{ font-size:13px; font-weight:800; color:var(--ink); margin:4px 0 2px; }
+  .book-chapters .exam-card .t.chap-sub{ font-size:11.5px; margin:0 0 9px; }
+  .book-empty{ text-align:center; color:var(--ink-soft); font-size:12.5px; padding:6px 0; }
   .exam-card.locked{ opacity:.55; }
   .exam-card.completed{ border-color:var(--good); background:var(--good-bg); }
   .exam-done-badge{ position:absolute; top:-9px; inset-inline-end:8px; display:flex; align-items:center; gap:3px; background:var(--good); color:#fff; font-size:10.5px; font-weight:800; padding:3px 9px; border-radius:999px; box-shadow:0 2px 6px rgba(76,122,69,0.3); }
@@ -1089,8 +1104,45 @@ const ICONS = {
 
 const EXAM_SECONDS = 300; // 5 minutes
 /* مدة الاختبار لكل مقرر (بالثواني)؛ ما لم يُذكر المقرر هنا فمدته الافتراضية EXAM_SECONDS */
-const EXAM_SECONDS_BY_COURSE = { ajurri: 600 };   // فرض طلب العلم: ١٠ دقائق
+const EXAM_SECONDS_BY_COURSE = { ajurri: 600, bidaya: 900 };   // فرض طلب العلم: ١٠ دقائق، بداية العابد: ١٥ دقيقة
 function examSecondsFor(courseId){ return EXAM_SECONDS_BY_COURSE[courseId] || EXAM_SECONDS; }
+function examMinutesLabel(courseId){ return toArabicDigits(Math.round(examSecondsFor(courseId)/60)) + ' د'; }
+/* المقررات التي يُحفظ فيها تقدّم الاختبار ليكمل الطالب من حيث وقف إن خرج ثم رجع (على جهازه فقط) */
+const QUIZ_RESUME_COURSES = ['bidaya'];
+const QUIZ_PROGRESS_KEY = 'bs_quiz_progress_v1';
+function quizProgressAll(){ try{ return JSON.parse(localStorage.getItem(QUIZ_PROGRESS_KEY)||'{}') || {}; }catch(e){ return {}; } }
+function quizProgressWrite(all){ try{ localStorage.setItem(QUIZ_PROGRESS_KEY, JSON.stringify(all)); }catch(e){} }
+function quizProgressClear(courseId, examId){
+  const all = quizProgressAll(); const k = `${courseId}__${examId}`;
+  if(k in all){ delete all[k]; quizProgressWrite(all); }
+}
+/* يُرجع التقدّم المحفوظ إن كان ما زال صالحًا (نفس نسخة الاختبار وعدد الأسئلة) وإلا يمسحه */
+function quizProgressGet(courseId, examId){
+  if(!QUIZ_RESUME_COURSES.includes(courseId)) return null;
+  const sv = quizProgressAll()[`${courseId}__${examId}`];
+  if(!sv) return null;
+  try{
+    const c = COURSES.find(c=>c.id===courseId);
+    const data = c && c.exams && c.exams[examId];
+    const ok = data && sv.v===data.createdAt && sv.n===(data.questions||[]).length
+      && sv.quiz && Array.isArray(sv.quiz.questions) && sv.quiz.questions.length===sv.n
+      && sv.quiz.idx>=0 && sv.quiz.idx<sv.n && sv.quiz.remaining>0;
+    if(ok) return sv;
+  }catch(e){}
+  quizProgressClear(courseId, examId);
+  return null;
+}
+function quizProgressSave(){
+  const q = state.quiz, courseId = state.courseId, examId = state.examId;
+  if(!q || !QUIZ_RESUME_COURSES.includes(courseId) || String(examId).startsWith('added')) return;
+  const c = COURSES.find(c=>c.id===courseId);
+  const data = c && c.exams && c.exams[examId];
+  if(!data) return;
+  const all = quizProgressAll();
+  all[`${courseId}__${examId}`] = { v:data.createdAt, n:q.questions.length, ts:Date.now(),
+    quiz:{ questions:q.questions, idx:q.idx, answers:q.answers, remaining:q.remaining, startedAt:q.startedAt, limit:q.limit } };
+  quizProgressWrite(all);
+}
 
 let COURSES = [];
 /* تُحمَّل المقررات والاختبارات والأسئلة من Supabase عند بدء تشغيل الصفحة
@@ -3451,11 +3503,12 @@ async function loadQuestionEdits(){
 }
 async function loadCoursesFromSupabase(){
   try{
-    const [coursesRes, examsRes, qRes] = await Promise.all([
+    const [coursesRes, examsRes, qRes, , booksRes] = await Promise.all([
       sb.from('courses').select('*').order('sort_order'),
       sb.from('exams').select('*').order('sort_order'),
       sb.from('quiz_questions').select('*').order('sort_order'),
       loadQuestionEdits(),
+      sb.from('course_books').select('*').order('sort_order'),   /* الكتب داخل المقرر (اختياري: إن تعذّر لا يتأثر بقية المحتوى) */
     ]);
     if(coursesRes.error) throw coursesRes.error;
     if(examsRes.error) throw examsRes.error;
@@ -3463,6 +3516,7 @@ async function loadCoursesFromSupabase(){
     const coursesRows = coursesRes.data || [];
     const examRows = examsRes.data || [];
     const qRows = qRes.data || [];
+    const bookRows = booksRes.error ? [] : (booksRes.data || []);
     const built = coursesRows.map(c=>{
       const examsObj = {};
       examRows.filter(e=>e.course_id===c.id).forEach(e=>{
@@ -3481,9 +3535,14 @@ async function loadCoursesFromSupabase(){
             }
             return o;
           });
-        examsObj[e.id] = { title:e.title, questions: qs, createdAt: e.created_at };
+        examsObj[e.id] = { title:e.title, questions: qs, createdAt: e.created_at, bookId: e.book_id || null };
       });
-      return { id:c.id, name:c.name, sub:c.sub, icon:c.icon, status:c.status, exams: examsObj };
+      /* الكتب: كل كتاب يضم فصوله (اختباراته) بترتيب sort_order */
+      const books = bookRows.filter(b=>b.course_id===c.id).map(b=>({
+        id:b.id, name:b.name,
+        examIds: examRows.filter(e=>e.course_id===c.id && e.book_id===b.id).map(e=>e.id)
+      }));
+      return { id:c.id, name:c.name, sub:c.sub, icon:c.icon, status:c.status, exams: examsObj, books };
     });
     if(built.length){ COURSES = built; return true; }
     return false;
@@ -3510,6 +3569,7 @@ function setupRealtimeSync(){
     sb.channel('bs-public-sync')
       .on('postgres_changes', {event:'*', schema:'public', table:'courses'}, __scheduleContentRefresh)
       .on('postgres_changes', {event:'*', schema:'public', table:'exams'}, __scheduleContentRefresh)
+      .on('postgres_changes', {event:'*', schema:'public', table:'course_books'}, __scheduleContentRefresh)
       .on('postgres_changes', {event:'*', schema:'public', table:'quiz_questions'}, __scheduleContentRefresh)
       .on('postgres_changes', {event:'*', schema:'public', table:'question_edits'}, __scheduleContentRefresh)
       .on('postgres_changes', {event:'*', schema:'public', table:'submitted_questions'}, ()=>{
@@ -4051,11 +4111,70 @@ async function hydrateHomeStats(){
 }
 
 /* ============================ COURSE DETAIL ============================ */
+/* ---- مقرر مقسّم إلى كتب: كل كتاب (قابل للطي) يضم فصوله، وكل فصل اختبار ---- */
+const OPEN_BOOKS = {};   /* courseId -> { bookId: true|false } (يُحفظ ما دامت الصفحة مفتوحة) */
+function isBookOpen(c, b, idx){
+  const m = OPEN_BOOKS[c.id];
+  if(m && b.id in m) return !!m[b.id];
+  if(m) return false;
+  /* الافتراضي: يُفتح أول كتاب فيه فصول */
+  const first = c.books.findIndex(x=>x.examIds.length);
+  return idx === first;
+}
+function toggleBook(courseId, bookId){
+  const c = COURSES.find(c=>c.id===courseId); if(!c) return;
+  const cur = {};
+  c.books.forEach((b,i)=>{ cur[b.id] = isBookOpen(c,b,i); });
+  cur[bookId] = !cur[bookId];
+  OPEN_BOOKS[courseId] = cur;
+  render();
+}
+function renderCourseBooks(c){
+  const chapterCard = (s, n)=>{
+    const data = c.exams[s];
+    const cnt = toArabicDigits((data.questions||[]).length);
+    return `<div class="exam-card" id="examcard-${c.id}-${s}">
+      <div class="exam-done-badge" id="examdone-${c.id}-${s}" style="display:none;">✓ منتهي</div>
+      <div class="n">${toArabicDigits(n)}</div>
+      <div class="t chap">${escapeHtml(data.title||'')}</div>
+      <div class="t chap-sub">${cnt} أسئلة · ${examMinutesLabel(c.id)}</div>
+      <div class="exam-actions" id="examactions-${c.id}-${s}">
+        ${(()=>{ const sv = quizProgressGet(c.id, s);
+          return sv
+            ? `<button class="btn btn-primary btn-sm" onclick="startQuiz('${c.id}','${s}')">متابعة · سؤال ${toArabicDigits(sv.quiz.idx+1)}</button>
+               <button class="btn btn-ghost btn-sm" onclick="startQuiz('${c.id}','${s}',true)">من جديد</button>`
+            : `<button class="btn btn-primary btn-sm" onclick="startQuiz('${c.id}','${s}')">ابدأ</button>`; })()}
+      </div>
+    </div>`;
+  };
+  const blocks = c.books.map((b,i)=>{
+    const ids = b.examIds.filter(id=>c.exams[id]);
+    const open = isBookOpen(c,b,i);
+    const body = ids.length
+      ? `<div class="book-chapters">${ids.map((id,k)=>chapterCard(id,k+1)).join('')}</div>`
+      : `<div class="book-empty">قيد الإعداد</div>`;
+    return `<div class="book-block ${open?'open':''}">
+      <button class="book-head" onclick="toggleBook('${c.id}','${b.id}')">
+        <span class="book-n">${toArabicDigits(i+1)}</span>
+        <span class="book-name">${escapeHtml(b.name)}</span>
+        <span class="book-count">${ids.length ? (ids.length===1 ? 'فصل واحد' : ids.length===2 ? 'فصلان' : toArabicDigits(ids.length)+' فصول') : 'قريبًا'}</span>
+        <span class="book-arrow">▼</span>
+      </button>
+      <div class="book-body">${body}</div>
+    </div>`;
+  }).join('');
+  /* اختبارات غير مصنّفة في كتاب (إن وُجدت) لا تضيع */
+  const assigned = new Set(c.books.flatMap(b=>b.examIds));
+  const loose = Object.keys(c.exams).filter(id=>c.exams[id] && !assigned.has(id));
+  const looseHtml = loose.length ? `<div class="book-block open"><div class="book-head" style="cursor:default"><span class="book-name">اختبارات أخرى</span></div><div class="book-body"><div class="book-chapters">${loose.map((id,k)=>chapterCard(id,k+1)).join('')}</div></div></div>` : '';
+  return blocks + looseHtml;
+}
 function renderCourse(){
   const c = COURSES.find(c=>c.id===state.courseId);
   if(!c) return `<p>لم يتم العثور على المقرر.</p>`;
   const isTimelineCourse = c.id==='urjuza';
   const slots = isTimelineCourse ? [1,2,3,4,5,6,'extra'] : [1,2,3,4,5,'extra'];
+  const booksMode = !!(c.books && c.books.length);   /* مقرر مقسّم إلى كتب ثم فصول (بداية العابد) */
   return `
   <button class="back-btn" onclick="go('home')">→ رجوع</button>
   <div class="panel">
@@ -4068,7 +4187,7 @@ function renderCourse(){
       <div class="course-progress-bg"><div class="course-progress-fg" id="course-progress-bar-${c.id}" style="width:0%"></div></div>
     </div>
     <div class="exam-grid">
-      ${slots.map(s=>{
+      ${booksMode ? renderCourseBooks(c) : slots.map(s=>{
         const isExtra = s==='extra';
         const isTimeline = c.id==='urjuza' && s===6;
         if(isTimeline){
@@ -4259,11 +4378,15 @@ async function resetSingleExam(courseId, examId){
   showToast('تمت إعادة تعيين الاختبار، يمكنك إعادته الآن');
   hydrateCourseExams(courseId);
 }
-async function startQuiz(courseId, examId){
+async function startQuiz(courseId, examId, fresh){
   const c = COURSES.find(c=>c.id===courseId);
   const data = c.exams[examId];
   if(!data) return;
-  const quiz = buildShuffledQuiz(data, courseId, examId);
+  /* في المقررات القابلة للاستئناف: يكمل من حيث وقف ما لم يطلب «من جديد» */
+  let quiz = null;
+  if(fresh) quizProgressClear(courseId, examId);
+  else{ const sv = quizProgressGet(courseId, examId); if(sv) quiz = sv.quiz; }
+  if(!quiz) quiz = buildShuffledQuiz(data, courseId, examId);
   const favs = await loadFavorites();
   state.favIds = new Set(favs.map(f=>f.id));
   state.flaggedIds = state.flaggedIds || new Set();
@@ -4820,6 +4943,7 @@ function hydrateQuizTimer(){
   quizTimerHandle = setInterval(()=>{
     if(state.view!=='quiz'){ clearInterval(quizTimerHandle); return; }
     state.quiz.remaining--;
+    if(state.quiz.remaining > 0) quizProgressSave();
     if(state.quiz.remaining <= 0){
       state.quiz.remaining = 0;
       clearInterval(quizTimerHandle);
@@ -4880,7 +5004,7 @@ function renderQuiz(){
       ${!isCorrect && cur.hint ? `<div class="hint-box">💡 <span>${cur.hint}</span></div>` : ''}
     ` : ''}
     <div class="quiz-actions">
-      <button class="btn btn-ghost btn-sm" onclick="go('course',{courseId:state.courseId})">إنهاء ومغادرة</button>
+      <button class="btn btn-ghost btn-sm" onclick="leaveQuiz()">${QUIZ_RESUME_COURSES.includes(state.courseId) ? 'حفظ ومغادرة' : 'إنهاء ومغادرة'}</button>
       <button class="btn btn-primary" onclick="nextQuestion()" ${!revealed?'disabled':''}>
         ${q.idx===total-1? 'إنهاء الاختبار' : 'التالي'}
       </button>
@@ -4891,18 +5015,27 @@ function renderQuiz(){
 function selectAnswer(i){
   if(state.quiz.answers[state.quiz.idx] != null) return; // locked after first pick
   state.quiz.answers[state.quiz.idx] = i;
+  quizProgressSave();
   render();
 }
 function nextQuestion(){
   const q = state.quiz;
-  if(q.idx < q.questions.length-1){ q.idx++; render(); }
+  if(q.idx < q.questions.length-1){ q.idx++; quizProgressSave(); render(); }
   else{ finishQuiz(); }
+}
+/* مغادرة الاختبار: في المقررات القابلة للاستئناف يُحفظ التقدّم ويكمل الطالب لاحقًا من حيث وقف */
+function leaveQuiz(){
+  const resumable = QUIZ_RESUME_COURSES.includes(state.courseId) && !String(state.examId).startsWith('added');
+  if(resumable) quizProgressSave();
+  go('course',{courseId:state.courseId});
+  if(resumable) showToast('حُفظ تقدّمك، تكمل من حيث توقفت');
 }
 function finishQuiz(){
   if(quizTimerHandle) clearInterval(quizTimerHandle);
   const q = state.quiz;
   let score = 0;
   q.questions.forEach((qq,i)=>{ if(q.answers[i]===qq.correct) score++; });
+  quizProgressClear(state.courseId, state.examId);   /* انتهى الاختبار: لا تقدّم محفوظًا */
   const timeTaken = (q.limit || EXAM_SECONDS) - q.remaining;
   state.lastResult = { score, total:q.questions.length, courseId:state.courseId, examId:state.examId, saved:false, timeTaken };
   const __c = COURSES.find(c=>c.id===state.courseId);
@@ -6439,7 +6572,7 @@ function renderHowToModal(){
         <div class="steps">
           <div class="step"><span class="num"></span><div><h4>اختر مقررًا</h4><p>من الصفحة الرئيسية، اختر أحد المقررات المتاحة (المقررات المقفلة بانتظار رفع ملفاتها).</p></div></div>
           <div class="step"><span class="num"></span><div><h4>اختر اختبارًا</h4><p>لكل مقرر ٥ اختبارات (١٠ أسئلة لكل اختبار)، بالإضافة إلى اختبار إضافي لمن أراد مزيدًا من التدريب.</p></div></div>
-          <div class="step"><span class="num"></span><div><h4>انتبه للوقت</h4><p>لكل اختبار حد زمني ٥ دقائق (١٠ دقائق في مقرر فرض طلب العلم) يظهر أعلى الصفحة.</p></div></div>
+          <div class="step"><span class="num"></span><div><h4>انتبه للوقت</h4><p>لكل اختبار حد زمني ٥ دقائق (١٠ دقائق في مقرر فرض طلب العلم، و١٥ دقيقة في بداية العابد) يظهر أعلى الصفحة.</p></div></div>
           <div class="step"><span class="num"></span><div><h4>أجب وتعلّم فورًا</h4><p>عند اختيار إجابة تظهر النتيجة الصحيحة مباشرة؛ وإن أخطأت يظهر تلميح موجز يوضّح الصواب قبل الانتقال للسؤال التالي.</p></div></div>
           <div class="step"><span class="num"></span><div><h4>يُحفظ تقدّمك تلقائيًا</h4><p>تُحفظ كل نتيجة على جوالك فقط ضمن «تقدّمي» دون أي اسم أو مشاركة، وتدخل نتيجتك أيضًا ضمن إحصاء المنصة العام بلا أسماء لرصد المستوى العام فقط.</p></div></div>
           <div class="step"><span class="num"></span><div><h4>شارك بسؤال من عندك</h4><p>اضغط الزر العائم «+ أضف سؤالك» في أسفل الصفحة لإضافة سؤال جديد على أي مقرر مباشرة وبلا أي مراجعة، ودون حدّ لعدد الأسئلة التي يمكنك إضافتها.</p></div></div>
