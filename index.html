@@ -401,6 +401,8 @@
   .tf-btn.tf-wrong-pick{ border-color:var(--danger); background:var(--danger-bg); color:var(--danger); }
   .tf-alert{ background:var(--danger-bg); border-radius:12px; padding:12px 14px; font-size:13px; color:var(--danger); margin-top:10px; line-height:1.8; display:flex; gap:8px; font-weight:600; }
   .quiz-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .q-cloze{ cursor:pointer; }
+  .q-cloze-tip{ font-size:11px; color:var(--ink-soft); text-align:center; margin:-4px 0 10px; }
   .quiz-nav{ display:flex; align-items:center; gap:8px; }
 
   /* ---------- result ---------- */
@@ -4972,9 +4974,26 @@ function hydrateQuizTimer(){
     }
   }, 1000);
 }
+/* سؤال إكمال بفراغين فأكثر («........»): تُكشف فراغاته بالنقر كبطاقات الإكمال، وإجاباتها من الخيار الصحيح مفصولًا بالفاصلة */
+function quizClozeInfo(cur){
+  const blanks = (String(cur.text).match(/\.{8}/g) || []).length;
+  if(blanks < 2) return null;
+  const ans = String(cur.options[cur.correct]).split('،').map((x,i)=>x.trim().replace(/^و(?=\S)/,'')).filter(Boolean);
+  if(ans.length !== blanks) return null;
+  return { front:String(cur.text).replace(/\.{8}/g,'……'), back:ans.join('|'), blanks };
+}
+function quizRevealBlank(){
+  const q = state.quiz, cur = q.questions[q.idx], info = quizClozeInfo(cur);
+  if(!info) return;
+  q.rev = q.rev || {};
+  const list = q.rev[q.idx] = q.rev[q.idx] || [];
+  if(list.length < info.blanks){ list.push(list.length); render(); }
+}
 function renderQuiz(){
   const q = state.quiz;
   const cur = q.questions[q.idx];
+  const __cz = quizClozeInfo(cur);
+  const __czShown = (q.rev && q.rev[q.idx]) || [];
   const total = q.questions.length;
   const pct = Math.round((q.idx)/total*100);
   const answered = q.answers[q.idx];
@@ -4999,7 +5018,8 @@ function renderQuiz(){
       </div>
     </div>
     <div class="progress-bar"><div style="width:${pct}%"></div></div>
-    <div class="q-text">${cur.text}</div>
+    ${__cz ? `<div class="q-text q-cloze" ${__czShown.length<__cz.blanks?'onclick="quizRevealBlank()"':''}>${rvClozeHtml(__cz.front, __cz.back, __czShown, true)}</div>
+      ${__czShown.length<__cz.blanks ? `<div class="q-cloze-tip">اضغط على السؤال لكشف الفراغات واحدًا واحدًا</div>` : ''}` : `<div class="q-text">${cur.text}</div>`}
     <div class="options">
       ${cur.options.map((opt,i)=>{
         let cls = '';
