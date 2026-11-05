@@ -1151,7 +1151,7 @@ function quizProgressSave(){
   if(!data) return;
   const all = quizProgressAll();
   all[`${courseId}__${examId}`] = { v:data.createdAt, n:q.questions.length, ts:Date.now(),
-    quiz:{ questions:q.questions, idx:q.idx, answers:q.answers, remaining:q.remaining, startedAt:q.startedAt, limit:q.limit } };
+    quiz:{ questions:q.questions, idx:q.idx, answers:q.answers, remaining:q.remaining, startedAt:q.startedAt, limit:q.limit, rev:q.rev||{}, czMiss:q.czMiss||{} } };
   quizProgressWrite(all);
 }
 
@@ -4997,23 +4997,25 @@ function quizRevealBlank(){
   const list = q.rev[q.idx] = q.rev[q.idx] || [];
   if(list.length < info.blanks){
     list.push(list.length);
-    if(list.length === info.blanks){ const sk = q.czSkip && q.czSkip[q.idx]; q.answers[q.idx] = sk ? Math.max(0, cur.options.findIndex((_,i)=>i!==cur.correct)) : cur.correct; quizProgressSave(); }   /* كشف آخر فراغ = أنهى السؤال */
+    if(list.length === info.blanks){ const miss = (q.czMiss && q.czMiss[q.idx]) || 0; q.answers[q.idx] = miss ? Math.max(0, cur.options.findIndex((_,i)=>i!==cur.correct)) : cur.correct; }
+    quizProgressSave();   /* كشف آخر فراغ = أنهى السؤال */
     render();
   }
 }
-/* «لا أعرف»: يُكشف فراغ واحد في كل ضغطة، ويُحسب السؤال خطأً واحدًا عند اكتمال الكشف */
+/* «لا أعرف»: يُكشف فراغ واحد في كل ضغطة، ويُحسب كل فراغ يُكشف بهذا الزر خطأً مستقلًّا */
 function quizClozeSkip(){
   const q = state.quiz, cur = q.questions[q.idx], info = quizClozeInfo(cur);
   if(!info || q.answers[q.idx] != null) return;
-  q.rev = q.rev || {}; q.czSkip = q.czSkip || {};
-  q.czSkip[q.idx] = true;
+  q.rev = q.rev || {}; q.czMiss = q.czMiss || {};
   const list = q.rev[q.idx] = q.rev[q.idx] || [];
-  if(list.length < info.blanks) list.push(list.length);
+  if(list.length >= info.blanks) return;
+  list.push(list.length);
+  q.czMiss[q.idx] = (q.czMiss[q.idx]||0) + 1;
   if(list.length === info.blanks){
     const wrong = cur.options.findIndex((_,i)=>i!==cur.correct);
     q.answers[q.idx] = wrong >= 0 ? wrong : -1;
-    quizProgressSave();
   }
+  quizProgressSave();
   render();
 }
 function renderQuiz(){
@@ -5107,14 +5109,20 @@ function leaveQuiz(){
 function finishQuiz(){
   if(quizTimerHandle) clearInterval(quizTimerHandle);
   const q = state.quiz;
-  let score = 0;
-  q.questions.forEach((qq,i)=>{ if(q.answers[i]===qq.correct) score++; });
+  /* سؤال الإكمال يُحسب بعدد فراغاته: كل فراغ كُشف بزر «لا أعرف» خطأ مستقل، وما سواه صحيح */
+  let score = 0, totalUnits = 0;
+  const missOf = (i)=> (q.czMiss && q.czMiss[i]) || 0;
+  q.questions.forEach((qq,i)=>{
+    const cz = quizClozeInfo(qq);
+    if(cz){ totalUnits += cz.blanks; if(q.answers[i]!=null) score += Math.max(0, cz.blanks - missOf(i)); }
+    else{ totalUnits += 1; if(q.answers[i]===qq.correct) score++; }
+  });
   quizProgressClear(state.courseId, state.examId);   /* انتهى الاختبار: لا تقدّم محفوظًا */
   const timeTaken = (q.limit || EXAM_SECONDS) - q.remaining;
   /* أخطاء هذه المحاولة (تشمل ما لم يُجَب عنه عند انتهاء الوقت) لتُعرض في شاشة النتيجة */
   const review = [];
-  q.questions.forEach((qq,i)=>{ if(q.answers[i]!==qq.correct) review.push({ text:qq.text, options:qq.options, picked:q.answers[i], correct:qq.correct, hint:qq.hint||'' }); });
-  state.lastResult = { score, total:q.questions.length, courseId:state.courseId, examId:state.examId, saved:false, timeTaken, review };
+  q.questions.forEach((qq,i)=>{ if(q.answers[i]!==qq.correct || missOf(i)>0) review.push({ cloze:!!quizClozeInfo(qq), text:qq.text, options:qq.options, picked:q.answers[i], correct:qq.correct, hint:qq.hint||'' }); });
+  state.lastResult = { score, total:totalUnits, courseId:state.courseId, examId:state.examId, saved:false, timeTaken, review };
   const __c = COURSES.find(c=>c.id===state.courseId);
   const __examVersion = __c && __c.exams && __c.exams[state.examId] ? __c.exams[state.examId].createdAt : null;
   markExamCompleted(state.courseId, state.examId, __examVersion);
@@ -5216,7 +5224,7 @@ function renderResultMistakes(r){
       ${list.map((it,i)=>`
         <div class="res-wrong-item">
           <div class="res-wrong-q"><span class="res-wrong-n">${toArabicDigits(i+1)}</span>${it.text}</div>
-          <div class="res-wrong-row bad">${it.picked==null ? 'لم تُجب عن هذا السؤال' : '✕ إجابتك: ' + it.options[it.picked]}</div>
+          ${it.cloze ? '' : `<div class="res-wrong-row bad">${it.picked==null ? 'لم تُجب عن هذا السؤال' : '✕ إجابتك: ' + it.options[it.picked]}</div>`}
           <div class="res-wrong-row ok">✓ الإجابة الصحيحة: ${it.options[it.correct]}</div>
           ${it.hint ? `<div class="hint-box" style="margin:8px 0 0;">💡 <span>${it.hint}</span></div>` : ''}
         </div>`).join('')}
