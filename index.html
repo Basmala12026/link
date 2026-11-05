@@ -3181,7 +3181,7 @@ function handleAdminModeTap(e){
   if(ADMIN_MODE){
     ADMIN_MODE = false; RV_ADMIN_OK = false;
     try{ localStorage.removeItem('bs_admin_mode'); }catch(err){}
-    render(); showToast('أُوقف وضع التعديل');
+    loadCoursesFromSupabase().then(()=>render()); showToast('أُوقف وضع التعديل');
     return;
   }
   const pass = prompt('أدخل الرمز السري لتفعيل وضع التعديل:');
@@ -3189,7 +3189,7 @@ function handleAdminModeTap(e){
   if(pass !== REF_ADMIN_PASS){ showToast('رمز غير صحيح'); return; }
   ADMIN_MODE = true; RV_ADMIN_OK = true;
   try{ localStorage.setItem('bs_admin_mode', '1'); }catch(err){}
-  render(); showToast('فُعّل وضع التعديل');
+  loadCoursesFromSupabase().then(()=>render()); showToast('فُعّل وضع التعديل');
 }
 function rvAdminOpen(mode, key){
   state.rvAdmin = { mode, key };
@@ -3528,7 +3528,8 @@ async function loadCoursesFromSupabase(){
     if(examsRes.error) throw examsRes.error;
     if(qRes.error) throw qRes.error;
     const coursesRows = coursesRes.data || [];
-    const examRows = examsRes.data || [];
+    /* الاختبارات المقفلة (hidden) لا تظهر إلا في وضع التعديل */
+    const examRows = (examsRes.data || []).filter(e=>!e.hidden || ADMIN_MODE);
     const qRows = qRes.data || [];
     const bookRows = booksRes.error ? [] : (booksRes.data || []);
     const built = coursesRows.map(c=>{
@@ -3556,12 +3557,12 @@ async function loadCoursesFromSupabase(){
           const t = Date.parse(ed.updated_at);
           if(t > QEDIT_VERSION_FROM && t > __lastEdit) __lastEdit = t;
         });
-        examsObj[e.id] = { title:e.title, questions: qs, createdAt: __lastEdit ? `${e.created_at}|${__lastEdit}` : e.created_at, bookId: e.book_id || null };
+        examsObj[e.id] = { title: e.title + (e.hidden ? ' (للمشرف فقط)' : ''), questions: qs, createdAt: __lastEdit ? `${e.created_at}|${__lastEdit}` : e.created_at, bookId: e.book_id || e.hidden_book_id || null };
       });
       /* الكتب: كل كتاب يضم فصوله (اختباراته) بترتيب sort_order */
       const books = bookRows.filter(b=>b.course_id===c.id).map(b=>({
         id:b.id, name:b.name,
-        examIds: examRows.filter(e=>e.course_id===c.id && e.book_id===b.id).map(e=>e.id)
+        examIds: examRows.filter(e=>e.course_id===c.id && (e.book_id||e.hidden_book_id)===b.id).map(e=>e.id)
       }));
       return { id:c.id, name:c.name, sub:c.sub, icon:c.icon, status:c.status, exams: examsObj, books };
     });
