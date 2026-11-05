@@ -403,6 +403,8 @@
   .quiz-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .q-cloze{ cursor:pointer; }
   .q-cloze-tip{ font-size:11px; color:var(--ink-soft); text-align:center; margin:-4px 0 10px; }
+  .q-cloze-skip{ text-align:center; margin:0 0 12px; }
+  .q-cloze-skip button{ background:none; border:1px solid var(--line,#e5dfd2); color:var(--ink-soft); font:inherit; font-size:12px; padding:6px 14px; border-radius:999px; cursor:pointer; }
   .quiz-nav{ display:flex; align-items:center; gap:8px; }
 
   /* ---------- result ---------- */
@@ -4999,6 +5001,17 @@ function quizRevealBlank(){
     render();
   }
 }
+/* «لا أعرف»: يُكشف الجواب كاملًا ويُحسب السؤال خطأً واحدًا */
+function quizClozeSkip(){
+  const q = state.quiz, cur = q.questions[q.idx], info = quizClozeInfo(cur);
+  if(!info || q.answers[q.idx] != null) return;
+  q.rev = q.rev || {};
+  q.rev[q.idx] = Array.from({length:info.blanks}, (_,i)=>i);
+  const wrong = cur.options.findIndex((_,i)=>i!==cur.correct);
+  q.answers[q.idx] = wrong >= 0 ? wrong : -1;
+  quizProgressSave();
+  render();
+}
 function renderQuiz(){
   const q = state.quiz;
   const cur = q.questions[q.idx];
@@ -5031,7 +5044,8 @@ function renderQuiz(){
     </div>
     <div class="progress-bar"><div style="width:${pct}%"></div></div>
     ${__cz ? `<div class="q-text q-cloze" ${!__czDone?'onclick="quizRevealBlank()"':''}>${rvClozeHtml(__cz.front, __cz.back, __czShown, true)}</div>
-      ${!__czDone ? `<div class="q-cloze-tip">اضغط على الفراغ لكشفه${__cz.blanks>1?'، واحدًا بعد واحد':''}</div>` : ''}` : `<div class="q-text">${cur.text}</div>`}
+      ${!__czDone ? `<div class="q-cloze-tip">اضغط على الفراغ لكشفه${__cz.blanks>1?'، واحدًا بعد واحد':''}</div>
+      <div class="q-cloze-skip"><button type="button" onclick="quizClozeSkip()">لا أعرف الإجابة (تُحسب خطأً)</button></div>` : (answered !== cur.correct ? `<div class="feedback-banner wrong">✕ لم تعرفها؛ حُسبت خطأً واحدًا</div>` : '')}` : `<div class="q-text">${cur.text}</div>`}
     ${__cz ? '' : `<div class="options">
       ${cur.options.map((opt,i)=>{
         let cls = '';
