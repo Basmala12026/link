@@ -401,6 +401,7 @@
   .tf-btn.tf-wrong-pick{ border-color:var(--danger); background:var(--danger-bg); color:var(--danger); }
   .tf-alert{ background:var(--danger-bg); border-radius:12px; padding:12px 14px; font-size:13px; color:var(--danger); margin-top:10px; line-height:1.8; display:flex; gap:8px; font-weight:600; }
   .quiz-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .quiz-nav{ display:flex; align-items:center; gap:8px; }
 
   /* ---------- result ---------- */
   .result-hero{ text-align:center; padding:8px 0 18px; }
@@ -5019,9 +5020,12 @@ function renderQuiz(){
     ` : ''}
     <div class="quiz-actions">
       <button class="btn btn-ghost btn-sm" onclick="leaveQuiz()">${quizResumable(state.courseId, state.examId) ? 'حفظ ومغادرة' : 'إنهاء ومغادرة'}</button>
-      <button class="btn btn-primary" onclick="nextQuestion()" ${!revealed?'disabled':''}>
-        ${q.idx===total-1? 'إنهاء الاختبار' : 'التالي'}
-      </button>
+      <div class="quiz-nav">
+        ${q.idx>0 ? `<button class="btn btn-ghost btn-sm" onclick="prevQuestion()">السابق</button>` : ''}
+        <button class="btn btn-primary" onclick="nextQuestion()" ${!revealed?'disabled':''}>
+          ${q.idx===total-1? 'إنهاء الاختبار' : 'التالي'}
+        </button>
+      </div>
     </div>
     ${quizResumable(state.courseId, state.examId) ? `<div class="quiz-save-note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span>تستطيع الخروج في أي وقت بزر «حفظ ومغادرة»؛ يُحفظ ما أنجزته والوقت المتبقي، وتكمل من حيث توقفت.</span></div>` : ''}
   </div>
@@ -5032,6 +5036,11 @@ function selectAnswer(i){
   state.quiz.answers[state.quiz.idx] = i;
   quizProgressSave();
   render();
+}
+/* الرجوع للسؤال السابق: يبقى جوابه مقفلًا كما هو، والغرض مراجعته فقط */
+function prevQuestion(){
+  const q = state.quiz;
+  if(q.idx > 0){ q.idx--; quizProgressSave(); render(); }
 }
 function nextQuestion(){
   const q = state.quiz;
