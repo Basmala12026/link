@@ -5045,7 +5045,7 @@ function renderQuiz(){
     <div class="progress-bar"><div style="width:${pct}%"></div></div>
     ${__cz ? `<div class="q-text q-cloze" ${!__czDone?'onclick="quizRevealBlank()"':''}>${rvClozeHtml(__cz.front, __cz.back, __czShown, true)}</div>
       ${!__czDone ? `<div class="q-cloze-tip">اضغط على الفراغ لكشفه${__cz.blanks>1?'، واحدًا بعد واحد':''}</div>
-      <div class="q-cloze-skip"><button type="button" onclick="quizClozeSkip()">لا أعرف الإجابة (تُحسب خطأً)</button></div>` : (answered !== cur.correct ? `<div class="feedback-banner wrong">✕ لم تعرفها؛ حُسبت خطأً واحدًا</div>` : '')}` : `<div class="q-text">${cur.text}</div>`}
+      <div class="q-cloze-skip"><button type="button" onclick="quizClozeSkip()">لا أعرف الإجابة</button></div>` : (answered !== cur.correct ? `<div class="feedback-banner wrong">✕ لم تعرفها؛ حُسبت خطأً واحدًا</div>` : '')}` : `<div class="q-text">${cur.text}</div>`}
     ${__cz ? '' : `<div class="options">
       ${cur.options.map((opt,i)=>{
         let cls = '';
