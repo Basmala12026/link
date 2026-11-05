@@ -411,7 +411,8 @@
   .res-wrong-row{ font-size:13px; line-height:1.8; border-radius:10px; padding:6px 10px; margin-top:4px; }
   .res-wrong-row.bad{ background:var(--danger-bg); color:var(--danger); }
   .res-wrong-row.ok{ background:var(--good-bg); color:var(--good); }
-  .quiz-save-note{ margin-top:12px; padding:9px 12px; border-radius:12px; background:var(--sage-pale-2); color:var(--sage-deep); font-size:12.5px; line-height:1.8; text-align:center; }
+  .quiz-save-note{ margin-top:10px; padding:6px 10px; border-radius:10px; background:var(--sage-pale-2); color:var(--sage-deep); font-size:11px; line-height:1.7; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .quiz-save-note svg{ width:14px; height:14px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
   .result-score{ font-size:48px; font-weight:900; color:var(--sage-deep); font-variant-numeric:tabular-nums; }
   .result-total{ font-size:15px; color:var(--ink-soft); font-weight:700; }
   .level-chip{ display:inline-block; margin-top:8px; padding:6px 16px; border-radius:999px; font-weight:800; font-size:12.5px; }
@@ -1105,7 +1106,7 @@ const EXAM_SECONDS_BY_COURSE = { ajurri: 600, bidaya: 900 };   // فرض طلب 
 function examSecondsFor(courseId){ return EXAM_SECONDS_BY_COURSE[courseId] || EXAM_SECONDS; }
 function examMinutesLabel(courseId){ return toArabicDigits(Math.round(examSecondsFor(courseId)/60)) + ' د'; }
 /* المقررات التي يُحفظ فيها تقدّم الاختبار ليكمل الطالب من حيث وقف إن خرج ثم رجع (على جهازه فقط) */
-const QUIZ_RESUME_COURSES = ['bidaya'];
+function quizResumable(courseId, examId){ return !String(examId).startsWith('added'); }   /* يعمل في كل المقررات عدا اختبارات «الأسئلة المضافة» */
 const QUIZ_PROGRESS_KEY = 'bs_quiz_progress_v1';
 function quizProgressAll(){ try{ return JSON.parse(localStorage.getItem(QUIZ_PROGRESS_KEY)||'{}') || {}; }catch(e){ return {}; } }
 function quizProgressWrite(all){ try{ localStorage.setItem(QUIZ_PROGRESS_KEY, JSON.stringify(all)); }catch(e){} }
@@ -1115,7 +1116,7 @@ function quizProgressClear(courseId, examId){
 }
 /* يُرجع التقدّم المحفوظ إن كان ما زال صالحًا (نفس نسخة الاختبار وعدد الأسئلة) وإلا يمسحه */
 function quizProgressGet(courseId, examId){
-  if(!QUIZ_RESUME_COURSES.includes(courseId)) return null;
+  if(!quizResumable(courseId, examId)) return null;
   const sv = quizProgressAll()[`${courseId}__${examId}`];
   if(!sv) return null;
   try{
@@ -1129,9 +1130,17 @@ function quizProgressGet(courseId, examId){
   quizProgressClear(courseId, examId);
   return null;
 }
+/* أزرار بطاقة الاختبار: «ابدأ»، أو «متابعة» + «من جديد» إن كان له تقدّم محفوظ */
+function quizActionButtonsHtml(courseId, s){
+  const sv = quizProgressGet(courseId, s);
+  return sv
+    ? `<button class="btn btn-primary btn-sm" onclick="startQuiz('${courseId}','${s}')">متابعة · سؤال ${toArabicDigits(sv.quiz.idx+1)}</button>
+       <button class="btn btn-ghost btn-sm" onclick="startQuiz('${courseId}','${s}',true)">من جديد</button>`
+    : `<button class="btn btn-primary btn-sm" onclick="startQuiz('${courseId}','${s}')">ابدأ</button>`;
+}
 function quizProgressSave(){
   const q = state.quiz, courseId = state.courseId, examId = state.examId;
-  if(!q || !QUIZ_RESUME_COURSES.includes(courseId) || String(examId).startsWith('added')) return;
+  if(!q || !quizResumable(courseId, examId)) return;
   const c = COURSES.find(c=>c.id===courseId);
   const data = c && c.exams && c.exams[examId];
   if(!data) return;
@@ -4145,11 +4154,7 @@ function renderCourseBooks(c){
       <div class="t chap">${escapeHtml(data.title||'')}</div>
       <div class="t chap-sub">${cnt} أسئلة · ${examMinutesLabel(c.id)}</div>
       <div class="exam-actions" id="examactions-${c.id}-${s}">
-        ${(()=>{ const sv = quizProgressGet(c.id, s);
-          return sv
-            ? `<button class="btn btn-primary btn-sm" onclick="startQuiz('${c.id}','${s}')">متابعة · سؤال ${toArabicDigits(sv.quiz.idx+1)}</button>
-               <button class="btn btn-ghost btn-sm" onclick="startQuiz('${c.id}','${s}',true)">من جديد</button>`
-            : `<button class="btn btn-primary btn-sm" onclick="startQuiz('${c.id}','${s}')">ابدأ</button>`; })()}
+        ${quizActionButtonsHtml(c.id, s)}
       </div>
     </div>`;
   };
@@ -4264,7 +4269,7 @@ function renderCourse(){
           <div class="n">${isExtra?'+':examLabel(s)}</div>
           <div class="t">${label} · ${toArabicDigits((data.questions||[]).length)} أسئلة · ٥ د</div>
           <div class="exam-actions" id="examactions-${c.id}-${s}">
-            <button class="btn btn-primary btn-sm" onclick="startQuiz('${c.id}','${s}')">ابدأ</button>
+            ${quizActionButtonsHtml(c.id, s)}
           </div>
         </div>`;
       }).join('')}
@@ -5013,12 +5018,12 @@ function renderQuiz(){
       ${!isCorrect && cur.hint ? `<div class="hint-box">💡 <span>${cur.hint}</span></div>` : ''}
     ` : ''}
     <div class="quiz-actions">
-      <button class="btn btn-ghost btn-sm" onclick="leaveQuiz()">${QUIZ_RESUME_COURSES.includes(state.courseId) ? 'حفظ ومغادرة' : 'إنهاء ومغادرة'}</button>
+      <button class="btn btn-ghost btn-sm" onclick="leaveQuiz()">${quizResumable(state.courseId, state.examId) ? 'حفظ ومغادرة' : 'إنهاء ومغادرة'}</button>
       <button class="btn btn-primary" onclick="nextQuestion()" ${!revealed?'disabled':''}>
         ${q.idx===total-1? 'إنهاء الاختبار' : 'التالي'}
       </button>
     </div>
-    ${(QUIZ_RESUME_COURSES.includes(state.courseId) && !String(state.examId).startsWith('added')) ? `<div class="quiz-save-note">💾 تستطيع الخروج في أي وقت بزر «حفظ ومغادرة»؛ يُحفظ ما أنجزته والوقت المتبقي، وتكمل من حيث توقفت.</div>` : ''}
+    ${quizResumable(state.courseId, state.examId) ? `<div class="quiz-save-note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span>تستطيع الخروج في أي وقت بزر «حفظ ومغادرة»؛ يُحفظ ما أنجزته والوقت المتبقي، وتكمل من حيث توقفت.</span></div>` : ''}
   </div>
   `;
 }
@@ -5035,7 +5040,7 @@ function nextQuestion(){
 }
 /* مغادرة الاختبار: في المقررات القابلة للاستئناف يُحفظ التقدّم ويكمل الطالب لاحقًا من حيث وقف */
 function leaveQuiz(){
-  const resumable = QUIZ_RESUME_COURSES.includes(state.courseId) && !String(state.examId).startsWith('added');
+  const resumable = quizResumable(state.courseId, state.examId);
   if(resumable) quizProgressSave();
   go('course',{courseId:state.courseId});
   if(resumable) showToast('حُفظ تقدّمك، تكمل من حيث توقفت');
