@@ -403,7 +403,8 @@
   .quiz-actions{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .q-cloze{ cursor:pointer; }
   .q-cloze-tip{ font-size:11px; color:var(--ink-soft); text-align:center; margin:-4px 0 10px; }
-  .q-cloze-skip{ text-align:center; margin:0 0 12px; }
+  .q-cloze-skip{ display:flex; justify-content:center; gap:8px; margin:0 0 12px; }
+  .q-cloze-skip button.ok{ background:var(--sage-deep); border-color:var(--sage-deep); color:#fff; }
   .q-cloze-skip button{ background:none; border:1px solid var(--line,#e5dfd2); color:var(--ink-soft); font:inherit; font-size:12px; padding:6px 14px; border-radius:999px; cursor:pointer; }
   .quiz-nav{ display:flex; align-items:center; gap:8px; }
 
@@ -1151,7 +1152,7 @@ function quizProgressSave(){
   if(!data) return;
   const all = quizProgressAll();
   all[`${courseId}__${examId}`] = { v:data.createdAt, n:q.questions.length, ts:Date.now(),
-    quiz:{ questions:q.questions, idx:q.idx, answers:q.answers, remaining:q.remaining, startedAt:q.startedAt, limit:q.limit, rev:q.rev||{}, czMiss:q.czMiss||{} } };
+    quiz:{ questions:q.questions, idx:q.idx, answers:q.answers, remaining:q.remaining, startedAt:q.startedAt, limit:q.limit, rev:q.rev||{}, czMiss:q.czMiss||{}, czSel:q.czSel||{} } };
   quizProgressWrite(all);
 }
 
@@ -3354,7 +3355,7 @@ async function qAdminSubmit(){
     if(cur && cur.qid === a.qid){
       cur.text = row.question; cur.options = row.options; cur.correct = row.correct_index; cur.hint = row.hint;
       quiz.answers[quiz.idx] = null;   // الخيارات تغيّرت: يُعاد الجواب على السؤال
-      if(quiz.rev) delete quiz.rev[quiz.idx]; if(quiz.czMiss) delete quiz.czMiss[quiz.idx];   /* وتُعاد فراغات الإكمال مخفية */
+      if(quiz.rev) delete quiz.rev[quiz.idx]; if(quiz.czMiss) delete quiz.czMiss[quiz.idx]; if(quiz.czSel) delete quiz.czSel[quiz.idx];   /* وتُعاد فراغات الإكمال مخفية */
     }
     state.modal = null; state.qAdmin = null; render();
   } else {
@@ -4991,31 +4992,33 @@ function quizClozeInfo(cur){
   if(ans.length !== blanks) return null;
   return { front:String(cur.text).replace(/\.{8}/g,'……'), back:ans.join('|'), blanks };
 }
+/* كشف فراغ بالنقر؛ ثم يختار الطالب «عرفتها» أو «لم أعرفها» قبل الانتقال لما بعده، ويُحسب كل فراغ على اختياره */
 function quizRevealBlank(){
   const q = state.quiz, cur = q.questions[q.idx], info = quizClozeInfo(cur);
-  if(!info) return;
-  q.rev = q.rev || {};
+  if(!info || q.answers[q.idx] != null) return;
+  q.rev = q.rev || {}; q.czSel = q.czSel || {};
   let list = q.rev[q.idx] = q.rev[q.idx] || [];
+  const sel = q.czSel[q.idx] = q.czSel[q.idx] || [];
   if(list.length > info.blanks){ list = q.rev[q.idx] = list.slice(0, info.blanks); }   /* بعد تعديل السؤال قد يقل عدد الفراغات */
+  if(list.length > sel.length) return;            /* فراغ مكشوف ينتظر اختيار الطالب */
   if(list.length < info.blanks){
     list.push(list.length);
-    if(list.length === info.blanks){ const miss = (q.czMiss && q.czMiss[q.idx]) || 0; q.answers[q.idx] = miss ? Math.max(0, cur.options.findIndex((_,i)=>i!==cur.correct)) : cur.correct; }
-    quizProgressSave();   /* كشف آخر فراغ = أنهى السؤال */
+    quizProgressSave();
     render();
   }
 }
-/* «لا أعرف»: يُكشف فراغ واحد في كل ضغطة، ويُحسب كل فراغ يُكشف بهذا الزر خطأً مستقلًّا */
-function quizClozeSkip(){
+function quizClozeChoose(known){
   const q = state.quiz, cur = q.questions[q.idx], info = quizClozeInfo(cur);
   if(!info || q.answers[q.idx] != null) return;
-  q.rev = q.rev || {}; q.czMiss = q.czMiss || {};
-  const list = q.rev[q.idx] = q.rev[q.idx] || [];
-  if(list.length >= info.blanks) return;
-  list.push(list.length);
-  q.czMiss[q.idx] = (q.czMiss[q.idx]||0) + 1;
-  if(list.length === info.blanks){
+  q.rev = q.rev || {}; q.czSel = q.czSel || {}; q.czMiss = q.czMiss || {};
+  const list = q.rev[q.idx] || [];
+  const sel = q.czSel[q.idx] = q.czSel[q.idx] || [];
+  if(list.length <= sel.length) return;
+  sel.push(!!known);
+  q.czMiss[q.idx] = sel.filter(x=>!x).length;
+  if(sel.length === info.blanks){
     const wrong = cur.options.findIndex((_,i)=>i!==cur.correct);
-    q.answers[q.idx] = wrong >= 0 ? wrong : -1;
+    q.answers[q.idx] = q.czMiss[q.idx] ? (wrong >= 0 ? wrong : -1) : cur.correct;
   }
   quizProgressSave();
   render();
@@ -5027,6 +5030,7 @@ function renderQuiz(){
   const __czShown = (__cz && q.answers[q.idx] != null) ? true : ((q.rev && q.rev[q.idx]) || []);
   const __czDone = __cz && __czShown === true;
   const __czCount = __czShown === true ? (__cz ? __cz.blanks : 0) : __czShown.length;
+  const __czPending = !!(__cz && !__czDone && q.rev && q.rev[q.idx] && q.rev[q.idx].length > ((q.czSel && q.czSel[q.idx]) || []).length);   /* فراغ مكشوف ينتظر «عرفتها / لم أعرفها» */
   const total = q.questions.length;
   const pct = Math.round((q.idx)/total*100);
   const answered = q.answers[q.idx];
@@ -5052,8 +5056,8 @@ function renderQuiz(){
     </div>
     <div class="progress-bar"><div style="width:${pct}%"></div></div>
     ${__cz ? `<div class="q-text q-cloze" ${!__czDone?'onclick="quizRevealBlank()"':''}>${rvClozeHtml(__cz.front, __cz.back, __czShown, true)}</div>
-      ${!__czDone ? `<div class="q-cloze-tip">اضغط على الفراغ لكشفه${__cz.blanks>1?'، واحدًا بعد واحد':''}</div>
-      <div class="q-cloze-skip"><button type="button" onclick="quizClozeSkip()">لا أعرف الإجابة</button></div>` : ''}` : `<div class="q-text">${cur.text}</div>`}
+      ${!__czDone ? `<div class="q-cloze-tip">${__czPending ? 'هل عرفتها؟' : 'اضغط على الفراغ لكشفه' + (__cz.blanks>1?'، واحدًا بعد واحد':'')}</div>
+      ${__czPending ? `<div class="q-cloze-skip"><button type="button" class="ok" onclick="quizClozeChoose(true)">عرفتها</button><button type="button" onclick="quizClozeChoose(false)">لم أعرفها</button></div>` : ''}` : ''}` : `<div class="q-text">${cur.text}</div>`}
     ${__cz ? '' : `<div class="options">
       ${cur.options.map((opt,i)=>{
         let cls = '';
