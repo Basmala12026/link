@@ -1035,6 +1035,55 @@
   /* الفراغات المنتظِرة دورها، والبطاقة كلها قابلة للنقر لكشف الفراغ التالي */
   .rv-blank.wait{ opacity:.5; }
   .rv-cloze-card[onclick]{ cursor:pointer; }
+
+  /* ===== تبويب «تعداد» (للمشرف): خرائط تعداد الأبواب ===== */
+  .td{ --td-gold:#C9973F; --td-gold-ink:#3A2C10; --td-gold-pale:#F6EBD3; --td-line:#E4DEC9; --td-line2:#C9C3AB; --td-title:#F0C56E; }
+  .td .td-books{ display:flex; gap:8px; overflow-x:auto; margin:0 0 12px; }
+  .td .td-bk{ flex:none; border:1px solid var(--td-line2); background:var(--card); color:var(--sage-deep); font:700 14px/1 inherit; font-family:inherit; padding:10px 14px; border-radius:999px; cursor:pointer; white-space:nowrap; }
+  .td .td-bk.on{ background:var(--sage-deep); border-color:var(--sage-deep); color:#FAF7F0; }
+  .td .td-tools{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:0 0 12px; }
+  .td .td-tb{ border:1.5px solid var(--td-line2); background:var(--card); color:var(--sage-deep); font-weight:700; font-size:13.5px; font-family:inherit; padding:9px 14px; border-radius:12px; cursor:pointer; }
+  .td .td-tb.on{ background:var(--td-gold); border-color:var(--td-gold); color:var(--td-gold-ink); }
+  .td .td-hint{ color:var(--ink-soft); font-size:13px; }
+  .td .td-canvas{ background:#F4F1E7; border:1px solid var(--td-line); border-radius:22px; overflow:hidden; box-shadow:var(--shadow); }
+  .td .td-ban{ position:relative; background:var(--sage-deep); color:#FAF7F0; padding:24px 24px 20px; overflow:hidden; }
+  .td .td-ban>*{ position:relative; }
+  .td .td-ban .td-bg{ position:absolute; inset:0; width:100%; height:100%; }
+  .td .td-ban .td-tri{ position:absolute; inset-inline-end:24px; top:0; }
+  .td .td-ban .td-sym{ font-size:13px; color:#D5DCC6; font-weight:500; }
+  .td .td-ban h1{ margin:2px 0 6px; font-size:clamp(24px,5.5vw,36px); line-height:1.3; font-weight:800; color:var(--td-title); }
+  .td .td-ban p{ margin:0; color:#D5DCC6; font-size:15px; }
+  .td .td-cols{ padding:20px 16px 8px; display:grid; grid-template-columns:1fr; gap:20px 26px; align-items:start; }
+  @media(min-width:900px){ .td .td-cols{ grid-template-columns:1fr 1fr; padding-inline:24px; } }
+  .td .td-sec{ min-width:0; }
+  .td .td-rib{ display:flex; align-items:center; gap:10px; width:100%; text-align:start; border:0; cursor:pointer; color:#FAF7F0; background:var(--sage-deep); font-weight:800; font-size:17px; line-height:1.5; font-family:inherit; padding:11px 14px; border-radius:14px; position:relative; box-shadow:0 3px 0 rgba(0,0,0,.12); }
+  .td .td-no{ flex:none; background:var(--td-gold); color:var(--td-gold-ink); width:28px; height:28px; border-radius:9px; display:grid; place-items:center; font-size:14px; }
+  .td .td-tt{ flex:1; min-width:0; }
+  .td .td-pin{ color:var(--td-gold); margin-inline-end:6px; }
+  .td .td-chev{ flex:none; transition:transform .2s; display:flex; opacity:.9; }
+  .td .td-sec.shut .td-chev{ transform:rotate(90deg); }
+  .td .td-arr{ position:absolute; inset-inline-start:26px; bottom:-9px; width:18px; height:9px; }
+  .td .td-sec.shut .td-arr{ display:none; }
+  .td .td-in{ padding-top:18px; }
+  .td .td-sec.shut .td-in{ display:none; }
+  .td .td-tree{ border-inline-start:2.5px solid var(--td-gold); margin-inline-start:12px; padding-inline-start:16px; display:flex; flex-direction:column; gap:16px; }
+  .td .td-grp{ position:relative; }
+  .td .td-gd{ position:absolute; inset-inline-start:-28px; top:6px; color:var(--td-gold); line-height:0; }
+  .td .td-gh{ display:flex; align-items:center; gap:8px; background:var(--td-gold); color:var(--td-gold-ink); border-radius:999px; padding:5px 14px; font-weight:800; font-size:15px; margin-bottom:10px; width:fit-content; max-width:100%; box-shadow:0 0 0 5px var(--td-gold-pale); }
+  .td .td-gh .td-ic{ display:flex; flex:none; --ic-on:var(--td-gold); }
+  .td .td-gh .td-cn{ font-weight:500; opacity:.8; }
+  .td .td-nodes{ display:flex; flex-wrap:wrap; gap:8px; }
+  .td .td-chip{ position:relative; max-width:100%; background:var(--card); border:1.5px solid var(--td-line2); border-radius:14px; padding:7px 14px; color:var(--sage-deep); font-weight:800; font-size:14.5px; line-height:1.55; text-align:center; }
+  .td .td-chip .td-cd{ position:absolute; top:-5px; inset-inline-end:-4px; color:var(--td-gold); line-height:0; }
+  .td .td-chip .td-sub{ display:block; margin-top:3px; padding-top:3px; border-top:1px dashed var(--td-line2); font-weight:500; font-size:12.5px; color:var(--ink-soft); text-align:center; }
+  .td.td-mem .td-chip:not(.rv) .td-sub{ filter:blur(7px); }
+  .td .td-chip .td-n{ color:var(--td-gold); margin-inline-end:6px; }
+  .td .td-svg{ flex:none; vertical-align:-3px; }
+  .td.td-mem .td-chip .td-tx{ filter:blur(7px); user-select:none; transition:filter .2s; }
+  .td.td-mem .td-chip{ cursor:pointer; }
+  .td.td-mem .td-chip.rv .td-tx{ filter:none; }
+  .td.td-mem .td-chip.rv{ border-color:var(--td-gold); }
+  .td .td-foot{ display:flex; justify-content:space-between; gap:10px; padding:10px 24px 14px; color:var(--ink-soft); font-size:12.5px; border-top:1px solid var(--td-line); }
 </style>
 </head>
 <body>
@@ -2839,6 +2888,52 @@ function renderResetReviewModal(){
     </div>`;
 }
 
+
+/* ============================ تبويب «تعداد» (للمشرف) ============================ */
+const TADAD_BOOKS = [{"id":"tahara","name":"كتاب الطهارة","def":"","ch":[{"t":"فصل: المياه","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"أنواع المياه (والمياه ثلاثة)","items":[{"n":1,"t":"الطهور: هو الباقي على خلقته","sub":[]},{"n":2,"t":"الطاهر: ما تغيّر كثير من لونه أو طعمه أو ريحه بطاهر","sub":[]},{"n":3,"t":"النجس: ما تغيّر بنجاسة في غير محل تطهير","sub":[]}]}]},{"t":"فصل: الاستنجاء","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"الاستنجاء واجب من كل خارج، إلا","items":[{"n":1,"t":"الريح","sub":[]},{"n":2,"t":"والطاهر","sub":[]},{"n":3,"t":"وغير الملوِّث","sub":[]}]},{"ic":"✅","t":"ولا يصح الاستجمار إلا","items":[{"n":1,"t":"بطاهر","sub":["يخرج منه: النجس"]},{"n":2,"t":"مباح","sub":["يخرج منه: المحرَّم كالمسروق والمغصوب"]},{"n":3,"t":"يابس","sub":["يخرج منه: الرخو المتفتّت"]},{"n":4,"t":"منقٍ","sub":["فالإنقاء بحجر ونحوه: أن يبقى أثر لا يزيله إلا الماء"]},{"n":5,"t":"ألّا يكون بمحرّم","sub":["وحرم: بروث وعظم، وطعام ولو لبهيمة"]},{"n":6,"t":"وشُرط له ثلاث مسحات فأكثر منقية","sub":[]},{"n":7,"t":"وعدم تعدّي خارج موضع العادة","sub":[]}]},{"ic":"🔹","t":"وحرم","items":[{"n":1,"t":"لبث فوق قدر حاجته","sub":[]},{"n":2,"t":"وتغوّطه بماء","sub":[]},{"n":3,"t":"وبوله وتغوّطه:","sub":["بموردِه","وبطريق مسلوك","وظلّ نافع","وتحت شجرة عليها ثمر يُقصد"]},{"n":4,"t":"واستقبال قبلة واستدبارها بفضاء","sub":[]}]}]},{"t":"فصل: في السواك","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"والسواك مسنون مطلقًا، إلا لصائم","items":[{"n":1,"t":"بعد الزوال فيُكره","sub":[]},{"n":2,"t":"ويُباح قبله بعود رطب","sub":[]},{"n":3,"t":"ويُستحب بيابس","sub":[]}]},{"ic":"✅","t":"ويتأكد عند","items":[{"n":1,"t":"صلاة","sub":[]},{"n":2,"t":"وقراءة","sub":[]},{"n":3,"t":"ووضوء","sub":[]},{"n":4,"t":"وانتباه من نوم","sub":[]},{"n":5,"t":"ودخول مسجد","sub":[]},{"n":6,"t":"وتغيّر رائحة فم ونحوه","sub":[]},{"n":7,"t":"دخول منزل (زيادة من الشرح)","sub":[]}]},{"ic":"🔹","t":"وسُنّ","items":[{"n":1,"t":"بداءةٌ باليمن في سواك وطُهور وشأنه كلِّه","sub":[]},{"n":2,"t":"وادّهان","sub":[]},{"n":3,"t":"واكتحال","sub":[]},{"n":4,"t":"ونظر في مرآة","sub":[]},{"n":5,"t":"وتطيّب","sub":[]},{"n":6,"t":"واستحداد","sub":[]},{"n":7,"t":"وحفُّ شارب","sub":[]},{"n":8,"t":"وتقليم ظفر","sub":[]},{"n":9,"t":"ونتف إبط","sub":[]}]}]},{"t":"فصل: في الوضوء","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"والتسمية واجبة","items":[{"n":1,"t":"فيه","sub":[]},{"n":2,"t":"وفي غسل","sub":[]},{"n":3,"t":"وتيمم","sub":[]},{"n":4,"t":"وغسل يدَي قائم من نوم ليل ناقض لوضوء","sub":[]},{"n":5,"t":"وغسل ميت","sub":[]}]},{"ic":"✅","t":"ويجب غسل يدَي القائم من نوم الليل","items":[{"n":1,"t":"ثلاثًا","sub":[]},{"n":2,"t":"بنيّة","sub":[]},{"n":3,"t":"وتسمية","sub":[]}]},{"ic":"✅","t":"وشروط الوضوء ثمانية","items":[{"n":1,"t":"انقطاع ما يوجبه","sub":[]},{"n":2,"t":"والنية","sub":["وهي شرط لكل طهارة شرعية، غير إزالة خبث ونحوها"]},{"n":3,"t":"والإسلام","sub":[]},{"n":4,"t":"والعقل","sub":[]},{"n":5,"t":"والتمييز","sub":[]},{"n":6,"t":"والماء الطهور المباح","sub":[]},{"n":7,"t":"وإزالة ما يمنع وصوله","sub":[]},{"n":8,"t":"والاستنجاء","sub":[]}]},{"ic":"✅","t":"وفروضه ستة","items":[{"n":1,"t":"غسل الوجه","sub":["ومنه: فمٌ وأنف"]},{"n":2,"t":"وغسل اليدين مع المرفقين","sub":[]},{"n":3,"t":"ومسح الرأس كلِّه","sub":["ومنه: الأذنان"]},{"n":4,"t":"وغسل الرجلين مع الكعبين","sub":[]},{"n":5,"t":"وترتيب","sub":[]},{"n":6,"t":"وموالاة","sub":["ويسقطان مع غسل"]}]}]},{"t":"فصل: في المسح","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"يجوز المسح على الخفين ونحوهما بسبعة شروط","items":[{"n":1,"t":"لُبسهما بعد كمال طهارة بماء","sub":[]},{"n":2,"t":"وسترهما محلَّ فرض","sub":[]},{"n":3,"t":"وإمكان مشي بهما عُرفًا","sub":[]},{"n":4,"t":"وثبوتهما بنفسيهما","sub":[]},{"n":5,"t":"وإباحتهما","sub":[]},{"n":6,"t":"وطهارة عينيهما","sub":[]},{"n":7,"t":"وعدم وصفهما البشرة","sub":[]}]}]},{"t":"فصل: في النواقض","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"نواقض الوضوء ثمانية","items":[{"n":1,"t":"خارج من سبيل مطلقًا","sub":[]},{"n":2,"t":"وخروج:","sub":["بول أو غائط من باقي البدن، قلّ أو كثُر","أو غيرهما، كقيء ودم، إن فحش في نفس كل أحد بحسبه"]},{"n":3,"t":"وزوال عقل","sub":["إلا يسير نوم من قائم أو جالس"]},{"n":4,"t":"وغسل ميت أو بعضه","sub":[]},{"n":5,"t":"وأكل لحم إبل، ولو نيئًا","sub":["تعبّدًا","فلا نقض بـ: بقية أجزائها، وشرب لبنها، ومرق لحمها"]},{"n":6,"t":"ومسّ فرج:","sub":["آدمي","متصل","أو حلقة دبره","ولو ميتًا","بيده","لا مسّ الخصيتين، ولا محلّ الفرج البائن"]},{"n":7,"t":"ولمس ذكر أو أنثى الآخر:","sub":["لشهوة","بلا حائل","ولو بزائد لزائد"]},{"n":8,"t":"والردّة","sub":[]}]},{"ic":"🔹","t":"ولا ينقض","items":[{"n":1,"t":"بكلام محرَّم","sub":[]},{"n":2,"t":"ولا بإزالة شعر وظفر ونحوهما","sub":[]}]}]},{"t":"فصل: في أحكام الغسل","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"موجبات الغسل سبعة","items":[{"n":1,"t":"انتقال منيّ","sub":["فلو أحسّ بانتقاله فحبسه فلم يخرج؛ وجب الغسل","فلو اغتسل له ثم خرج بلا لذّة: لم يعِدْه"]},{"n":2,"t":"وخروجه من مخرجه، ولو دمًا","sub":["وتُعتبر لذّة في غير نائم ونحوه"]},{"n":3,"t":"وتغييب حشفة:","sub":["أصلية","أو قدرها","بلا حائل","في فرج أصلي","ولو: دبرًا، أو لبهيمة، أو ميت ممن يُجامَع مثله، ولو نائمًا"]},{"n":4,"t":"وإسلام كافر","sub":["ولو مرتدًّا","أو لم يوجد منه في كفره ما يوجبه"]},{"n":5,"t":"وخروج حيض","sub":[]},{"n":6,"t":"وخروج دم نفاس","sub":["فلا يجب بولادة عَرِيَتْ عنه"]},{"n":7,"t":"وموت تعبّدًا","sub":["غير: شهيد معركة","ومقتول ظلمًا"]}]}]},{"t":"فصل: في شروط الغسل","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"وشروط الغسل سبعة","items":[{"n":1,"t":"انقطاع ما يوجبه","sub":[]},{"n":2,"t":"والنية","sub":[]},{"n":3,"t":"والإسلام","sub":[]},{"n":4,"t":"والعقل","sub":[]},{"n":5,"t":"والتمييز","sub":[]},{"n":6,"t":"والماء الطهور المباح","sub":[]},{"n":7,"t":"وإزالة ما يمنع وصوله","sub":[]}]},{"ic":"✅","t":"وفرضه","items":[{"n":1,"t":"أن يعمّ بالماء جميع بدنه","sub":[]},{"n":2,"t":"وداخل فمه وأنفه","sub":[]},{"n":3,"t":"حتى ما يظهر من فرج امرأة عند قعودها لحاجتها","sub":[]}]}]},{"t":"فصل: التيمم","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"التيمم: بديل طهارة ماء، لكل ما يُفعل به، عند عجز عنه شرعًا، سوى","items":[{"n":1,"t":"نجاسة على غير بدن","sub":[]},{"n":2,"t":"ولبث بمسجد لحاجة","sub":[]}]},{"ic":"✅","t":"وشروطه ثلاثة","items":[{"n":1,"t":"دخول وقت الصلاة","sub":[]},{"n":2,"t":"وتعذّر الماء:","sub":["لحبسه عنه ونحوه","أو لخوفه بطلبه، أو استعماله، ضررًا ببدنه أو ماله أو غيرهما"]},{"n":3,"t":"وأن يكون:","sub":["بتراب","طهور","مباح","غير محترق","له غبار يعلق باليد"]}]},{"ic":"✅","t":"وفروضه","items":[{"n":1,"t":"مسح وجهه","sub":[]},{"n":2,"t":"ويديه إلى كوعيه","sub":[]},{"n":3,"t":"وترتيب","sub":[]},{"n":4,"t":"وموالاة لحدث أصغر","sub":["وهي: بقدرها في وضوء"]},{"n":5,"t":"وتعيين نية استباحة ما يتيمم له من حدث أو نجاسة","sub":["فلا تكفي نية أحدهما عن الآخر","وإن نواهما: أجزأ"]}]},{"ic":"🔹","t":"ويُبطله","items":[{"n":1,"t":"ما يُبطل الوضوء","sub":[]},{"n":2,"t":"وخروج الوقت","sub":[]},{"n":3,"t":"ووجود الماء إن تيمم لفقده","sub":[]},{"n":4,"t":"وزوال المبيح له","sub":[]},{"n":5,"t":"وخلع ما يُمسح عليه","sub":[]}]}]},{"t":"فصل: في تطهير النجاسات","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"يُشترط لكل متنجّس","items":[{"n":1,"t":"سبع غسلات إن أنقت، وإلّا فحتى تنقى","sub":[]},{"n":2,"t":"بماء طهور","sub":[]},{"n":3,"t":"مع حتٍّ وقرص لحاجة، إن لم يتضرر المحل","sub":[]},{"n":4,"t":"وعصر مع إمكان فيما تشرّب، كلَّ مرة خارج الماء","sub":[]},{"n":5,"t":"وكون إحداها في متنجّس بكلب أو خنزير بتراب طهور","sub":[]}]}]},{"t":"فصل: في بيان النجاسات","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"وكل ميتة نجسة، غير","items":[{"n":1,"t":"ميتة الآدمي","sub":[]},{"n":2,"t":"والسمك","sub":[]},{"n":3,"t":"والجراد","sub":[]}]},{"ic":"✅","t":"ولا يُكره سؤر حيوان طاهر، وهو فضلة طعامه وشرابه، غير","items":[{"n":1,"t":"دجاجة مخلاة","sub":[]},{"n":2,"t":"وفأر","sub":[]}]}]},{"t":"فصل: الحيض","concept":null,"label":"","dabit":null,"g":[{"ic":"✅","t":"سنّ الحيض","items":[{"n":1,"t":"وأقلّ سنّ حيض: تمام تسع سنين","sub":["المعنى: ما قبلها يُعدّ استحاضة، إلا إن وُجدت قرينة أخرى للبلوغ مع الدم"]},{"n":2,"t":"وأكثره: خمسون سنة","sub":["المعنى: أكثر سنّ تحيض فيه النساء؛ وما بعدها استحاضة، إلا لو كانت مطّردة على عادتها القديمة فتُعدّ حيضًا"]},{"n":3,"t":"والحامل لا تحيض","sub":["المعنى: هذا الأصل؛ لكن لو نزل دم بكيفية الحيض وفي موعده ومكث نفس المدة فيُعتبر حيضًا، أما المتقطع أثناء الحمل فاستحاضة"]}]},{"ic":"✅","t":"مدة الحيض","items":[{"n":1,"t":"وأقلّه: يوم وليلة","sub":["المعنى: أي ٢٤ ساعة؛ فإن نزل الدم خلالها فهو حيض، وإلا فاستحاضة"]},{"n":2,"t":"وأكثره: خمسة عشر يومًا","sub":["المعنى: ما بعد ذلك استحاضة"]},{"n":3,"t":"وغالبه: ستٌّ أو سبع","sub":["المعنى: غالب عادة النساء، وتُقدَّر عادة المرأة بحسب غالب عادة أهلها وأمّها وخالاتها"]}]},{"ic":"✅","t":"الطهر بين الحيضتين","items":[{"n":1,"t":"وأقلّ الطهر بين الحيضتين: ثلاثة عشر يومًا","sub":["المعنى: الطهر المتصوَّر لا الدائم، في الأغلب؛ لأن أكثر الحيض خمسة عشر يومًا"]},{"n":2,"t":"وغالبه: بقية الشهر","sub":["المعنى: غالب الطهر بين الحيضتين"]},{"n":3,"t":"ولا حدّ لأكثره","sub":["المعنى: أي الطهر؛ قد ينقطع الحيض شهورًا أو سنين وهي طاهرة"]}]},{"ic":"🔹","t":"ويحرم عليها","items":[{"n":1,"t":"فعلُ صلاة، ولا تقضيها","sub":[]},{"n":2,"t":"وفعلُ صوم، وتقضيه","sub":[]},{"n":3,"t":"ووطؤها في فرج","sub":["ويجب فيه: دينار أو نصفه كفّارة","وتُباح المباشرة فيما دونه","المعنى: أي في حال كونها حائضًا؛ والمباشرة دون الفرج كالتماس والقبلات"]}]},{"ic":"🔹","t":"والنفاس","items":[{"n":1,"t":"لا حدّ لأقلّه","sub":["المعنى: هو دم النفاس؛ وأحيانًا تكون الولادة وليس فيها دم"]},{"n":2,"t":"وأكثره: أربعون يومًا","sub":["المعنى: والصحيح أن الأكثر يختلف بحسب كل امرأة"]},{"n":3,"t":"ويثبت حكمه بوضع ما يتبيّن فيه خلق إنسان","sub":["المعنى: بخروج عضو فما يصدر منها فهو نفاس، ميتًا أو حيًّا، وبداية النفاس من بداية خروج العضو"]},{"n":4,"t":"والنقاء زمنه طُهر","sub":["المعنى: انقطاع الدم أثناء الأربعين فتغتسل وتصلي","ويُكره الوطء فيه"]},{"n":5,"t":"وهو كحيض في أحكامه، غير: عِدّة، وبلوغ","sub":["المعنى: العدّة لأن الحيض ثلاث قروء بخلاف الحمل؛ والحيض علامة بلوغ أما النفاس فلا يكون إلا بعد حمل"]}]}]}]}];
+const TD_SV = {
+  book:'<path d="M12 6.5C10.3 5.3 8 5 5 5v13c3 0 5.3.3 7 1.5 1.7-1.2 4-1.5 7-1.5V5c-3 0-5.3.3-7 1.5zM12 6.5v13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>',
+  pin:'<path d="M9 3h6l-1 6 3 3v2h-4v6l-1 1-1-1v-6H6v-2l3-3-1-6z" fill="currentColor"/>',
+  check:'<circle cx="12" cy="12" r="9" fill="currentColor"/><path d="M7.8 12.4l3 3 5.4-6" fill="none" stroke="var(--ic-on,#fff)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
+  diamond:'<path d="M12 3l8 9-8 9-8-9z" fill="currentColor"/>',
+  chev:'<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>',
+  dot:'<circle cx="5" cy="5" r="4" fill="currentColor"/>'
+};
+const TD_ICMAP = {'✅':'check','🔹':'diamond'};
+const tdState = { book:0, open:{}, mem:false };
+function tdAr(x){ return String(x).replace(/\d/g, d=>'٠١٢٣٤٥٦٧٨٩'[d]); }
+function tdIc(k, sz){ const vb = k==='dot' ? '0 0 10 10' : '0 0 24 24'; return `<svg class="td-svg" width="${sz||18}" height="${sz||18}" viewBox="${vb}" aria-hidden="true">${TD_SV[k]}</svg>`; }
+function tdSetBook(i){ tdState.book = i; render(); }
+function tdToggle(k){ const bk = TADAD_BOOKS[tdState.book].id; tdState.open[bk+k] = !tdState.open[bk+k]; render(); }
+function tdAll(op){ const b = TADAD_BOOKS[tdState.book]; b.ch.forEach((c,k)=>{ tdState.open[b.id+k] = op; }); render(); }
+function tdMem(){ tdState.mem = !tdState.mem; render(); }
+function renderTadad(){
+  const b = TADAD_BOOKS[tdState.book];
+  const books = TADAD_BOOKS.length > 1 ? `<div class="td-books">${TADAD_BOOKS.map((x,i)=>`<button class="td-bk ${i===tdState.book?'on':''}" onclick="tdSetBook(${i})">${escapeHtml(x.name)}</button>`).join('')}</div>` : '';
+  let h = `<div class="td">${books}
+    <div class="td-tools"><button class="td-tb" onclick="tdAll(false)">طيّ الكل</button><button class="td-tb" onclick="tdAll(true)">فتح الكل</button><button class="td-tb ${tdState.mem?'on':''}" onclick="tdMem()">وضع الحفظ</button><span class="td-hint">${tdState.mem?'اضغط على أي بند ليظهر':'اضغط على عنوان الباب لفتحه وطيّه'}</span></div>
+    <div class="td-canvas"><div class="td-ban">
+      <svg class="td-bg" viewBox="0 0 600 140" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><pattern id="td-pt" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0H22" stroke="#fff" stroke-opacity=".05" stroke-width="2"/></pattern></defs><rect width="600" height="140" fill="url(#td-pt)"/><circle cx="70" cy="170" r="110" fill="#fff" fill-opacity=".08"/><circle cx="540" cy="-30" r="100" fill="#fff" fill-opacity=".06"/></svg>
+      <svg class="td-tri" width="54" height="20" viewBox="0 0 54 20" aria-hidden="true"><path d="M0 0H54L27 20z" fill="#C9973F"/></svg>
+      <div class="td-sym">${tdIc('book',16)} تعداد · بداية العابد</div><h1>${escapeHtml(b.name)}</h1>${b.def?`<p>${escapeHtml(b.def)}</p>`:''}</div><div class="td-cols">`;
+  b.ch.forEach((c,k)=>{
+    const shut = !tdState.open[b.id+k];
+    h += `<section class="td-sec ${shut?'shut':''}"><button class="td-rib" onclick="tdToggle(${k})"><span class="td-no">${tdAr(k+1)}</span><span class="td-tt"><span class="td-pin">${tdIc('pin',16)}</span>${escapeHtml(c.t)}</span><svg class="td-arr" viewBox="0 0 18 9" aria-hidden="true"><path d="M0 0h18L9 9z" fill="#49523E"/></svg><span class="td-chev">${tdIc('chev',18)}</span></button><div class="td-in"><div class="td-tree">`;
+    c.g.forEach(g=>{
+      const cn = (g.items.length>1 && g.items[0].n>0 && !/[\(\[]/.test(g.t)) ? ` <span class="td-cn">[${tdAr(g.items.length)}]</span>` : '';
+      h += `<div class="td-grp"><span class="td-gd">${tdIc('dot',20)}</span><div class="td-gh"><span class="td-ic">${tdIc(TD_ICMAP[g.ic]||'diamond',16)}</span><span>${escapeHtml(g.t)}${cn}</span></div><div class="td-nodes">`;
+      g.items.forEach(it=>{
+        const num = (it.n>0 && !/^[\d٠-٩]/.test(it.t)) ? `<span class="td-n">${tdAr(it.n)}</span>` : '';
+        h += `<div class="td-chip" ${tdState.mem?'onclick="this.classList.toggle(\'rv\')"':''}><span class="td-cd">${tdIc('dot',10)}</span>${num}<span class="td-tx">${escapeHtml(tdAr(it.t))}</span>${(it.sub||[]).map(s=>`<span class="td-sub">${escapeHtml(tdAr(s))}</span>`).join('')}</div>`;
+      });
+      h += `</div></div>`;
+    });
+    h += `</div></div></section>`;
+  });
+  h += `</div><div class="td-foot"><span>بسملة · ساعة علم وساعة عمل</span><span>مبادرة مستقلة للمراجعة الشخصية</span></div></div></div>`;
+  return h;
+}
+
 /* ---- التبويبان: أسئلة / مراجعة ---- */
 function setHomeTab(t){
   state.homeTab = t;
@@ -2854,8 +2949,9 @@ function renderHomeTabs(){
   const rv = state.homeTab === 'review';
   return `
   <div class="home-tabs" role="tablist">
-    <button class="home-tab ${!rv?'active':''}" role="tab" onclick="setHomeTab('questions')">أسئلة</button>
+    <button class="home-tab ${(!rv && state.homeTab!=='tadad')?'active':''}" role="tab" onclick="setHomeTab('questions')">أسئلة</button>
     <button class="home-tab ${rv?'active':''}" role="tab" onclick="setHomeTab('review')">بطاقات${RV_STORE.seenTab ? '' : '<span class="rv-new">جديد</span>'}</button>
+    <button class="home-tab ${state.homeTab==='tadad'?'active':''}" role="tab" onclick="setHomeTab('tadad')">تعداد</button>
     ${rv ? `<div class="home-tools">${rvStripToolsHtml()}</div>` : ''}
   </div>`;
 }
@@ -3932,12 +4028,12 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<
 /* ============================ RENDER ROOT ============================ */
 function render(){
   /* حماية: خارج وضع التعديل لا تُعرض شاشات البطاقات مهما كانت الحالة */
-  if(!ADMIN_MODE){ if(state.homeTab==='review') state.homeTab='questions'; if(String(state.view).startsWith('rv')) state.view='home'; }
+  if(!ADMIN_MODE){ if(state.homeTab==='review' || state.homeTab==='tadad') state.homeTab='questions'; if(String(state.view).startsWith('rv')) state.view='home'; }
   const navView = String(state.view).startsWith('rv') ? 'home' : state.view;
   document.querySelectorAll('.nav-link').forEach(b=>{ b.classList.toggle('active', b.dataset.view===navView); });
   /* زر «أضف سؤالك» خاص بتبويب الأسئلة فقط */
   const fabEl = document.querySelector('.fab');
-  if(fabEl) fabEl.style.display = (String(state.view).startsWith('rv') || (state.view==='home' && state.homeTab==='review')) ? 'none' : '';
+  if(fabEl) fabEl.style.display = (String(state.view).startsWith('rv') || (state.view==='home' && (state.homeTab==='review' || state.homeTab==='tadad'))) ? 'none' : '';
   const app = document.getElementById('app');
   let html = '';
   if(state.view==='home') html = renderHome();
@@ -4028,7 +4124,7 @@ function renderHome(){
   <div id="home-reset-area"></div>
 
   ${renderHomeTabs()}
-  ${(ADMIN_MODE && state.homeTab==='review') ? renderReviewHome() : `
+  ${(ADMIN_MODE && state.homeTab==='review') ? renderReviewHome() : (ADMIN_MODE && state.homeTab==='tadad') ? renderTadad() : `
   <div class="section-title"><span class="hint">اختر مقررًا لبدء الاختبار</span></div>
   <div class="courses-grid">
     ${COURSES.map(c=>{ const peek = c.status!=='active' && ADMIN_MODE && Object.keys(c.exams||{}).length>0;   /* مقرر مقفل: يفتحه المشرف وحده للمعاينة */
