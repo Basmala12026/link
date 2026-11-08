@@ -410,6 +410,12 @@
 
   /* ---------- result ---------- */
   .result-hero{ text-align:center; padding:8px 0 18px; }
+  .ar-chips{ display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 14px; }
+  .ar-chip{ min-width:30px; height:30px; padding:0 6px; border-radius:9px; border:1.5px solid var(--sage-pale); background:#fff; color:var(--ink-soft); font:inherit; font-size:12.5px; font-weight:800; cursor:pointer; }
+  .ar-chip.ok{ background:var(--good-bg); border-color:var(--good); color:var(--good); }
+  .ar-chip.bad{ background:var(--danger-bg); border-color:var(--danger); color:var(--danger); }
+  .ar-chip.cur{ outline:2.5px solid var(--sage-deep); outline-offset:1px; }
+  .ar-fill{ color:var(--good); border-bottom:2px solid var(--good); padding:0 4px; }
   .res-wrong-list{ display:flex; flex-direction:column; gap:10px; margin-top:8px; }
   .res-wrong-item{ border:1px solid var(--sage-pale); border-radius:14px; padding:12px 14px; background:var(--cream); }
   .res-wrong-q{ font-weight:800; font-size:14px; line-height:1.9; color:var(--ink); margin-bottom:6px; }
@@ -3940,6 +3946,7 @@ function render(){
   else if(state.view==='timeline') html = renderTimeline();
   else if(state.view==='imanarkan') html = renderImanArkan();
   else if(state.view==='result') html = renderResult();
+  else if(state.view==='qreview') html = renderAnswersReview();
   else if(state.view==='tasks') html = renderTasks();
   else if(state.view==='mustalahat') html = renderMustalahatPage();
   else if(state.view==='ajrumfill') html = renderAjrumFillPage();
@@ -5115,7 +5122,9 @@ function finishQuiz(){
   /* أخطاء هذه المحاولة (تشمل ما لم يُجَب عنه عند انتهاء الوقت) لتُعرض في شاشة النتيجة */
   const review = [];
   q.questions.forEach((qq,i)=>{ if(q.answers[i]!==qq.correct || missOf(i)>0) review.push({ cloze:!!quizClozeInfo(qq), text:qq.text, options:qq.options, picked:q.answers[i], correct:qq.correct, hint:qq.hint||'' }); });
-  state.lastResult = { score, total:totalUnits, courseId:state.courseId, examId:state.examId, saved:false, timeTaken, review };
+  /* كل أسئلة المحاولة بإجاباتها، لشاشة «مراجعة» (تنقّل بين الأسئلة) */
+  const all = q.questions.map((qq,i)=>{ const cz = quizClozeInfo(qq); return { text:qq.text, options:qq.options, picked:q.answers[i], correct:qq.correct, hint:qq.hint||'', cloze:cz?{ front:cz.front, back:cz.back }:null, miss:missOf(i) }; });
+  state.lastResult = { score, total:totalUnits, courseId:state.courseId, examId:state.examId, saved:false, timeTaken, review, all, revIdx:0 };
   const __c = COURSES.find(c=>c.id===state.courseId);
   const __examVersion = __c && __c.exams && __c.exams[state.examId] ? __c.exams[state.examId].createdAt : null;
   markExamCompleted(state.courseId, state.examId, __examVersion);
@@ -5243,10 +5252,60 @@ function renderResult(){
 
     <div class="quiz-actions" style="margin-top:20px;">
       <button class="btn btn-ghost btn-sm" onclick="go('course',{courseId:'${r.courseId}'})">مقررات أخرى</button>
-      <button class="btn btn-primary btn-sm" onclick="${r.examId==='6' ? `startTimelineGame('${r.courseId}')` : (r.courseId==='zubda'&&r.examId==='4') ? `startImanArkanGame('${r.courseId}')` : (r.examId && r.examId.toString().startsWith('added')) ? `startAddedQuestionsQuiz('${r.courseId}', ${r.examId.toString().includes('-') ? r.examId.toString().split('-')[1] : 1})` : `startQuiz('${r.courseId}', '${r.examId}')`}">إعادة المحاولة</button>
+      ${(r.all && r.all.length) ? `<button class="btn btn-primary btn-sm" onclick="openAnswersReview()">مراجعة</button>` : `<button class="btn btn-primary btn-sm" onclick="${r.examId==='6' ? `startTimelineGame('${r.courseId}')` : (r.courseId==='zubda'&&r.examId==='4') ? `startImanArkanGame('${r.courseId}')` : (r.examId && r.examId.toString().startsWith('added')) ? `startAddedQuestionsQuiz('${r.courseId}', ${r.examId.toString().includes('-') ? r.examId.toString().split('-')[1] : 1})` : `startQuiz('${r.courseId}', '${r.examId}')`}">إعادة المحاولة</button>`}
     </div>
   </div>
   `;
+}
+/* ============================ مراجعة إجابات المحاولة ============================ */
+function openAnswersReview(){
+  const r = state.lastResult;
+  if(!r || !r.all || !r.all.length) return;
+  r.revIdx = 0;
+  setView('qreview');
+}
+function arGo(i){
+  const r = state.lastResult; if(!r || !r.all) return;
+  r.revIdx = Math.max(0, Math.min(r.all.length-1, i));
+  render(); window.scrollTo({top:0, behavior:'smooth'});
+}
+function renderAnswersReview(){
+  const r = state.lastResult;
+  if(!r || !r.all || !r.all.length) return '<div class="panel"><p>لا توجد محاولة لمراجعتها.</p></div>';
+  const n = r.all.length, i = Math.max(0, Math.min(n-1, r.revIdx||0)), it = r.all[i];
+  const ok = (x)=> x.cloze ? (x.miss===0 && x.picked!=null) : (x.picked===x.correct);
+  const chips = r.all.map((x,k)=>`<button type="button" class="ar-chip ${ok(x)?'ok':(x.picked==null?'none':'bad')} ${k===i?'cur':''}" onclick="arGo(${k})">${toArabicDigits(k+1)}</button>`).join('');
+  let body;
+  if(it.cloze){
+    const parts = it.cloze.front.split('……'), ans = it.cloze.back.split('|');
+    const filled = parts.map((t,k)=> t + (k<ans.length ? `<span class="ar-fill">${ans[k]}</span>` : '')).join('');
+    body = `<div class="q-text">${filled}</div>
+      <div class="feedback-banner ${ok(it)?'correct':'wrong'}">${ok(it) ? '✓ عرفتها كلها' : (it.picked==null ? 'لم تُجب عن هذا السؤال' : '✕ لم تعرف ' + toArabicDigits(it.miss) + ' من الفراغات')}</div>`;
+  }else{
+    body = `<div class="q-text">${it.text}</div>
+      <div class="options">${it.options.map((opt,k)=>{
+        let cls = ' locked-opt';
+        if(k===it.correct) cls += ' correct-answer'; else if(k===it.picked) cls += ' wrong-answer';
+        return `<div class="option ${cls}"><span class="dot">${k===it.correct?'✓':(k===it.picked?'✕':'')}</span><span>${opt}</span></div>`;
+      }).join('')}</div>
+      <div class="feedback-banner ${ok(it)?'correct':'wrong'}">${ok(it) ? '✓ إجابتك صحيحة' : (it.picked==null ? 'لم تُجب عن هذا السؤال' : '✕ إجابتك غير صحيحة')}</div>`;
+  }
+  return `
+  <div class="panel">
+    <div class="quiz-top">
+      <div class="q-index">مراجعة · سؤال ${toArabicDigits(i+1)} من ${toArabicDigits(n)} — ${courseName(r.courseId)}</div>
+    </div>
+    <div class="ar-chips">${chips}</div>
+    ${body}
+    ${it.hint && !ok(it) ? `<div class="hint-box">💡 <span>${it.hint}</span></div>` : ''}
+    <div class="quiz-actions">
+      <button class="btn btn-ghost btn-sm" onclick="setView('result')">رجوع للنتيجة</button>
+      <div class="quiz-nav">
+        ${i>0 ? `<button class="btn btn-ghost btn-sm" onclick="arGo(${i-1})">السابق</button>` : ''}
+        ${i<n-1 ? `<button class="btn btn-primary" onclick="arGo(${i+1})">التالي</button>` : ''}
+      </div>
+    </div>
+  </div>`;
 }
 async function hydrateResultAutoSave(){
   const r = state.lastResult;
