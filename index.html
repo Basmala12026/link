@@ -1130,8 +1130,12 @@ function quizProgressGet(courseId, examId){
     const data = c && c.exams && c.exams[examId];
     const ok = data && sv.v===data.createdAt && sv.n===(data.questions||[]).length
       && sv.quiz && Array.isArray(sv.quiz.questions) && sv.quiz.questions.length===sv.n
-      && sv.quiz.idx>=0 && sv.quiz.idx<sv.n && sv.quiz.remaining>0;
-    if(ok) return sv;
+      && sv.quiz.idx>=0 && sv.quiz.idx<sv.n;
+    if(ok){
+      /* تقدّم محفوظ بالنظام القديم (مؤقت تنازلي): نحوّله إلى الزمن المنقضي */
+      if(sv.quiz.elapsed==null) sv.quiz.elapsed = Math.max(0, (sv.quiz.limit||EXAM_SECONDS) - (sv.quiz.remaining||0));
+      return sv;
+    }
   }catch(e){}
   quizProgressClear(courseId, examId);
   return null;
@@ -1152,7 +1156,7 @@ function quizProgressSave(){
   if(!data) return;
   const all = quizProgressAll();
   all[`${courseId}__${examId}`] = { v:data.createdAt, n:q.questions.length, ts:Date.now(),
-    quiz:{ questions:q.questions, idx:q.idx, answers:q.answers, remaining:q.remaining, startedAt:q.startedAt, limit:q.limit, rev:q.rev||{}, czMiss:q.czMiss||{}, czSel:q.czSel||{} } };
+    quiz:{ questions:q.questions, idx:q.idx, answers:q.answers, elapsed:q.elapsed||0, startedAt:q.startedAt, rev:q.rev||{}, czMiss:q.czMiss||{}, czSel:q.czSel||{} } };
   quizProgressWrite(all);
 }
 
@@ -3881,7 +3885,7 @@ function buildShuffledQuiz(examData, courseId, examId){
   const groups = [];
   qs.forEach(x=>{ if(x.chain && groups.length) groups[groups.length-1].push(x); else groups.push([x]); });
   const ordered = shuffle(groups).reduce((a,g)=>a.concat(g), []);
-  return { questions: ordered, idx:0, answers:new Array(examData.questions.length).fill(null), remaining:examSecondsFor(courseId), limit:examSecondsFor(courseId), startedAt:Date.now() };
+  return { questions: ordered, idx:0, answers:new Array(examData.questions.length).fill(null), elapsed:0, startedAt:Date.now() };
 }
 function levelOf(pct){
   if(pct>=90) return {label:'ممتاز', cls:'lvl-excellent'};
@@ -4164,7 +4168,7 @@ function renderCourseBooks(c){
       <div class="exam-done-badge" id="examdone-${c.id}-${s}" style="display:none;">✓ منتهي</div>
       <div class="n">${toArabicDigits(n)}</div>
       <div class="t chap">${escapeHtml(data.title||'')}</div>
-      <div class="t chap-sub">${cnt} أسئلة · ${examMinutesLabel(c.id)}</div>
+      <div class="t chap-sub">${cnt} أسئلة</div>
       <div class="exam-actions" id="examactions-${c.id}-${s}">
         ${quizActionButtonsHtml(c.id, s)}
       </div>
@@ -4439,7 +4443,7 @@ async function startAddedQuestionsQuiz(courseId, batchIndex){
       hint: sub.name ? `سؤال مضاف من: ${sub.name}` : 'سؤال مضاف من أحد المستخدمين'
     };
   });
-  const quiz = { questions: shuffle(qs), idx:0, answers:new Array(qs.length).fill(null), remaining:examSecondsFor(courseId), limit:examSecondsFor(courseId), startedAt:Date.now() };
+  const quiz = { questions: shuffle(qs), idx:0, answers:new Array(qs.length).fill(null), elapsed:0, startedAt:Date.now() };
   const favs = await loadFavorites();
   state.favIds = new Set(favs.map(f=>f.id));
   state.flaggedIds = state.flaggedIds || new Set();
@@ -4653,7 +4657,7 @@ function saveImanArkanProgress(){
   const ia = state.imanArkan;
   if(!ia) return;
   try{
-    const toSave = { courseId:ia.courseId, queue:ia.queue, idx:ia.idx, placed:ia.placed, correct:ia.correct, wrong:ia.wrong, total:ia.total, startedAt:ia.startedAt, remaining:ia.remaining, hintShown:ia.hintShown };
+    const toSave = { courseId:ia.courseId, queue:ia.queue, idx:ia.idx, placed:ia.placed, correct:ia.correct, wrong:ia.wrong, total:ia.total, startedAt:ia.startedAt, elapsed:ia.elapsed||0, hintShown:ia.hintShown };
     localStorage.setItem(IMANARKAN_PROGRESS_KEY, JSON.stringify(toSave));
   }catch(e){}
 }
@@ -4672,7 +4676,7 @@ function clearImanArkanProgress(){
 async function startImanArkanGame(courseId, forceNew){
   const saved = forceNew ? null : loadImanArkanProgress(courseId);
   if(saved){
-    state.imanArkan = { ...saved, remaining: (saved.remaining!=null ? saved.remaining : EXAM_SECONDS), feedback:null, locked:false, autoAdvanceTimer:null };
+    state.imanArkan = { ...saved, elapsed: (saved.elapsed!=null ? saved.elapsed : (saved.remaining!=null ? Math.max(0, EXAM_SECONDS-saved.remaining) : 0)), feedback:null, locked:false, autoAdvanceTimer:null };
   }else{
     state.imanArkan = {
       courseId,
@@ -4683,7 +4687,7 @@ async function startImanArkanGame(courseId, forceNew){
       wrong: 0,
       total: IMAN_ARKAN_ITEMS.length,
       startedAt: Date.now(),
-      remaining: EXAM_SECONDS,
+      elapsed: 0,
       feedback: null,
       hintShown: false,
       locked: false,
@@ -4740,7 +4744,7 @@ function renderImanArkan(){
       <div class="quiz-top-right">
         <span class="tl-tally tl-tally-correct">✓ ${ia.correct}</span>
         <span class="tl-tally tl-tally-wrong">✕ ${ia.wrong}</span>
-        <div class="timer-chip ${ia.remaining<=30?'low':''}" id="imanarkan-timer-chip">⏱ ${fmtTime(ia.remaining)}</div>
+        <div class="timer-chip" id="imanarkan-timer-chip">⏱ ${fmtTime(ia.elapsed||0)}</div>
       </div>
     </div>
     <div class="progress-bar"><div style="width:${pct}%"></div></div>
@@ -4899,7 +4903,7 @@ function advanceImanArkan(){
 function finishImanArkanGame(){
   const ia = state.imanArkan;
   if(imanArkanTimerHandle) clearInterval(imanArkanTimerHandle);
-  const timeTaken = Math.round((Date.now()-ia.startedAt)/1000);
+  const timeTaken = ia.elapsed || Math.round((Date.now()-ia.startedAt)/1000);
   clearImanArkanProgress();
   markExamCompleted('zubda', '4', null);
   state.lastResult = { score:ia.correct, total:ia.total, courseId:ia.courseId, examId:'4', saved:false, timeTaken };
@@ -4911,19 +4915,10 @@ function hydrateImanArkanTimer(){
   imanArkanTimerHandle = setInterval(()=>{
     if(state.view!=='imanarkan' || !state.imanArkan){ clearInterval(imanArkanTimerHandle); return; }
     const ia = state.imanArkan;
-    ia.remaining--;
-    if(ia.remaining <= 0){
-      ia.remaining = 0;
-      clearInterval(imanArkanTimerHandle);
-      finishImanArkanGame();
-      return;
-    }
+    ia.elapsed = (ia.elapsed||0) + 1;
     saveImanArkanProgress();
     const chip = document.getElementById('imanarkan-timer-chip');
-    if(chip){
-      chip.textContent = '⏱ ' + fmtTime(ia.remaining);
-      chip.classList.toggle('low', ia.remaining<=30);
-    }
+    if(chip) chip.textContent = '⏱ ' + fmtTime(ia.elapsed);
   }, 1000);
 }
 /* ---- قلب المفضلة لعبارات رتّب الأمور ---- */
@@ -4968,19 +4963,11 @@ function hydrateQuizTimer(){
   if(quizTimerHandle) clearInterval(quizTimerHandle);
   quizTimerHandle = setInterval(()=>{
     if(state.view!=='quiz'){ clearInterval(quizTimerHandle); return; }
-    state.quiz.remaining--;
-    if(state.quiz.remaining > 0) quizProgressSave();
-    if(state.quiz.remaining <= 0){
-      state.quiz.remaining = 0;
-      clearInterval(quizTimerHandle);
-      finishQuiz();
-      return;
-    }
+    /* مؤقت تصاعدي (ستوبووتش) بلا حد زمني */
+    state.quiz.elapsed = (state.quiz.elapsed||0) + 1;
+    quizProgressSave();
     const chip = document.getElementById('timer-chip');
-    if(chip){
-      chip.textContent = '⏱ ' + fmtTime(state.quiz.remaining);
-      chip.classList.toggle('low', state.quiz.remaining<=30);
-    }
+    if(chip) chip.textContent = '⏱ ' + fmtTime(state.quiz.elapsed);
   }, 1000);
 }
 /* سؤال إكمال بفراغين فأكثر («........»): تُكشف فراغاته بالنقر كبطاقات الإكمال، وإجاباتها من الخيار الصحيح مفصولًا بالفاصلة */
@@ -5051,7 +5038,7 @@ function renderQuiz(){
         ${(ADMIN_MODE && cur.qid != null) ? `<div class="q-adm"><button title="تعديل السؤال" onclick="qAdminOpen('edit')">${RV_ICON_EDIT}</button><button class="x" title="حذف السؤال" onclick="qAdminOpen('del')">${RV_ICON_X}</button></div>` : ''}
         <button class="icon-btn heart-btn ${isFav?'active':''}" onclick="toggleFavorite()" title="${isFav?'إزالة من المفضلة':'أضف إلى المفضلة'}">${ICONS.heart}</button>
         <button class="icon-btn flag-btn ${isFlagged?'flagged':''}" onclick="openReportQuestion()" title="${isFlagged?'تم إرسال بلاغك عن هذا السؤال':'الإبلاغ عن مشكلة في السؤال'}">${ICONS.flag}</button>
-        <div class="timer-chip ${q.remaining<=30?'low':''}" id="timer-chip">⏱ ${fmtTime(q.remaining)}</div>
+        <div class="timer-chip" id="timer-chip">⏱ ${fmtTime(q.elapsed||0)}</div>
       </div>
     </div>
     <div class="progress-bar"><div style="width:${pct}%"></div></div>
@@ -5124,7 +5111,7 @@ function finishQuiz(){
     else{ totalUnits += 1; if(q.answers[i]===qq.correct) score++; }
   });
   quizProgressClear(state.courseId, state.examId);   /* انتهى الاختبار: لا تقدّم محفوظًا */
-  const timeTaken = (q.limit || EXAM_SECONDS) - q.remaining;
+  const timeTaken = q.elapsed || 0;
   /* أخطاء هذه المحاولة (تشمل ما لم يُجَب عنه عند انتهاء الوقت) لتُعرض في شاشة النتيجة */
   const review = [];
   q.questions.forEach((qq,i)=>{ if(q.answers[i]!==qq.correct || missOf(i)>0) review.push({ cloze:!!quizClozeInfo(qq), text:qq.text, options:qq.options, picked:q.answers[i], correct:qq.correct, hint:qq.hint||'' }); });
@@ -6680,7 +6667,7 @@ function renderHowToModal(){
         <div class="steps">
           <div class="step"><span class="num"></span><div><h4>اختر مقررًا</h4><p>من الصفحة الرئيسية، اختر أحد المقررات المتاحة (المقررات المقفلة بانتظار رفع ملفاتها).</p></div></div>
           <div class="step"><span class="num"></span><div><h4>اختر اختبارًا</h4><p>لكل مقرر ٥ اختبارات (١٠ أسئلة لكل اختبار)، بالإضافة إلى اختبار إضافي لمن أراد مزيدًا من التدريب.</p></div></div>
-          <div class="step"><span class="num"></span><div><h4>انتبه للوقت</h4><p>لكل اختبار حد زمني ٥ دقائق (١٠ دقائق في مقرر فرض طلب العلم، و١٥ دقيقة في بداية العابد) يظهر أعلى الصفحة.</p></div></div>
+          <div class="step"><span class="num"></span><div><h4>انتبه للوقت</h4><p>في كل اختبار مؤقت يعدّ الوقت تصاعديًا أعلى الصفحة دون حد زمني، فخذ وقتك في التفكير.</p></div></div>
           <div class="step"><span class="num"></span><div><h4>أجب وتعلّم فورًا</h4><p>عند اختيار إجابة تظهر النتيجة الصحيحة مباشرة؛ وإن أخطأت يظهر تلميح موجز يوضّح الصواب قبل الانتقال للسؤال التالي.</p></div></div>
           <div class="step"><span class="num"></span><div><h4>يُحفظ تقدّمك تلقائيًا</h4><p>تُحفظ كل نتيجة على جوالك فقط ضمن «تقدّمي» دون أي اسم أو مشاركة، وتدخل نتيجتك أيضًا ضمن إحصاء المنصة العام بلا أسماء لرصد المستوى العام فقط.</p></div></div>
           <div class="step"><span class="num"></span><div><h4>شارك بسؤال من عندك</h4><p>اضغط الزر العائم «+ أضف سؤالك» في أسفل الصفحة لإضافة سؤال جديد على أي مقرر مباشرة وبلا أي مراجعة، ودون حدّ لعدد الأسئلة التي يمكنك إضافتها.</p></div></div>
