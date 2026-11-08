@@ -2906,6 +2906,8 @@ const TD_SV = {
   dot:'<circle cx="5" cy="5" r="4" fill="currentColor"/>'
 };
 const TD_ICMAP = {'✅':'check','🔹':'diamond'};
+/* تبويب «تعداد»: مُغلق حاليًا؛ غيّر القيمة إلى true لإظهاره للمشرف */
+const TADAD_ENABLED = false;
 const tdState = { book:0, open:{}, mem:false, q:{} };
 try{ tdState.q = JSON.parse(localStorage.getItem('bs_tadad_quiz_v1')||'{}')||{}; }catch(e){ tdState.q = {}; }
 function tdQSave(){ try{ localStorage.setItem('bs_tadad_quiz_v1', JSON.stringify(tdState.q)); }catch(e){} }
@@ -2982,7 +2984,7 @@ function renderHomeTabs(){
   <div class="home-tabs" role="tablist">
     <button class="home-tab ${(!rv && state.homeTab!=='tadad')?'active':''}" role="tab" onclick="setHomeTab('questions')">أسئلة</button>
     <button class="home-tab ${rv?'active':''}" role="tab" onclick="setHomeTab('review')">بطاقات${RV_STORE.seenTab ? '' : '<span class="rv-new">جديد</span>'}</button>
-    <button class="home-tab ${state.homeTab==='tadad'?'active':''}" role="tab" onclick="setHomeTab('tadad')">تعداد</button>
+    ${TADAD_ENABLED ? `<button class="home-tab ${state.homeTab==='tadad'?'active':''}" role="tab" onclick="setHomeTab('tadad')">تعداد</button>` : ''}
     ${rv ? `<div class="home-tools">${rvStripToolsHtml()}</div>` : ''}
   </div>`;
 }
@@ -4059,7 +4061,8 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<
 /* ============================ RENDER ROOT ============================ */
 function render(){
   /* حماية: خارج وضع التعديل لا تُعرض شاشات البطاقات مهما كانت الحالة */
-  if(!ADMIN_MODE){ if(state.homeTab==='review' || state.homeTab==='tadad') state.homeTab='questions'; if(String(state.view).startsWith('rv')) state.view='home'; }
+  if(!ADMIN_MODE || !TADAD_ENABLED){ if(state.homeTab==='tadad') state.homeTab='questions'; }
+  if(!ADMIN_MODE){ if(state.homeTab==='review') state.homeTab='questions'; if(String(state.view).startsWith('rv')) state.view='home'; }
   const navView = String(state.view).startsWith('rv') ? 'home' : state.view;
   document.querySelectorAll('.nav-link').forEach(b=>{ b.classList.toggle('active', b.dataset.view===navView); });
   /* زر «أضف سؤالك» خاص بتبويب الأسئلة فقط */
